@@ -315,7 +315,7 @@ String DashDevice::getTextBoxMessage(String controlID, String text) {
 }
 
 String DashDevice::getSelectorMessage(String controlID, int index) {
-    return String(DELIM) + deviceID + String(DELIM) + SELECTOR_ID + String(DELIM) + controlID + String(DELIM) + String(index) + String(DELIM);
+    return String(DELIM) + deviceID + String(DELIM) + SELECTOR_ID + String(DELIM) + controlID + String(DELIM) + String(index) + String(END_DELIM);
 }
 
 String DashDevice::getSelectorMessage(String controlID, int index, String* selectionItems, int rows) {
