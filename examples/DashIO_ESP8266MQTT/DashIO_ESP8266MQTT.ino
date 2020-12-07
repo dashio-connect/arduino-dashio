@@ -136,7 +136,7 @@ void loadUserSetup() {
 
 static void mqttPublish(String message, MQTTTopicType topic = data_topic) {
     if (mqttClient.connected()) {
-        String publishTopic = myDevice.getMQTTTopic(MQTT_USER, topic);
+        String publishTopic = myDevice.getMQTTTopic(userSetup.dashUserName, topic);
         mqttClient.publish(publishTopic.c_str(), message.c_str(), false, MQTT_QOS);
     
         Serial.println("---- MQTT Sent ----");
@@ -373,7 +373,7 @@ void checkConnectivity() {
 
 void setupMQTT_LWT() {
   // Setup MQTT Last Will and Testament message (Optional). Default keep alive time is 10s
-  String willTopic = myDevice.getMQTTTopic(MQTT_USER, will_topic);
+  String willTopic = myDevice.getMQTTTopic(userSetup.dashUserName, will_topic);
   Serial.print("LWT topic: ");
   Serial.println(willTopic);
   
