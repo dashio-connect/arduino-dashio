@@ -547,18 +547,18 @@ String DashDevice::getConfigMessage(PageCfg pageData) {
     json.addKeyString(F("controlID"), pageData.controlID);
     json.addKeyString(F("title"), pageData.title);
     json.addKeyString(F("iconName"), pageData.iconName);
-    json.addKeyString(F("pageColour"), pageData.pageColor);
+    json.addKeyString(F("pageColor"), pageData.pageColor);
      
     // Control Default Values
     json.addKeyInt(F("ctrlMaxFontSize"), pageData.ctrlMaxFontSize);
-    json.addKeyString(F("ctrlTextIconColour"), pageData.ctrlTextIconColor);
+    json.addKeyString(F("ctrlTextIconColor"), pageData.ctrlTextIconColor);
     json.addKeyBool(F("ctrlBorderOn"), pageData.ctrlBorderOn);
-    json.addKeyString(F("ctrlBkgndColour"), pageData.ctrlBkgndColor);
+    json.addKeyString(F("ctrlBkgndColou"), pageData.ctrlBkgndColor);
     json.addKeyInt(F("ctrlBkgndTransparency"), pageData.ctrlBkgndTransparency);
 
     // Control Title Box Default Values
     json.addKeyInt(F("ctrlTitleFontSize"), pageData.ctrlTitleFontSize);
-    json.addKeyString(F("ctrlTitleBoxColour"), pageData.ctrlTitleBoxColor);
+    json.addKeyString(F("ctrlTitleBoxColou"), pageData.ctrlTitleBoxColor);
     json.addKeyInt(F("ctrlTitleBoxTransparency"), pageData.ctrlTitleBoxTransparency);
     json.addKeyString(F("ctrlTitlePosition"), getTitlePositionStr(pageData.ctrlTitlePosition), true);
     return getFullConfigMessage(page, json.jsonStr);
@@ -576,7 +576,7 @@ String DashDevice::getConfigMessage(LabelCfg labelData) {
     json.addKeyString(F("title"), labelData.title);
     
     json.addKeyString(F("style"), getLabelStyle(labelData.style));
-    json.addKeyString(F("colour"), labelData.color, true);
+    json.addKeyString(F("color"), labelData.color, true);
     return getFullConfigMessage(label, json.jsonStr);
 }
 
@@ -619,8 +619,8 @@ String DashDevice::getConfigMessage(ButtonCfg buttonData) {
     json.addKeyBool(F("buttonEnabled"), buttonData.buttonEnabled);
     json.addKeyString(F("iconName"), buttonData.iconName);
     json.addKeyString(F("text"), buttonData.text);
-    json.addKeyString(F("offColour"), buttonData.offColor);
-    json.addKeyString(F("onColour"), buttonData.onColor, true);
+    json.addKeyString(F("offColor"), buttonData.offColor);
+    json.addKeyString(F("onColor"), buttonData.onColor, true);
     return getFullConfigMessage(button, json.jsonStr);
 }
 
@@ -685,10 +685,10 @@ String DashDevice::getConfigMessage(KnobCfg knobData) {
     json.addKeyFloat(F("max"), knobData.max);
     json.addKeyFloat(F("redValue"), knobData.redValue);
     json.addKeyBool(F("showMinMax"), knobData.showMinMax);
-    json.addKeyString(F("knobColour"), knobData.knobColor);
+    json.addKeyString(F("knobColor"), knobData.knobColor);
     json.addKeyBool(F("sendOnlyOnRelease"), knobData.sendOnlyOnRelease);
     json.addKeyBool(F("dialFollowsKnob"), knobData.dialFollowsKnob);
-    json.addKeyString(F("dialColour"), knobData.dialColor, true);
+    json.addKeyString(F("dialColor"), knobData.dialColor, true);
     return getFullConfigMessage(knob, json.jsonStr);
 }
 
@@ -706,8 +706,8 @@ String DashDevice::getConfigMessage(DialCfg dialData) {
     json.addKeyFloat(F("min"), dialData.min);
     json.addKeyFloat(F("max"), dialData.max);
     json.addKeyFloat(F("redValue"), dialData.redValue);
-    json.addKeyString(F("dialFillColour"), dialData.dialFillColor);
-    json.addKeyString(F("pointerColour"), dialData.pointerColor);
+    json.addKeyString(F("dialFillColor"), dialData.dialFillColor);
+    json.addKeyString(F("pointerColor"), dialData.pointerColor);
     json.addKeyString(F("numberPosition"), getDialNumberPosition(dialData.numberPosition));
     json.addKeyBool(F("showMinMax"), dialData.showMinMax);
     json.addKeyString(F("style"), getDialPresentationStyle(dialData.style));
@@ -727,7 +727,7 @@ String DashDevice::getConfigMessage(DirectionCfg directionData) {
     json.addKeyFloat(F("heightRatio"), directionData.graphicsRect.heightRatio);
     json.addKeyString(F("title"), directionData.title);
     
-    json.addKeyString(F("pointerColour"), directionData.pointerColor);
+    json.addKeyString(F("pointerColor"), directionData.pointerColor);
     json.addKeyInt(F("calAngle"), directionData.calAngle, true);
     return getFullConfigMessage(direction, json.jsonStr);
 }
@@ -780,10 +780,10 @@ String DashDevice::getConfigMessage(SliderCfg sliderData) {
     json.addKeyFloat(F("redValue"), sliderData.redValue);
     json.addKeyBool(F("showMinMax"), sliderData.showMinMax);
     json.addKeyBool(F("sliderEnabled"), sliderData.sliderEnabled);
-    json.addKeyString(F("knobColour"), sliderData.knobColor);
+    json.addKeyString(F("knobColor"), sliderData.knobColor);
     json.addKeyBool(F("sendOnlyOnRelease"), sliderData.sendOnlyOnRelease);
     json.addKeyBool(F("barFollowsSlider"), sliderData.barFollowsSlider);
-    json.addKeyString(F("barColour"), sliderData.barColor);
+    json.addKeyString(F("barColor"), sliderData.barColor);
     json.addKeyString(F("barStyle"), getBarStyleStr(sliderData.barStyle), true);
     return getFullConfigMessage(slider, json.jsonStr);
 }
