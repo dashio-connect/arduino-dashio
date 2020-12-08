@@ -553,12 +553,12 @@ String DashDevice::getConfigMessage(PageCfg pageData) {
     json.addKeyInt(F("ctrlMaxFontSize"), pageData.ctrlMaxFontSize);
     json.addKeyString(F("ctrlTextIconColor"), pageData.ctrlTextIconColor);
     json.addKeyBool(F("ctrlBorderOn"), pageData.ctrlBorderOn);
-    json.addKeyString(F("ctrlBkgndColou"), pageData.ctrlBkgndColor);
+    json.addKeyString(F("ctrlBkgndColor"), pageData.ctrlBkgndColor);
     json.addKeyInt(F("ctrlBkgndTransparency"), pageData.ctrlBkgndTransparency);
 
     // Control Title Box Default Values
     json.addKeyInt(F("ctrlTitleFontSize"), pageData.ctrlTitleFontSize);
-    json.addKeyString(F("ctrlTitleBoxColou"), pageData.ctrlTitleBoxColor);
+    json.addKeyString(F("ctrlTitleBoxColor"), pageData.ctrlTitleBoxColor);
     json.addKeyInt(F("ctrlTitleBoxTransparency"), pageData.ctrlTitleBoxTransparency);
     json.addKeyString(F("ctrlTitlePosition"), getTitlePositionStr(pageData.ctrlTitlePosition), true);
     return getFullConfigMessage(page, json.jsonStr);
