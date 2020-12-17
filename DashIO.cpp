@@ -551,33 +551,17 @@ String DashDevice::getConfigMessage(PageCfg pageData) {
      
     // Control Default Values
     json.addKeyInt(F("ctrlMaxFontSize"), pageData.ctrlMaxFontSize);
-    json.addKeyString(F("ctrlTextIconColor"), pageData.ctrlTextIconColor);
     json.addKeyBool(F("ctrlBorderOn"), pageData.ctrlBorderOn);
+    json.addKeyString(F("ctrlBorderColor"), pageData.ctrlBorderColor);
+    json.addKeyString(F("ctrlColor"), pageData.ctrlColor);
     json.addKeyString(F("ctrlBkgndColor"), pageData.ctrlBkgndColor);
     json.addKeyInt(F("ctrlBkgndTransparency"), pageData.ctrlBkgndTransparency);
 
     // Control Title Box Default Values
     json.addKeyInt(F("ctrlTitleFontSize"), pageData.ctrlTitleFontSize);
     json.addKeyString(F("ctrlTitleBoxColor"), pageData.ctrlTitleBoxColor);
-    json.addKeyInt(F("ctrlTitleBoxTransparency"), pageData.ctrlTitleBoxTransparency);
-    json.addKeyString(F("ctrlTitlePosition"), getTitlePositionStr(pageData.ctrlTitlePosition), true);
+    json.addKeyInt(F("ctrlTitleBoxTransparency"), pageData.ctrlTitleBoxTransparency, true);
     return getFullConfigMessage(page, json.jsonStr);
-}
-
-String DashDevice::getConfigMessage(LabelCfg labelData) {
-    DashJSON json;
-    json.start();
-    json.addKeyString(F("controlID"), labelData.controlID);
-    json.addKeyString(F("parentID"), labelData.parentID);
-    json.addKeyFloat(F("xPositionRatio"), labelData.graphicsRect.xPositionRatio);
-    json.addKeyFloat(F("yPositionRatio"), labelData.graphicsRect.yPositionRatio);
-    json.addKeyFloat(F("widthRatio"), labelData.graphicsRect.widthRatio);
-    json.addKeyFloat(F("heightRatio"), labelData.graphicsRect.heightRatio);
-    json.addKeyString(F("title"), labelData.title);
-    
-    json.addKeyString(F("style"), getLabelStyle(labelData.style));
-    json.addKeyString(F("color"), labelData.color, true);
-    return getFullConfigMessage(label, json.jsonStr);
 }
 
 String DashDevice::getConfigMessage(BLEConnCfg connectionData) {
@@ -605,6 +589,23 @@ String DashDevice::getConfigMessage(MQTTConnCfg connectionData) {
     return getFullConfigMessage(mqttConn, json.jsonStr);
 }
 
+String DashDevice::getConfigMessage(LabelCfg labelData) {
+    DashJSON json;
+    json.start();
+    json.addKeyString(F("controlID"), labelData.controlID);
+    json.addKeyString(F("parentID"), labelData.parentID);
+    json.addKeyFloat(F("xPositionRatio"), labelData.graphicsRect.xPositionRatio);
+    json.addKeyFloat(F("yPositionRatio"), labelData.graphicsRect.yPositionRatio);
+    json.addKeyFloat(F("widthRatio"), labelData.graphicsRect.widthRatio);
+    json.addKeyFloat(F("heightRatio"), labelData.graphicsRect.heightRatio);
+    json.addKeyString(F("title"), labelData.title);
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(labelData.titlePosition));
+
+    json.addKeyString(F("style"), getLabelStyle(labelData.style));
+    json.addKeyString(F("color"), labelData.color, true);
+    return getFullConfigMessage(label, json.jsonStr);
+}
+
 String DashDevice::getConfigMessage(ButtonCfg buttonData) {
     DashJSON json;
     json.start();
@@ -615,7 +616,8 @@ String DashDevice::getConfigMessage(ButtonCfg buttonData) {
     json.addKeyFloat(F("widthRatio"), buttonData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), buttonData.graphicsRect.heightRatio);
     json.addKeyString(F("title"), buttonData.title);
-    
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(buttonData.titlePosition));
+
     json.addKeyBool(F("buttonEnabled"), buttonData.buttonEnabled);
     json.addKeyString(F("iconName"), buttonData.iconName);
     json.addKeyString(F("text"), buttonData.text);
@@ -634,7 +636,8 @@ String DashDevice::getConfigMessage(MenuCfg menuData) {
     json.addKeyFloat(F("widthRatio"), menuData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), menuData.graphicsRect.heightRatio);
     json.addKeyString(F("title"), menuData.title);
-    
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(menuData.titlePosition));
+
     json.addKeyString(F("iconName"), menuData.iconName);
     json.addKeyString(F("text"), menuData.text, true);
     return getFullConfigMessage(menu, json.jsonStr);
@@ -650,7 +653,8 @@ String DashDevice::getConfigMessage(ButtonGroupCfg groupData) {
     json.addKeyFloat(F("widthRatio"), groupData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), groupData.graphicsRect.heightRatio);
     json.addKeyString(F("title"), groupData.title);
-    
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(groupData.titlePosition));
+
     json.addKeyString(F("iconName"), groupData.iconName);
     json.addKeyString(F("text"), groupData.text);
     json.addKeyBool(F("gridView"), groupData.gridView, true);
@@ -666,7 +670,8 @@ String DashDevice::getConfigMessage(EventLogCfg eventLogData) {
     json.addKeyFloat(F("yPositionRatio"), eventLogData.graphicsRect.yPositionRatio);
     json.addKeyFloat(F("widthRatio"), eventLogData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), eventLogData.graphicsRect.heightRatio);
-    json.addKeyString(F("title"), eventLogData.title, true);
+    json.addKeyString(F("title"), eventLogData.title);
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(eventLogData.titlePosition), true);
     return getFullConfigMessage(eventLog, json.jsonStr);
 }
 
@@ -680,11 +685,13 @@ String DashDevice::getConfigMessage(KnobCfg knobData) {
     json.addKeyFloat(F("widthRatio"), knobData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), knobData.graphicsRect.heightRatio);
     json.addKeyString(F("title"), knobData.title);
-    
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(knobData.titlePosition));
+
     json.addKeyFloat(F("min"), knobData.min);
     json.addKeyFloat(F("max"), knobData.max);
     json.addKeyFloat(F("redValue"), knobData.redValue);
     json.addKeyBool(F("showMinMax"), knobData.showMinMax);
+    json.addKeyString(F("style"), getKnobPresentationStyle(knobData.style));
     json.addKeyString(F("knobColor"), knobData.knobColor);
     json.addKeyBool(F("sendOnlyOnRelease"), knobData.sendOnlyOnRelease);
     json.addKeyBool(F("dialFollowsKnob"), knobData.dialFollowsKnob);
@@ -702,7 +709,8 @@ String DashDevice::getConfigMessage(DialCfg dialData) {
     json.addKeyFloat(F("widthRatio"), dialData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), dialData.graphicsRect.heightRatio);
     json.addKeyString(F("title"), dialData.title);
-    
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(dialData.titlePosition));
+
     json.addKeyFloat(F("min"), dialData.min);
     json.addKeyFloat(F("max"), dialData.max);
     json.addKeyFloat(F("redValue"), dialData.redValue);
@@ -726,7 +734,8 @@ String DashDevice::getConfigMessage(DirectionCfg directionData) {
     json.addKeyFloat(F("widthRatio"), directionData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), directionData.graphicsRect.heightRatio);
     json.addKeyString(F("title"), directionData.title);
-    
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(directionData.titlePosition));
+
     json.addKeyString(F("pointerColor"), directionData.pointerColor);
     json.addKeyInt(F("calAngle"), directionData.calAngle, true);
     return getFullConfigMessage(direction, json.jsonStr);
@@ -742,7 +751,8 @@ String DashDevice::getConfigMessage(TextBoxCfg textBoxData) {
     json.addKeyFloat(F("widthRatio"), textBoxData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), textBoxData.graphicsRect.heightRatio);
     json.addKeyString(F("title"), textBoxData.title);
-    
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(textBoxData.titlePosition));
+
     json.addKeyString(F("textAlign"), getTextAlignStr(textBoxData.textAlign));
     json.addKeyString(F("units"), textBoxData.units);
     json.addKeyInt(F("precision"), textBoxData.precision);
@@ -760,7 +770,8 @@ String DashDevice::getConfigMessage(SelectorCfg selectorData) {
     json.addKeyFloat(F("yPositionRatio"), selectorData.graphicsRect.yPositionRatio);
     json.addKeyFloat(F("widthRatio"), selectorData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), selectorData.graphicsRect.heightRatio);
-    json.addKeyString(F("title"), selectorData.title, true);
+    json.addKeyString(F("title"), selectorData.title);
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(selectorData.titlePosition), true);
     return getFullConfigMessage(selector, json.jsonStr);
 }
 
@@ -774,7 +785,8 @@ String DashDevice::getConfigMessage(SliderCfg sliderData) {
     json.addKeyFloat(F("widthRatio"), sliderData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), sliderData.graphicsRect.heightRatio);
     json.addKeyString(F("title"), sliderData.title);
-    
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(sliderData.titlePosition));
+
     json.addKeyFloat(F("min"), sliderData.min);
     json.addKeyFloat(F("max"), sliderData.max);
     json.addKeyFloat(F("redValue"), sliderData.redValue);
@@ -798,7 +810,8 @@ String DashDevice::getConfigMessage(GraphCfg graphData) {
     json.addKeyFloat(F("widthRatio"), graphData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), graphData.graphicsRect.heightRatio);
     json.addKeyString(F("title"), graphData.title);
-    
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(graphData.titlePosition));
+
     json.addKeyString(F("xAxisLabel"), graphData.xAxisLabel);
     json.addKeyFloat(F("xAxisMin"), graphData.xAxisMin);
     json.addKeyFloat(F("xAxisMax"), graphData.xAxisMax);
@@ -821,7 +834,8 @@ String DashDevice::getConfigMessage(TimeGraphCfg timeGraphData) {
     json.addKeyFloat(F("widthRatio"), timeGraphData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), timeGraphData.graphicsRect.heightRatio);
     json.addKeyString(F("title"), timeGraphData.title);
-    
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(timeGraphData.titlePosition));
+
     json.addKeyString(F("yAxisLabel"), timeGraphData.yAxisLabel);
     json.addKeyFloat(F("yAxisMin"), timeGraphData.yAxisMin);
     json.addKeyFloat(F("yAxisMax"), timeGraphData.yAxisMax);
@@ -838,7 +852,8 @@ String DashDevice::getConfigMessage(MapCfg mapData) {
     json.addKeyFloat(F("yPositionRatio"), mapData.graphicsRect.yPositionRatio);
     json.addKeyFloat(F("widthRatio"), mapData.graphicsRect.widthRatio);
     json.addKeyFloat(F("heightRatio"), mapData.graphicsRect.heightRatio);
-    json.addKeyString(F("title"), mapData.title, true);
+    json.addKeyString(F("title"), mapData.title);
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(mapData.titlePosition), true);
     return getFullConfigMessage(mapper, json.jsonStr);
 }
 
@@ -871,6 +886,15 @@ String DashDevice::getDialNumberPosition(DialNumberPosition numberPosition) {
             return "RIGHT";
         default:
             return "OFF";
+    }
+}
+
+String DashDevice::getKnobPresentationStyle(KnobPresentationStyle presentationStyle) {
+    switch (presentationStyle) {
+        case knobPan:
+            return "PAN";
+        default:
+            return "NORMAL";
     }
 }
 

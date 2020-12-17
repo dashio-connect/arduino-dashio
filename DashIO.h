@@ -100,6 +100,11 @@ enum LabelStyle {
     group
 };
 
+enum KnobPresentationStyle {
+    knobNormal,
+    knobPan
+};
+
 enum DialNumberPosition {
     numberOff,
     numberLeft,
@@ -195,8 +200,9 @@ struct PageCfg {
      
     // Control Default Values
     int    ctrlMaxFontSize = 30;  // The maximum size of the text font. The font size will never be larger than this value.
-    String ctrlTextIconColor = "white"; // Default color of the text and/or icon of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
     bool   ctrlBorderOn = true;   // Default Hide or shor border on all controls
+    String ctrlBorderColor = "white"; // Default color of the border and title boxtext. Color name from colors in IoT Dashboard e.g. "blue" or index
+    String ctrlColor = "white";   // Default color of misc parts of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
     String ctrlBkgndColor;        // Default color of the background of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
     int    ctrlBkgndTransparency = 0; // Default transparency of the background of all controls (0 to 100).
 
@@ -204,7 +210,6 @@ struct PageCfg {
     int    ctrlTitleFontSize = 18; // Font size for the title (8 to 30)
     String ctrlTitleBoxColor;     // Default color of the title box of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
     int    ctrlTitleBoxTransparency = 0; // Default transparency of the title box of all controls (0 to 100).
-    TitlePosition ctrlTitlePosition = titleTop; // Default position of title box for all control. "titleOff", "titleTop" or "titleBottom"
     
     PageCfg(String _controlID, String _title, String _iconName, String _pageColor) {
         controlID = _controlID;
@@ -218,6 +223,7 @@ struct CommonControl {
     String controlID;             // Identifier of the control.
     String parentID;              // Identifier of the parent page or control
     String title;                 // Text to be displayed in the title box of the control
+    TitlePosition titlePosition = titleTop; // Default position of title box. "titleOff", "titleTop" or "titleBottom"
     Rect   graphicsRect;          // Position and size of the control
     
     CommonControl(String _controlID, String _parentID, String _title, Rect _graphicsRect) {
@@ -274,6 +280,7 @@ struct KnobCfg : CommonControl {
     float  max = 100;             // Maximum value of the dial behind the knob
     float  redValue = 70;         // When the dial value is above this number it will be colored red
     bool   showMinMax = true;     // Show the maximum and minimum values on the dial
+    KnobPresentationStyle style = knobNormal; // Presentation style of the dial. May be "knobNormal" or "knobPan"
     String knobColor = "red";     // Color name from colors in IoT Dashboard e.g. "blue" or index to the color e.g. "4"
     bool   sendOnlyOnRelease = true; // Send message only when the the knob is released
     bool   dialFollowsKnob = true; // The dial behind the knob shows the same value as the knob
@@ -465,6 +472,7 @@ class DashDevice {
 
     String getTitlePositionStr(TitlePosition tbp);
     String getLabelStyle(LabelStyle labelStyle);
+    String getKnobPresentationStyle(KnobPresentationStyle presentationStyle);
     String getDialNumberPosition(DialNumberPosition numberPosition);
     String getDialPresentationStyle(DialPresentationStyle presentationStyle);
     String getKeyboardTypeStr(KeyboardType kbd);
