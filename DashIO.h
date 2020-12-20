@@ -97,6 +97,7 @@ enum TitlePosition {
 
 enum LabelStyle {
     basic,
+    border,
     group
 };
 
@@ -235,7 +236,7 @@ struct CommonControl {
 };
 
 struct LabelCfg : CommonControl {
-    LabelStyle style = group;     // Style of the label. May be "basic" or "group"
+    LabelStyle style = group;     // Style of the label. May be "basic", "border" or "group"
     String color = "white";       // Color of the text
     
     LabelCfg(String _controlID, String _parentID, String _title, Rect _graphicsRect = Rect())

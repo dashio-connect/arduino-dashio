@@ -873,6 +873,8 @@ String DashDevice::getLabelStyle(LabelStyle labelStyle) {
     switch (labelStyle) {
         case basic:
             return "BASIC";
+        case border:
+            return "GROUP";
         default:
             return "GROUP";
     }
