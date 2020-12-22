@@ -537,7 +537,8 @@ String DashDevice::getFloatArray(String controlType, String ID, float fdata[], i
 String DashDevice::getConfigMessage(DeviceCfg deviceConfigData) {
     DashJSON json;
     json.start();
-    json.addKeyInt(F("numPages"), deviceConfigData.numPages, true);
+    json.addKeyInt(F("numPages"), deviceConfigData.numPages);
+    json.addKeyString(F("deviceSetup"), deviceConfigData.deviceSetup, true);
     return getFullConfigMessage(device, json.jsonStr);
 }
 

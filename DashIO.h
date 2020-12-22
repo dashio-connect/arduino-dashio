@@ -186,10 +186,12 @@ struct MQTTConnCfg {
 };
 
 struct DeviceCfg {
-    int numPages;
+    int    numPages;
+    String deviceSetup;
     
-    DeviceCfg(int _numPages) {
+    DeviceCfg(int _numPages, String _deviceSetup = "") {
         numPages = _numPages;
+        deviceSetup = _deviceSetup;
     }
 };
 
