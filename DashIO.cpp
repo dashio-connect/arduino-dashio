@@ -754,6 +754,7 @@ String DashDevice::getConfigMessage(TextBoxCfg textBoxData) {
     json.addKeyString(F("title"), textBoxData.title);
     json.addKeyString(F("titlePosition"), getTitlePositionStr(textBoxData.titlePosition));
 
+    json.addKeyString(F("format"), getTextFormatStr(textBoxData.format));
     json.addKeyString(F("textAlign"), getTextAlignStr(textBoxData.textAlign));
     json.addKeyString(F("units"), textBoxData.units);
     json.addKeyInt(F("precision"), textBoxData.precision);
@@ -910,14 +911,39 @@ String DashDevice::getDialPresentationStyle(DialPresentationStyle presentationSt
     }
 }
 
+String DashDevice::getTextFormatStr(TextFormat format) {
+    switch (format) {
+        case numFmt:
+            return "NUM";
+        case dateTimeFmt:
+            return "DATETIME";
+        case dateTimeLongFmt:
+            return "DTLONG";
+        case intvlFmt:
+            return "INTVL";
+        default:
+            return "NONE";
+    }
+}
+
 String DashDevice::getKeyboardTypeStr(KeyboardType kbd) {
     switch (kbd) {
-        case hexChars:
+        case hexKbd:
             return "HEX";
-        case numChars:
-            return "NUM";
-        case allChars:
+        case allKbd:
             return "ALL";
+        case numKbd:
+            return "NUM";
+        case intKbd:
+            return "INT";
+        case dateKbd:
+            return "DATE";
+        case timeKbd:
+            return "TIME";
+        case dateTimeKbd:
+            return "DATETIME";
+        case intvlKbd:
+            return "INTVL";
         default:
             return "NONE";
     }

@@ -117,11 +117,24 @@ enum DialPresentationStyle {
     dialInverted
 };
 
+enum TextFormat {
+    numFmt,
+    dateTimeFmt,
+    dateTimeLongFmt,
+    intvlFmt,
+    noFmt
+};
+
 enum KeyboardType {
-    hexChars,
-    allChars,
-    numChars,
-    none
+    hexKbd,
+    allKbd,
+    numKbd,
+    intKbd,
+    dateKbd,
+    timeKbd,
+    dateTimeKbd,
+    intvlKbd,
+    noKbd
 };
 
 enum TextAlign {
@@ -318,10 +331,12 @@ struct DirectionCfg : CommonControl {
 };
 
 struct TextBoxCfg : CommonControl {
+    TextFormat format = noFmt;          // numFmt, dateTimeFmt, dateTimeLongFmt, intvlFmt, noFmt
+
     TextAlign textAlign = textCenter; // textCenter, textLeft or textRight
     String units;                 // To be displayed after the text
     int precision = 0;            // Numeric precision - number of charactes excluding the decimal point from 1 to 6. Any other value = off
-    KeyboardType kbdType = numChars; // "none", "allChars" for all characters, "nnumCharsum" for numeric, or "hexChars" for hexidecimal
+    KeyboardType kbdType = allKbd; // "none", "allKbd" for all characters, "numKbd" for numeric, or "hexKbd" for hexidecimal, intKbd, dateKbd, timeKbd, dateTimeKbd, intvlKbd,
     bool   closeKbdOnSend = true; // Hide the keyboard once the message has been sent.
 
     TextBoxCfg(String _controlID, String _parentID, String _title, Rect _graphicsRect = Rect())
@@ -478,6 +493,7 @@ class DashDevice {
     String getKnobPresentationStyle(KnobPresentationStyle presentationStyle);
     String getDialNumberPosition(DialNumberPosition numberPosition);
     String getDialPresentationStyle(DialPresentationStyle presentationStyle);
+    String getTextFormatStr(TextFormat format);
     String getKeyboardTypeStr(KeyboardType kbd);
     String getTextAlignStr(TextAlign align);
     String getBarStyleStr(BarStyle barStyle);
