@@ -57,7 +57,9 @@
 
 #define DEVICE_NAME_ID "NAME"
 #define WIFI_SETUP_ID "WIFI"
-#define DASH_SETUP_ID "DASH"
+#define TCP_SETUP_ID "TCP"
+#define DASHIO_SETUP_ID "DASHIO"
+#define MQTT_SETUP_ID "MQTT"
 #define POPUP_MESSAGE_ID "MSSG"
 
 // Connection type IDs
@@ -160,8 +162,12 @@ bool DashConnection::processChar(char chr) {
           control = deviceName;
         } else if (readStr == WIFI_SETUP_ID) {
           control = wifiSetup;
-        } else if (readStr == DASH_SETUP_ID) {
-          control = dashSetup;
+        } else if (readStr == TCP_SETUP_ID) {
+          control = tcpSetup;
+        } else if (readStr == DASHIO_SETUP_ID) {
+          control = dashioSetup;
+        } else if (readStr == MQTT_SETUP_ID) {
+          control = mqttSetup;
         } else {
           control = unknown;
           segmentCount == -1;
@@ -172,6 +178,9 @@ bool DashConnection::processChar(char chr) {
         break;
       case 3:
         payloadStr = readStr;
+        break;
+      case 4:
+        payloadStr2 = readStr;
         break;
       default:
         segmentCount = 0;
@@ -409,15 +418,18 @@ String DashDevice::getGraphLineFloats(String controlID, String graphLineID, Stri
   return writeStr;
 }
 
-String DashDevice::getTimeGraphLineFloats(String controlID, String graphLineID, String lineName, LineType lineType, String color, String times[], float lineData[], int dataLength) {
-  String writeStr = String(DELIM) + deviceID + String(DELIM) + TIME_GRAPH_ID + String(DELIM) + controlID + String(DELIM) + graphLineID + String(DELIM) + lineName + String(DELIM) + getLineTypeStr(lineType) + String(DELIM) + color;
-  for (int i = 0; i < dataLength; i++) {
-    char lineDataBuffer[8];
-    String lineDataStr = dtostrf(lineData[i], 5, 2, lineDataBuffer);
-    writeStr += String(DELIM) + times[i] + "," +  lineDataStr;
-  }
-  writeStr += String(END_DELIM);
-  return writeStr;
+String DashDevice::getTimeGraphLineFloats(String controlID, String graphLineID, String lineName, LineType lineType, String color, String times[], float lineData[], int dataLength, bool breakLine) {
+    String writeStr = String(DELIM) + deviceID + String(DELIM) + TIME_GRAPH_ID + String(DELIM) + controlID + String(DELIM) + graphLineID + String(DELIM) + lineName + String(DELIM) + getLineTypeStr(lineType) + String(DELIM) + color;
+    if (breakLine && (dataLength > 0)) {
+        writeStr += String(DELIM) + times[0] + "," + "B";
+    }
+    for (int i = 0; i < dataLength; i++) {
+      char lineDataBuffer[8];
+      String lineDataStr = dtostrf(lineData[i], 5, 2, lineDataBuffer);
+      writeStr += String(DELIM) + times[i] + "," +  lineDataStr;
+    }
+    writeStr += String(END_DELIM);
+    return writeStr;
 }
 
 String DashDevice::getTimeGraphLineBools(String controlID, String graphLineID, String lineName, LineType lineType, String color, String times[], bool lineData[], int dataLength) {
@@ -460,7 +472,9 @@ String DashDevice::getControlTypeStr(ControlType controltype) {
           
     case deviceName: return DEVICE_NAME_ID;
     case wifiSetup: return WIFI_SETUP_ID;
-    case dashSetup: return DASH_SETUP_ID;
+    case tcpSetup: return TCP_SETUP_ID;
+    case dashioSetup: return DASHIO_SETUP_ID;
+    case mqttSetup: return MQTT_SETUP_ID;
     case popupMessage: return POPUP_MESSAGE_ID;
 
     case mqttConn: return MQTT_CONNECTION_ID;

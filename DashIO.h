@@ -64,7 +64,9 @@ enum ControlType {
     mapper,
     deviceName,
     wifiSetup,
-    dashSetup,
+    tcpSetup,
+    dashioSetup,
+    mqttSetup,
     popupMessage,
     unknown
 };
@@ -203,7 +205,7 @@ struct DeviceCfg {
     bool   editLock;
     String deviceSetup;
     
-    DeviceCfg(int _numPages, bool _editLock, String _deviceSetup = "") {
+    DeviceCfg(int _numPages, bool _editLock = false, String _deviceSetup = "") {
         numPages = _numPages;
         editLock = _editLock;
         deviceSetup = _deviceSetup;
@@ -405,6 +407,7 @@ class DashConnection {
     ControlType control = unknown;
     String idStr = "";
     String payloadStr = "";
+    String payloadStr2 = "";
 
     DashConnection(ConnectionType connType);
     void processMessage(String message);
@@ -449,7 +452,7 @@ class DashDevice {
     
     String getGraphLineInts(String controlID, String graphLineID, String lineName, LineType lineType, String color, int lineData[], int dataLength);
     String getGraphLineFloats(String controlID, String graphLineID, String lineName, LineType lineType, String color, float lineData[], int dataLength);
-    String getTimeGraphLineFloats(String controlID, String graphLineID, String lineName, LineType lineType, String color, String times[], float lineData[], int dataLength);
+    String getTimeGraphLineFloats(String controlID, String graphLineID, String lineName, LineType lineType, String color, String times[], float lineData[], int dataLength, bool breakLine = false);
     String getTimeGraphLineBools(String controlID, String graphLineID, String lineName, LineType lineType, String color, String times[], bool lineData[], int dataLength);
     
     //  Config messages
