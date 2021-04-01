@@ -46,6 +46,7 @@ enum ControlType {
     mqttConn,
     bleConn,
     tcpConn,
+    alarmNotify,
     device,
     page,
     label,
@@ -209,6 +210,18 @@ struct DeviceCfg {
         numPages = _numPages;
         editLock = _editLock;
         deviceSetup = _deviceSetup;
+    }
+};
+
+struct AlarmCfg {
+    String controlID;
+    String description;
+    String soundName;
+
+    AlarmCfg(String _controlID, String _description, String _soundName = "Default") {
+        controlID = _controlID;
+        description = _description;
+        soundName = _soundName;
     }
 };
 
@@ -462,6 +475,8 @@ class DashDevice {
     String getConfigMessage(BLEConnCfg connectionData);
     String getConfigMessage(TCPConnCfg connectionData);
     String getConfigMessage(MQTTConnCfg connectionData);
+    
+    String getConfigMessage(AlarmCfg alarmData);
 
     String getConfigMessage(LabelCfg labelData);
     String getConfigMessage(ButtonCfg buttonData);
@@ -478,8 +493,6 @@ class DashDevice {
     String getConfigMessage(TimeGraphCfg timeGraphData);
     String getConfigMessage(MapCfg mapData);
 
-        
-        
     String getOnlineMessage();
     String getOfflineMessage();
     

@@ -67,6 +67,9 @@
 #define BLE_CONNECTION_ID "BLE"
 #define TCP_CONNECTION_ID "TCP"
 
+// Alarm
+#define ALARM_ID "ALM"
+
 // Button control states
 #define BUTTON_ON "ON"
 #define BUTTON_OFF "OFF"
@@ -292,8 +295,8 @@ String DashDevice::getDeviceNameMessage(String deviceName) {
     return String(DELIM) + deviceID + String(DELIM) + DEVICE_NAME_ID + String(DELIM) + deviceName + String(END_DELIM);
 }
 
-String DashDevice::getAlarmMessage(String alarmID, String title, String description) {
-    return String(DELIM) + deviceID + String(DELIM) + alarmID + String(DELIM) + title + String(DELIM) + description + String(END_DELIM);
+String DashDevice::getAlarmMessage(String controlID, String title, String description) {
+    return String(DELIM) + deviceID + String(DELIM) + controlID + String(DELIM) + title + String(DELIM) + description + String(END_DELIM);
 }
 
 String DashDevice::getAlarmMessage(Notification alarm) {
@@ -480,6 +483,8 @@ String DashDevice::getControlTypeStr(ControlType controltype) {
     case mqttConn: return MQTT_CONNECTION_ID;
     case bleConn: return BLE_CONNECTION_ID;
     case tcpConn: return TCP_CONNECTION_ID;
+          
+    case alarmNotify: return ALARM_ID;
 
     case unknown: return "";
   }
@@ -603,6 +608,15 @@ String DashDevice::getConfigMessage(MQTTConnCfg connectionData) {
     json.addKeyString(F("userName"), connectionData.userName);
     json.addKeyString(F("hostURL"), connectionData.hostURL, true);
     return getFullConfigMessage(mqttConn, json.jsonStr);
+}
+
+String DashDevice::getConfigMessage(AlarmCfg alarmData) {
+    DashJSON json;
+    json.start();
+    json.addKeyString(F("controlID"), alarmData.controlID);
+    json.addKeyString(F("description"), alarmData.description);
+    json.addKeyString(F("soundName"), alarmData.soundName, true);
+    return getFullConfigMessage(alarmNotify, json.jsonStr);
 }
 
 String DashDevice::getConfigMessage(LabelCfg labelData) {
