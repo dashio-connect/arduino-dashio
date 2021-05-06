@@ -917,6 +917,8 @@ String DashDevice::getDialNumberPosition(DialNumberPosition numberPosition) {
             return "LEFT";
         case numberRight:
             return "RIGHT";
+        case numberCenter:
+            return "CENTER";
         default:
             return "OFF";
     }
@@ -933,10 +935,12 @@ String DashDevice::getKnobPresentationStyle(KnobPresentationStyle presentationSt
 
 String DashDevice::getDialPresentationStyle(DialPresentationStyle presentationStyle) {
     switch (presentationStyle) {
-        case dialInverted:
-            return "INVERTED";
+        case dialPie:
+            return "PIE";
+        case dialPieInverted:
+            return "PIEINV";
         default:
-            return "UPRIGHT";
+            return "BAR";
     }
 }
 

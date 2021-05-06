@@ -112,12 +112,14 @@ enum KnobPresentationStyle {
 enum DialNumberPosition {
     numberOff,
     numberLeft,
-    numberRight
+    numberRight,
+    numberCenter,
 };
 
 enum DialPresentationStyle {
-    dialUpright,
-    dialInverted
+    dialPie,
+    dialPieInverted,
+    dialBar
 };
 
 enum TextFormat {
@@ -329,9 +331,9 @@ struct DialCfg : CommonControl {
     float  redValue = 70;         // When the dial value is above this number it will be colored red
     String dialFillColor = "green"; // Color name from colors in IoT Dashboard e.g. "blue" or index to the color e.g. "4"
     String pointerColor = "yellow"; // Color name from colors in IoT Dashboard e.g. "blue" or index to the color e.g. "4"
-    DialNumberPosition numberPosition = numberRight; // Position of the display of the value. May be "numberOff", "numberLeft" or "numberRight"
+    DialNumberPosition numberPosition = numberCenter; // Position of the display of the value. May be "numberOff", "numberLeft", "numberRight" or numberCenter
     bool   showMinMax = true;     // Show the maximum and minimum values on the dial.
-    DialPresentationStyle style = dialUpright; // Presentation style of the dial. May be "dialUpright" or "dialInverted"
+    DialPresentationStyle style = dialBar; // Presentation style of the dial. May be "pie", "pieInv" or "bar"
     String units;                 // To be displayed after the text
     int precision = 3;            // Numeric precision - number of charactes excluding the decimal point from 1 to 6. Any other value = off
 
