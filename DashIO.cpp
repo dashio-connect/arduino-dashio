@@ -767,6 +767,7 @@ String DashDevice::getConfigMessage(DirectionCfg directionData) {
     json.addKeyString(F("titlePosition"), getTitlePositionStr(directionData.titlePosition));
 
     json.addKeyString(F("pointerColor"), directionData.pointerColor);
+    json.addKeyString(F("style"), getDirectionPresentationStyle(directionData.style));
     json.addKeyInt(F("calAngle"), directionData.calAngle, true);
     return getFullConfigMessage(direction, json.jsonStr);
 }
@@ -941,6 +942,17 @@ String DashDevice::getDialPresentationStyle(DialPresentationStyle presentationSt
             return "PIEINV";
         default:
             return "BAR";
+    }
+}
+
+String DashDevice::getDirectionPresentationStyle(DirectionPresentationStyle presentationStyle) {
+    switch (presentationStyle) {
+        case dirDeg:
+            return "DEG";
+        case dirDegPS:
+            return "DEGPS";
+        default:
+            return "NSEW";
     }
 }
 

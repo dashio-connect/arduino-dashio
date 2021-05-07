@@ -122,6 +122,12 @@ enum DialPresentationStyle {
     dialBar
 };
 
+enum DirectionPresentationStyle {
+    dirNSEW,
+    dirDeg,
+    dirDegPS
+};
+
 enum TextFormat {
     numFmt,
     dateTimeFmt,
@@ -343,6 +349,7 @@ struct DialCfg : CommonControl {
 
 struct DirectionCfg : CommonControl {
     String pointerColor = "yellow"; // Color name from colors in IoT Dashboard e.g. "blue" or index to the color e.g. "4"
+    DirectionPresentationStyle style = dirNSEW; // Presentation style of the dial. May be "nsew", "deg" or "degps"
     int    calAngle = 0;          // Correction offset in degrees for the direction pointer
 
     DirectionCfg(String _controlID, String _parentID, String _title, Rect _graphicsRect = Rect())
@@ -513,6 +520,7 @@ class DashDevice {
     String getKnobPresentationStyle(KnobPresentationStyle presentationStyle);
     String getDialNumberPosition(DialNumberPosition numberPosition);
     String getDialPresentationStyle(DialPresentationStyle presentationStyle);
+    String getDirectionPresentationStyle(DirectionPresentationStyle presentationStyle);
     String getTextFormatStr(TextFormat format);
     String getKeyboardTypeStr(KeyboardType kbd);
     String getTextAlignStr(TextAlign align);
