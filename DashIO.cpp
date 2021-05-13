@@ -105,7 +105,7 @@ void DashConnection::processMessage(String message) {
   Serial.println();
 
   if (message.length() > 0) {
-    for (int i = 0; i < message.length(); i++) {
+    for (unsigned int i = 0; i < message.length(); i++) {
       char chr = message[i];
       if (messageReceived) {
         Serial.println(F("Incoming message overflow"));
@@ -188,6 +188,7 @@ bool DashConnection::processChar(char chr) {
       default:
         segmentCount = 0;
       }
+        
       if (segmentCount >= 0) {
         segmentCount++;
         if (chr == END_DELIM) { // End of message, so process message
@@ -356,8 +357,13 @@ String DashDevice::getKnobDialMessage(String controlID, int value) {
   return String(DELIM) + deviceID + String(DELIM) + KNOB_DIAL_ID + String(DELIM) + controlID + String(DELIM) + String(value) + String(END_DELIM);
 }
 
-String DashDevice::getDirectionMessage(String controlID, int value) {
-  return String(DELIM) + deviceID + String(DELIM) + DIRECTION_ID + String(DELIM) + controlID + String(DELIM) + String(value) + String(END_DELIM);
+String DashDevice::getDirectionMessage(String controlID, int value, String text) {
+  String writeStr = String(DELIM) + deviceID + String(DELIM) + DIRECTION_ID + String(DELIM) + controlID + String(DELIM) + String(value);
+  if (text != "") {
+      writeStr += (String(DELIM) + text);
+  }
+  writeStr += String(END_DELIM);
+  return writeStr;
 }
 
 String DashDevice::getDialMessage(String controlID, String text) {
@@ -486,8 +492,10 @@ String DashDevice::getControlTypeStr(ControlType controltype) {
           
     case alarmNotify: return ALARM_ID;
 
+    case pushToken: return "";
     case unknown: return "";
   }
+  return "";
 }
 
 String DashDevice::getMQTTSubscribeTopic(String userName) {
@@ -768,7 +776,9 @@ String DashDevice::getConfigMessage(DirectionCfg directionData) {
 
     json.addKeyString(F("pointerColor"), directionData.pointerColor);
     json.addKeyString(F("style"), getDirectionPresentationStyle(directionData.style));
-    json.addKeyInt(F("calAngle"), directionData.calAngle, true);
+    json.addKeyInt(F("calAngle"), directionData.calAngle);
+    json.addKeyString(F("units"), directionData.units);
+    json.addKeyInt(F("precision"), directionData.precision, true);
     return getFullConfigMessage(direction, json.jsonStr);
 }
 

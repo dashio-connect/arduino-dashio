@@ -351,6 +351,8 @@ struct DirectionCfg : CommonControl {
     String pointerColor = "yellow"; // Color name from colors in IoT Dashboard e.g. "blue" or index to the color e.g. "4"
     DirectionPresentationStyle style = dirNSEW; // Presentation style of the dial. May be "nsew", "deg" or "degps"
     int    calAngle = 0;          // Correction offset in degrees for the direction pointer
+    String units;                 // To be displayed below the text
+    int precision = 3;            // Numeric precision - number of charactes excluding the decimal point from 1 to 6. Any other value = off
 
     DirectionCfg(String _controlID, String _parentID, String _title, Rect _graphicsRect = Rect())
                  : CommonControl(_controlID, _parentID, _title, _graphicsRect) {}
@@ -462,7 +464,7 @@ class DashDevice {
     String getSingleBarMessage(String controlID, int value);
     String getKnobMessage(String controlID, int value);
     String getKnobDialMessage(String controlID, int value);
-    String getDirectionMessage(String controlID, int value);
+    String getDirectionMessage(String controlID, int direction, String text = "");
     String getDialMessage(String controlID, String text);
     String getMapMessage(String controlID, String latitude, String longitude, String message);
     String getEventLogMessage(String controlID, String timeStr, String color, String text[], int dataLength);
