@@ -48,7 +48,7 @@ enum ControlType {
     tcpConn,
     alarmNotify,
     device,
-    page,
+    controlsBox,
     label,
     button,
     menu,
@@ -210,12 +210,12 @@ struct MQTTConnCfg {
 };
 
 struct DeviceCfg {
-    int    numPages;
+    int    numCtrlsBoxes;
     bool   editLock;
     String deviceSetup;
     
-    DeviceCfg(int _numPages, bool _editLock = false, String _deviceSetup = "") {
-        numPages = _numPages;
+    DeviceCfg(int _numCtrlsBoxes, bool _editLock = false, String _deviceSetup = "") {
+        numCtrlsBoxes = _numCtrlsBoxes;
         editLock = _editLock;
         deviceSetup = _deviceSetup;
     }
@@ -233,11 +233,11 @@ struct AlarmCfg {
     }
 };
 
-struct PageCfg {
-    String controlID;             // Unique identifier of the page.
-    String title;                 // Page Name
-    String iconName;              // Name of the icon from the icons in IoT Dashboard. Displayed on the page menu.
-    String pageColor;             // Color of the page. Color name from colors in IoT Dashboard e.g. "blue" or index
+struct ControlsBoxCfg {
+    String controlID;             // Unique identifier of the Controls Box.
+    String title;                 // Controls Box Name
+    String iconName;              // Name of the icon from the icons in IoT Dashboard. Displayed on the menu.
+    String color;                 // Controls Box background color. Color name from colors in IoT Dashboard e.g. "blue" or index
      
     // Control Default Values
     int    ctrlMaxFontSize = 30;  // The maximum size of the text font. The font size will never be larger than this value.
@@ -252,17 +252,17 @@ struct PageCfg {
     String ctrlTitleBoxColor;     // Default color of the title box of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
     int    ctrlTitleBoxTransparency = 0; // Default transparency of the title box of all controls (0 to 100).
     
-    PageCfg(String _controlID, String _title, String _iconName, String _pageColor) {
+    ControlsBoxCfg(String _controlID, String _title, String _iconName, String _color) {
         controlID = _controlID;
         title = _title;
         iconName = _iconName;
-        pageColor = _pageColor;
+        color = _color;
     }
 };
 
 struct CommonControl {
     String controlID;             // Identifier of the control.
-    String parentID;              // Identifier of the parent page or control
+    String parentID;              // Identifier of the parent control
     String title;                 // Text to be displayed in the title box of the control
     TitlePosition titlePosition = titleTop; // Default position of title box. "titleOff", "titleTop" or "titleBottom"
     Rect   graphicsRect;          // Position and size of the control
@@ -339,7 +339,7 @@ struct DialCfg : CommonControl {
     String pointerColor = "yellow"; // Color name from colors in IoT Dashboard e.g. "blue" or index to the color e.g. "4"
     DialNumberPosition numberPosition = numberCenter; // Position of the display of the value. May be "numberOff", "numberLeft", "numberRight" or numberCenter
     bool   showMinMax = true;     // Show the maximum and minimum values on the dial.
-    DialPresentationStyle style = dialBar; // Presentation style of the dial. May be "pie", "pieInv" or "bar"
+    DialPresentationStyle style = dialBar; // Presentation style of the dial. May be "pie", "dialPieInverted" or "bar"
     String units;                 // To be displayed after the text
     int precision = 3;            // Numeric precision - number of charactes excluding the decimal point from 1 to 6. Any other value = off
 
@@ -481,7 +481,7 @@ class DashDevice {
     
     //  Config messages
     String getConfigMessage(DeviceCfg deviceConfigData);
-    String getConfigMessage(PageCfg pageData);
+    String getConfigMessage(ControlsBoxCfg controlsBoxData);
 
     String getConfigMessage(BLEConnCfg connectionData);
     String getConfigMessage(TCPConnCfg connectionData);
