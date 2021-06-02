@@ -42,7 +42,7 @@ DashDevice myDevice;
 DashConnection myTCPconnection(TCP_CONN);
 
 // Create Control IDs
-const char *PAGE01_ID = "PG01";
+const char *CB01_ID = "CB01";
 const char *TIME_GRAPH_ID = "IDTG";
 const char *SLIDER_ID = "IDS";
 const char *BUTTON_ID = "IDB";
@@ -142,30 +142,30 @@ void processStatus() {
 }
 
 void processConfig() {
-    tcpWriteStr(myDevice.getConfigMessage(DeviceCfg(1))); // One page
+    tcpWriteStr(myDevice.getConfigMessage(DeviceCfg(1))); // One controls box
     
-    TimeGraphCfg timpGraphCfg(TIME_GRAPH_ID, PAGE01_ID, "Temperature", {0.25, 0.0, 0.75, 0.394});
+    TimeGraphCfg timpGraphCfg(TIME_GRAPH_ID, CB01_ID, "Temperature", {0.25, 0.0, 0.75, 0.394});
     timpGraphCfg.yAxisLabel = "°C";
     timpGraphCfg.yAxisMin = 0;
     timpGraphCfg.yAxisMax = 50;
     tcpWriteStr(myDevice.getConfigMessage(timpGraphCfg));
     
-    SliderCfg sliderCfg(SLIDER_ID, PAGE01_ID, "UV", {0.0, 0.0, 0.2, 0.394});
+    SliderCfg sliderCfg(SLIDER_ID, CB01_ID, "UV", {0.0, 0.0, 0.2, 0.394});
     sliderCfg.knobColor = "green";
     sliderCfg.barFollowsSlider = false;
     sliderCfg.barColor = "yellow";
     tcpWriteStr(myDevice.getConfigMessage(sliderCfg));
     
-    ButtonCfg buttonCfg(BUTTON_ID, PAGE01_ID, "B1", {0.0, 0.424, 0.2, 0.12});
+    ButtonCfg buttonCfg(BUTTON_ID, CB01_ID, "B1", {0.0, 0.424, 0.2, 0.12});
     buttonCfg.iconName = "refresh";
     buttonCfg.offColor = "blue";
     buttonCfg.onColor = "black";
     tcpWriteStr(myDevice.getConfigMessage(buttonCfg));
     
-    TextBoxCfg textBoxCfg(TEXT_BOX_ID, PAGE01_ID, "Counter", {0.25, 0.424, 0.75, 0.1212});
+    TextBoxCfg textBoxCfg(TEXT_BOX_ID, CB01_ID, "Counter", {0.25, 0.424, 0.75, 0.1212});
     tcpWriteStr(myDevice.getConfigMessage(textBoxCfg));
     
-    GraphCfg graphCfg(GRAPH_ID,  PAGE01_ID, "Level", {0.0, 0.576, 1.0, 0.364});
+    GraphCfg graphCfg(GRAPH_ID,  CB01_ID, "Level", {0.0, 0.576, 1.0, 0.364});
     graphCfg.xAxisLabel = "Temperature";
     graphCfg.xAxisMin = 0;
     graphCfg.xAxisMax = 1000;
@@ -176,13 +176,13 @@ void processConfig() {
     graphCfg.yAxisNumBars = 5;
     tcpWriteStr(myDevice.getConfigMessage(graphCfg));
     
-    PageCfg pageCfg(PAGE01_ID, "Graph Page", "down", "93");
-    pageCfg.ctrlBkgndColor = "blue";
-    pageCfg.ctrlBkgndTransparency = 80;
-    pageCfg.ctrlTitleFontSize = 16;
-    pageCfg.ctrlTitleBoxColor = "5";
-    pageCfg.ctrlTitleBoxTransparency = 50;
-    tcpWriteStr(myDevice.getConfigMessage(pageCfg));
+    ControlsBoxCfg controlsBoxCfg(CB01_ID, "Graph Controls Box", "down", "93");
+    controlsBoxCfg.ctrlBkgndColor = "blue";
+    controlsBoxCfg.ctrlBkgndTransparency = 80;
+    controlsBoxCfg.ctrlTitleFontSize = 16;
+    controlsBoxCfg.ctrlTitleBoxColor = "5";
+    controlsBoxCfg.ctrlTitleBoxTransparency = 50;
+    tcpWriteStr(myDevice.getConfigMessage(controlsBoxCfg));
 }
 
 void processButton() {
