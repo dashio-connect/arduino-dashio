@@ -577,7 +577,9 @@ String DashDevice::getConfigMessage(ControlsBoxCfg controlsBoxData) {
     json.addKeyString(F("title"), controlsBoxData.title);
     json.addKeyString(F("iconName"), controlsBoxData.iconName);
     json.addKeyString(F("color"), controlsBoxData.color);
-     
+    json.addKeyBool(F("shareColumn"), controlsBoxData.shareColumn);
+    json.addKeyInt(F("numColumns"), controlsBoxData.numColumns);
+
     // Control Default Values
     json.addKeyInt(F("ctrlMaxFontSize"), controlsBoxData.ctrlMaxFontSize);
     json.addKeyBool(F("ctrlBorderOn"), controlsBoxData.ctrlBorderOn);

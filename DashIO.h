@@ -238,10 +238,12 @@ struct ControlsBoxCfg {
     String title;                 // Controls Box Name
     String iconName;              // Name of the icon from the icons in IoT Dashboard. Displayed on the menu.
     String color;                 // Controls Box background color. Color name from colors in IoT Dashboard e.g. "blue" or index
+    bool   shareColumn = true;    // When true, allows controls boxes to share a column if their height is small enough.
+    int    numColumns = 1;        // Number of columns wide the controlsBox is (1 to 3).
      
     // Control Default Values
     int    ctrlMaxFontSize = 30;  // The maximum size of the text font. The font size will never be larger than this value.
-    bool   ctrlBorderOn = true;   // Default Hide or shor border on all controls
+    bool   ctrlBorderOn = true;   // Default Hide or show border on all controls
     String ctrlBorderColor = "white"; // Default color of the border and title boxtext. Color name from colors in IoT Dashboard e.g. "blue" or index
     String ctrlColor = "white";   // Default color of misc parts of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
     String ctrlBkgndColor;        // Default color of the background of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
