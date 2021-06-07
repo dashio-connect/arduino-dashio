@@ -211,12 +211,10 @@ struct MQTTConnCfg {
 
 struct DeviceCfg {
     int    numCtrlsBoxes;
-    bool   editLock;
     String deviceSetup;
     
-    DeviceCfg(int _numCtrlsBoxes, bool _editLock = false, String _deviceSetup = "") {
+    DeviceCfg(int _numCtrlsBoxes, String _deviceSetup = "") {
         numCtrlsBoxes = _numCtrlsBoxes;
-        editLock = _editLock;
         deviceSetup = _deviceSetup;
     }
 };

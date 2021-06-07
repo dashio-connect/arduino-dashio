@@ -565,7 +565,6 @@ String DashDevice::getConfigMessage(DeviceCfg deviceConfigData) {
     DashJSON json;
     json.start();
     json.addKeyInt(F("numCtrlsBoxes"), deviceConfigData.numCtrlsBoxes);
-    json.addKeyBool(F("editLock"), deviceConfigData.editLock);
     json.addKeyString(F("deviceSetup"), deviceConfigData.deviceSetup, true);
     return getFullConfigMessage(device, json.jsonStr);
 }
