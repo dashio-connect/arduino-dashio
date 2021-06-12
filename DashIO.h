@@ -48,7 +48,7 @@ enum ControlType {
     tcpConn,
     alarmNotify,
     device,
-    controlsBox,
+    deviceView,
     label,
     button,
     menu,
@@ -210,11 +210,11 @@ struct MQTTConnCfg {
 };
 
 struct DeviceCfg {
-    int    numCtrlsBoxes;
+    int    numDeviceViews;
     String deviceSetup;
     
-    DeviceCfg(int _numCtrlsBoxes, String _deviceSetup = "") {
-        numCtrlsBoxes = _numCtrlsBoxes;
+    DeviceCfg(int _numDeviceViews, String _deviceSetup = "") {
+        numDeviceViews = _numDeviceViews;
         deviceSetup = _deviceSetup;
     }
 };
@@ -231,18 +231,18 @@ struct AlarmCfg {
     }
 };
 
-struct ControlsBoxCfg {
-    String controlID;             // Unique identifier of the Controls Box.
-    String title;                 // Controls Box Name
+struct DeviceViewCfg {
+    String controlID;             // Unique identifier of the Device View.
+    String title;                 // Device View Name
     String iconName;              // Name of the icon from the icons in IoT Dashboard. Displayed on the menu.
-    String color;                 // Controls Box background color. Color name from colors in IoT Dashboard e.g. "blue" or index
-    bool   shareColumn = true;    // When true, allows controls boxes to share a column if their height is small enough.
-    int    numColumns = 1;        // Number of columns wide the controlsBox is (1 to 3).
+    String color;                 // Device View background color. Color name from colors in IoT Dashboard e.g. "blue" or index
+    bool   shareColumn = true;    // When true, allows device views to share a column if their height is small enough.
+    int    numColumns = 1;        // Number of columns wide the deviceView is (1 to 3).
      
     // Control Default Values
     int    ctrlMaxFontSize = 30;  // The maximum size of the text font. The font size will never be larger than this value.
     bool   ctrlBorderOn = true;   // Default Hide or show border on all controls
-    String ctrlBorderColor = "white"; // Default color of the border and title boxtext. Color name from colors in IoT Dashboard e.g. "blue" or index
+    String ctrlBorderColor = "white"; // Default color of the border and title box text. Color name from colors in IoT Dashboard e.g. "blue" or index
     String ctrlColor = "white";   // Default color of misc parts of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
     String ctrlBkgndColor;        // Default color of the background of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
     int    ctrlBkgndTransparency = 0; // Default transparency of the background of all controls (0 to 100).
@@ -252,7 +252,7 @@ struct ControlsBoxCfg {
     String ctrlTitleBoxColor;     // Default color of the title box of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
     int    ctrlTitleBoxTransparency = 0; // Default transparency of the title box of all controls (0 to 100).
     
-    ControlsBoxCfg(String _controlID, String _title, String _iconName, String _color) {
+    DeviceViewCfg(String _controlID, String _title, String _iconName, String _color) {
         controlID = _controlID;
         title = _title;
         iconName = _iconName;
@@ -481,7 +481,7 @@ class DashDevice {
     
     //  Config messages
     String getConfigMessage(DeviceCfg deviceConfigData);
-    String getConfigMessage(ControlsBoxCfg controlsBoxData);
+    String getConfigMessage(DeviceViewCfg deviceViewData);
 
     String getConfigMessage(BLEConnCfg connectionData);
     String getConfigMessage(TCPConnCfg connectionData);

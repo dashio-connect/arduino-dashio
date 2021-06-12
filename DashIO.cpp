@@ -36,7 +36,7 @@
 #define CONFIG_ID "CFG"
 
 #define DEVICE_ID "DVCE"
-#define CONTROLS_BOX_ID "CBOX"
+#define DEVICE_VIEW_ID "DVVW"
 #define LABEL_ID "LBL"
 #define BUTTON_ID "BTTN"
 #define MENU_ID "MENU"
@@ -463,7 +463,7 @@ String DashDevice::getControlTypeStr(ControlType controltype) {
     case config: return CONFIG_ID;
           
     case device: return DEVICE_ID;
-    case controlsBox: return CONTROLS_BOX_ID;
+    case deviceView: return DEVICE_VIEW_ID;
     case label: return LABEL_ID;
     case button: return BUTTON_ID;
     case menu: return MENU_ID;
@@ -564,34 +564,34 @@ String DashDevice::getFloatArray(String controlType, String ID, float fdata[], i
 String DashDevice::getConfigMessage(DeviceCfg deviceConfigData) {
     DashJSON json;
     json.start();
-    json.addKeyInt(F("numCtrlsBoxes"), deviceConfigData.numCtrlsBoxes);
+    json.addKeyInt(F("numDeviceViews"), deviceConfigData.numDeviceViews);
     json.addKeyString(F("deviceSetup"), deviceConfigData.deviceSetup, true);
     return getFullConfigMessage(device, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(ControlsBoxCfg controlsBoxData) {
+String DashDevice::getConfigMessage(DeviceViewCfg deviceViewData) {
     DashJSON json;
     json.start();
-    json.addKeyString(F("controlID"), controlsBoxData.controlID);
-    json.addKeyString(F("title"), controlsBoxData.title);
-    json.addKeyString(F("iconName"), controlsBoxData.iconName);
-    json.addKeyString(F("color"), controlsBoxData.color);
-    json.addKeyBool(F("shareColumn"), controlsBoxData.shareColumn);
-    json.addKeyInt(F("numColumns"), controlsBoxData.numColumns);
+    json.addKeyString(F("controlID"), deviceViewData.controlID);
+    json.addKeyString(F("title"), deviceViewData.title);
+    json.addKeyString(F("iconName"), deviceViewData.iconName);
+    json.addKeyString(F("color"), deviceViewData.color);
+    json.addKeyBool(F("shareColumn"), deviceViewData.shareColumn);
+    json.addKeyInt(F("numColumns"), deviceViewData.numColumns);
 
     // Control Default Values
-    json.addKeyInt(F("ctrlMaxFontSize"), controlsBoxData.ctrlMaxFontSize);
-    json.addKeyBool(F("ctrlBorderOn"), controlsBoxData.ctrlBorderOn);
-    json.addKeyString(F("ctrlBorderColor"), controlsBoxData.ctrlBorderColor);
-    json.addKeyString(F("ctrlColor"), controlsBoxData.ctrlColor);
-    json.addKeyString(F("ctrlBkgndColor"), controlsBoxData.ctrlBkgndColor);
-    json.addKeyInt(F("ctrlBkgndTransparency"), controlsBoxData.ctrlBkgndTransparency);
+    json.addKeyInt(F("ctrlMaxFontSize"), deviceViewData.ctrlMaxFontSize);
+    json.addKeyBool(F("ctrlBorderOn"), deviceViewData.ctrlBorderOn);
+    json.addKeyString(F("ctrlBorderColor"), deviceViewData.ctrlBorderColor);
+    json.addKeyString(F("ctrlColor"), deviceViewData.ctrlColor);
+    json.addKeyString(F("ctrlBkgndColor"), deviceViewData.ctrlBkgndColor);
+    json.addKeyInt(F("ctrlBkgndTransparency"), deviceViewData.ctrlBkgndTransparency);
 
     // Control Title Box Default Values
-    json.addKeyInt(F("ctrlTitleFontSize"), controlsBoxData.ctrlTitleFontSize);
-    json.addKeyString(F("ctrlTitleBoxColor"), controlsBoxData.ctrlTitleBoxColor);
-    json.addKeyInt(F("ctrlTitleBoxTransparency"), controlsBoxData.ctrlTitleBoxTransparency, true);
-    return getFullConfigMessage(controlsBox, json.jsonStr);
+    json.addKeyInt(F("ctrlTitleFontSize"), deviceViewData.ctrlTitleFontSize);
+    json.addKeyString(F("ctrlTitleBoxColor"), deviceViewData.ctrlTitleBoxColor);
+    json.addKeyInt(F("ctrlTitleBoxTransparency"), deviceViewData.ctrlTitleBoxTransparency, true);
+    return getFullConfigMessage(deviceView, json.jsonStr);
 }
 
 String DashDevice::getConfigMessage(BLEConnCfg connectionData) {
