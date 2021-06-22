@@ -59,11 +59,11 @@ bool buttonFiveValue = on;
 float menuSliderValue = 14;
 
 // Create Control IDs
-// Pages
-const char *PAGE01_ID = "PG01";
-const char *PAGE02_ID = "PG02";
+// Device Views
+const char *DV01_ID = "DV01";
+const char *DV02_ID = "DV02";
 
-// Page 1 Controls
+// Device View 1 Controls
 const char *LOG_ID = "EL01";
 const char *BUTTON02_ID = "UB02";
 const char *MAP_ID = "MP01";
@@ -81,7 +81,7 @@ const char *BGROUP_B03_ID = "GB03";
 const char *BGROUP_B04_ID = "GB04";
 const char *BGROUP_B05_ID = "GB05";
 
-// Page 2 Controls
+// Device View 2 Controls
 const char *GRAPH_ID = "IDG";
 const char *LABEL_ID = "LBL01";
 const char *KNOB_ID = "KB01";
@@ -215,21 +215,21 @@ void processConfig() {
   Serial.print(F("Screen height: "));
   Serial.println(myMQTTconnection.payloadStr + "mm");
 
-  mqttPublish(myDevice.getConfigMessage(DeviceCfg(2))); // Two pages
+  mqttPublish(myDevice.getConfigMessage(DeviceCfg(2))); // Two Device Views
 
-  EventLogCfg anEventLog(LOG_ID, PAGE01_ID, "Log", {0.05, 0.545, 0.9, 0.212});
+  EventLogCfg anEventLog(LOG_ID, DV01_ID, "Log", {0.05, 0.545, 0.9, 0.212});
   mqttPublish(myDevice.getConfigMessage(anEventLog));
   
-  MapCfg aMap(MAP_ID, PAGE01_ID, "My Map", {0.0, 0.0, 1.0, 0.515});
+  MapCfg aMap(MAP_ID, DV01_ID, "My Map", {0.0, 0.0, 1.0, 0.515});
   mqttPublish(myDevice.getConfigMessage(aMap));
 
-  ButtonCfg aButton(BUTTON02_ID, PAGE01_ID, "Event", {0.5, 0.788, 0.2, 0.121});
+  ButtonCfg aButton(BUTTON02_ID, DV01_ID, "Event", {0.5, 0.788, 0.2, 0.121});
   aButton.iconName = "bell";
   aButton.offColor = "blue";
   aButton.onColor = "black";
   mqttPublish(myDevice.getConfigMessage(aButton));
 
-  MenuCfg aMenu(MENU_ID, PAGE01_ID, "Settings", {0.05, 0.788, 0.4, 0.121});
+  MenuCfg aMenu(MENU_ID, DV01_ID, "Settings", {0.05, 0.788, 0.4, 0.121});
   aMenu.iconName = "pad";
   aMenu.text = "Setup";
   mqttPublish(myDevice.getConfigMessage(aMenu));
@@ -251,7 +251,7 @@ void processConfig() {
   menuSlider.barColor = "yellow";
   mqttPublish(myDevice.getConfigMessage(menuSlider));
 
-  ButtonGroupCfg aGroup(BGROUP_ID, PAGE01_ID, "Actions", {0.75, 0.788, 0.2, 0.121});
+  ButtonGroupCfg aGroup(BGROUP_ID, DV01_ID, "Actions", {0.75, 0.788, 0.2, 0.121});
   aGroup.iconName = "pad";
   aGroup.text = "BG";
   mqttPublish(myDevice.getConfigMessage(aGroup));
@@ -286,7 +286,7 @@ void processConfig() {
   groupButton5.onColor = "#bc41d7";
   mqttPublish(myDevice.getConfigMessage(groupButton5));
 
-  GraphCfg aGraph(GRAPH_ID, PAGE02_ID, "Level", {0.0, 0.0, 1.0, 0.485});
+  GraphCfg aGraph(GRAPH_ID, DV02_ID, "Level", {0.0, 0.0, 1.0, 0.485});
   aGraph.xAxisLabel = "Temperature";
   aGraph.xAxisMin = 0;
   aGraph.xAxisMax = 1000;
@@ -297,33 +297,33 @@ void processConfig() {
   aGraph.yAxisNumBars = 6;
   mqttPublish(myDevice.getConfigMessage(aGraph));
 
-  LabelCfg aLabel(LABEL_ID, PAGE02_ID, "Label", {0.0, 0.515, 1.0, 0.394});
+  LabelCfg aLabel(LABEL_ID, DV02_ID, "Label", {0.0, 0.515, 1.0, 0.394});
   aLabel.color = 22;
   mqttPublish(myDevice.getConfigMessage(aLabel));
 
-  KnobCfg aKnob(KNOB_ID, PAGE02_ID, "Knob", {0.05, 0.576, 0.4, 0.303});
+  KnobCfg aKnob(KNOB_ID, DV02_ID, "Knob", {0.05, 0.576, 0.4, 0.303});
   aKnob.knobColor = "#FF00F0";
   aKnob.dialColor = "yellow";
   mqttPublish(myDevice.getConfigMessage(aKnob));
 
-  DialCfg aDial(DIAL_ID, PAGE02_ID, "Dial", {0.55, 0.576, 0.4, 0.303});
+  DialCfg aDial(DIAL_ID, DV02_ID, "Dial", {0.55, 0.576, 0.4, 0.303});
   aDial.dialFillColor = "green";
   aDial.pointerColor = "yellow";
-  aDial.style = dialInverted;
+  aDial.style = dialPieInverted;
   aDial.units = "F";
   aDial.precision = 2;
   mqttPublish(myDevice.getConfigMessage(aDial));
 
-  // Pages
-  PageCfg pageOne(PAGE01_ID, "First Page", "down", "dark gray");
-  pageOne.ctrlBkgndColor = "blue";
-  pageOne.ctrlTitleBoxColor = 5;
-  mqttPublish(myDevice.getConfigMessage(pageOne));
+  // Device Views
+  DeviceViewCfg deviceViewOne(DV01_ID, "First Device View", "down", "dark gray");
+  deviceViewOne.ctrlBkgndColor = "blue";
+  deviceViewOne.ctrlTitleBoxColor = 5;
+  mqttPublish(myDevice.getConfigMessage(deviceViewOne));
   
-  PageCfg pageTwo(PAGE02_ID, "Second Page", "up", "0");
-  pageTwo.ctrlBkgndColor = "blue";
-  pageTwo.ctrlTitleBoxColor = 5;
-  mqttPublish(myDevice.getConfigMessage(pageTwo));
+  DeviceViewCfg deviceViewTwo(DV02_ID, "Second Device View", "up", "0");
+  deviceViewTwo.ctrlBkgndColor = "blue";
+  deviceViewTwo.ctrlTitleBoxColor = 5;
+  mqttPublish(myDevice.getConfigMessage(deviceViewTwo));
 }
 
 void processButton() {
@@ -414,7 +414,7 @@ void processIncomingMessage() {
       Serial.println(userSetup.wifiPassword);
       setupWiFiMQTT();
       break;
-    case dashSetup:
+    case dashioSetup:
       myMQTTconnection.idStr.toCharArray(userSetup.dashUserName, myMQTTconnection.idStr.length() + 1);
       myMQTTconnection.payloadStr.toCharArray(userSetup.dashPassword, myMQTTconnection.payloadStr.length() + 1);
       saveUserSetup();
