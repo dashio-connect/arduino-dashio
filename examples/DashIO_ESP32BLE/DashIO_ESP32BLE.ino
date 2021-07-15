@@ -176,11 +176,6 @@ void processStatus() {
 }
 
 void processConfig() {
-  Serial.print(F("Screen width: "));
-  Serial.println(myBLEconnection.idStr + "mm");
-  Serial.print(F("Screen height: "));
-  Serial.println(myBLEconnection.payloadStr + "mm");
-
   bleWriteStr(myDevice.getConfigMessage(DeviceCfg(2))); // Two Device Views
 
   EventLogCfg anEventLog(LOG_ID, DV01_ID, "Log", {0.05, 0.545, 0.9, 0.212});

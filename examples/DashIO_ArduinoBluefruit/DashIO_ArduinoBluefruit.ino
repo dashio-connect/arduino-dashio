@@ -225,10 +225,10 @@ void setupBLE() {
   Serial.print(F("DeviceID: "));
   Serial.println(myDevice.deviceID);
 
-  // Set peripheral name
-  Serial.println(F("Set peripheral name to " DEVICE_TYPE));
-  ble.sendCommandCheckOK(F("AT+GAPDEVNAME=" DEVICE_TYPE));
-
+  // Set local name name
+  Serial.println(F("Set local name to DashIO_" DEVICE_TYPE));
+  ble.sendCommandCheckOK(F("AT+GAPDEVNAME=DashIO_" DEVICE_TYPE));
+  
   // Set Bluefruit to DATA mode
   Serial.println(F("Switching to DATA mode!"));
   ble.setMode(BLUEFRUIT_MODE_DATA);

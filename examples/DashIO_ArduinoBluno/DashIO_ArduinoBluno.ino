@@ -4,7 +4,7 @@
 #include <SimpleTimer.h>
 
 #define DEVICE_NAME "Bluno Test"
-#define DEVICE_TYPE "bluno"
+#define DEVICE_TYPE "Bluno"
 
 // Create device
 DashDevice myDevice;
@@ -137,7 +137,7 @@ void setupBLE() {
   delay(350);
   Serial.print("+++"); // Enter AT mode
   delay(500);
-  Serial.println(F("AT+NAME=" DEVICE_TYPE)); // If the name has changed, requires a RESTART or power cycle
+  Serial.println("AT+NAME=DashIO_" + String(DEVICE_TYPE)); // If the name has changed, requires a RESTART or power cycle
   delay(500);
   Serial.println("AT+NAME=?");
   delay(500);
