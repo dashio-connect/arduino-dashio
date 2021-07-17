@@ -151,8 +151,6 @@ static void mqttPublish(String message, MQTTTopicType topic = data_topic) {
 // Process incoming control mesages
 void processStatus() {
     // Control initial condition messages (recommended)
-    mqttPublish(myDevice.getDeviceNameMessage(userSetup.deviceName));
-
     String message = myDevice.getButtonMessage(BUTTON_ID, toggle);
     message += myDevice.getSingleBarMessage(SLIDER_ID, 25);
     int data[] = {100, 200, 300, 400, 500};

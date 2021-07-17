@@ -49,7 +49,6 @@ void tcpWriteStr(String message) {
 
 // Process incoming control mesages
 void processStatus() {
-  tcpWriteStr(myDevice.getDeviceNameMessage(DEVICE_NAME));
   tcpWriteStr(myDevice.getButtonMessage(TOGGLE_BUTTON_ID, toggle));
   tcpWriteStr(myDevice.getSingleBarMessage(SINGLE_SLIDER_ID, 25));
   int data[5] = {100, 200, 300, 400, 500};

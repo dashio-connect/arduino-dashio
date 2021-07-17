@@ -127,9 +127,7 @@ void tcpWriteStr(String message) {
 
 // Process incoming control mesages
 void processStatus() {
-    // Control initial condition messages (recommended)
-    tcpWriteStr(myDevice.getDeviceNameMessage(userSetup.deviceName));
-    
+    // Control initial condition messages (recommended)    
     String message = myDevice.getButtonMessage(BUTTON_ID, toggle);
     message += myDevice.getSingleBarMessage(SLIDER_ID, 25);
     int data[] = {100, 200, 300, 400, 500};

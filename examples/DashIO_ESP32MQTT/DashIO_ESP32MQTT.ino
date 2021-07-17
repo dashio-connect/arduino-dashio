@@ -179,8 +179,6 @@ void sendAlarmMessage(String message) {
 // Process incoming control mesages
 void processStatus() {
   // Control initial condition messages (recommended)
-  mqttPublish(myDevice.getDeviceNameMessage(userSetup.deviceName));
-
   String selection[] = {F("Dogs"), F("Bunnys"), F("Pigs")};
   String message = myDevice.getSelectorMessage(MENU_SELECTOR_ID, menuSelectorIndex, selection, 3);
   message += myDevice.getButtonMessage(MENU_BUTTON_ID, menuButtonValue);
