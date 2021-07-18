@@ -296,6 +296,22 @@ String DashDevice::getDeviceNameMessage(String deviceName) {
     return String(DELIM) + deviceID + String(DELIM) + DEVICE_NAME_ID + String(DELIM) + deviceName + String(END_DELIM);
 }
 
+String DashDevice::getWifiUpdateAckMessage() {
+    return String(DELIM) + deviceID + String(DELIM) + WIFI_SETUP_ID + String(END_DELIM);
+}
+
+String DashDevice::getTCPUpdateAckMessage() {
+    return String(DELIM) + deviceID + String(DELIM) + TCP_SETUP_ID + String(END_DELIM);
+}
+
+String DashDevice::getDashioUpdateAckMessage() {
+    return String(DELIM) + deviceID + String(DELIM) + DASHIO_SETUP_ID  + String(END_DELIM);
+}
+
+String DashDevice::getMQTTUpdateAckMessage() {
+    return String(DELIM) + deviceID + String(DELIM) + MQTT_SETUP_ID + String(END_DELIM);
+}
+
 String DashDevice::getAlarmMessage(String controlID, String title, String description) {
     return String(DELIM) + deviceID + String(DELIM) + controlID + String(DELIM) + title + String(DELIM) + description + String(END_DELIM);
 }

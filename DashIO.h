@@ -453,7 +453,13 @@ class DashDevice {
     String getWhoMessage(String deviceName, String deviceType);
     String getConnectMessage();
     String getPopupMessage(String header, String body = "", String caption = "");
+    
     String getDeviceNameMessage(String deviceName);
+    String getWifiUpdateAckMessage();
+    String getTCPUpdateAckMessage();
+    String getDashioUpdateAckMessage();
+    String getMQTTUpdateAckMessage();
+    
     String getAlarmMessage(String alarmID, String title, String description);
     String getAlarmMessage(Notification alarm);
     String getButtonMessage(String controlID, bool on, String iconName = "", String text = "");
