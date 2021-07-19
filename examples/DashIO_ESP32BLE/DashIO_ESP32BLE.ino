@@ -381,7 +381,7 @@ void setupBLE() {
   esp_bt_controller_enable(ESP_BT_MODE_BLE); // Make sure we're only using BLE
   esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT); // Release memory for Bluetooth Classic as we're not using it
   
-  BLEDevice::init(DEVICE_TYPE);
+  BLEDevice::init("DashIO_" DEVICE_TYPE);
 //  BLEDevice::setMTU(512);
 
   // Setup security (optional)
