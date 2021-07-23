@@ -365,8 +365,8 @@ void processIncomingMessage() {
       tcpWriteStr(myDevice.getDeviceNameMessage(userSetup.deviceName));
       break;
     case wifiSetup:
-      myTCPconnection.idStr.toCharArray(userSetup.wifiSSID, myTCPconnection.idStr.length() + 1);
-      myTCPconnection.payloadStr.toCharArray(userSetup.wifiPassword, myTCPconnection.payloadStr.length() + 1);
+      myTCPconnection.payloadStr.toCharArray(userSetup.wifiSSID, myTCPconnection.payloadStr.length() + 1);
+      myTCPconnection.payloadStr2.toCharArray(userSetup.wifiPassword, myTCPconnection.payloadStr2.length() + 1);
       saveUserSetup();
       Serial.print(F("Updated WIFI SSID: "));
       Serial.println(userSetup.wifiSSID);

@@ -398,8 +398,8 @@ void processIncomingMessage() {
       mqttPublish(myDevice.getDeviceNameMessage(userSetup.deviceName));
       break;
     case wifiSetup:
-      myMQTTconnection.idStr.toCharArray(userSetup.wifiSSID, myMQTTconnection.idStr.length() + 1);
-      myMQTTconnection.payloadStr.toCharArray(userSetup.wifiPassword, myMQTTconnection.payloadStr.length() + 1);
+      myMQTTconnection.payloadStr.toCharArray(userSetup.wifiSSID, myMQTTconnection.payloadStr.length() + 1);
+      myMQTTconnection.payloadStr2.toCharArray(userSetup.wifiPassword, myMQTTconnection.payloadStr2.length() + 1);
       saveUserSetup();
       Serial.print(F("Updated WIFI SSID: "));
       Serial.println(userSetup.wifiSSID);
