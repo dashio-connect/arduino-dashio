@@ -95,115 +95,115 @@ const char END_DELIM = '\n';
 const char DELIM = '\t';
 
 DashConnection::DashConnection(ConnectionType connType) {
-  connectionType = connType;
+    connectionType = connType;
 };
 
 void DashConnection::processMessage(String message) {
-  Serial.println(F("---- MQTT Received ----"));
-  Serial.print(F("Message: "));
-  Serial.println(message);
-  Serial.println();
+    Serial.println(F("---- MQTT Received ----"));
+    Serial.print(F("Message: "));
+    Serial.println(message);
+    Serial.println();
 
-  if (message.length() > 0) {
-    for (unsigned int i = 0; i < message.length(); i++) {
-      char chr = message[i];
-      if (messageReceived) {
-        Serial.println(F("Incoming message overflow"));
-      }
-      if (processChar(chr)) {
-        messageReceived = true;
-      }
+    if (message.length() > 0) {
+        for (unsigned int i = 0; i < message.length(); i++) {
+            char chr = message[i];
+            if (messageReceived) {
+                Serial.println(F("Incoming message overflow"));
+            }
+            if (processChar(chr)) {
+                messageReceived = true;
+            }
+        }
     }
-  }
 }
 
 bool DashConnection::processChar(char chr) {
-  bool messageEnd = false;
-  if ((chr == DELIM) || (chr == END_DELIM)) {
-    if ((readStr.length() > 0) || (segmentCount == 1)) { // segmentCount == 1 allows for empty second field ??? maybe should be 2 for empty third field now that we've added deviceID at the front
-      switch (segmentCount) {
-      case 0:
-        if (readStr == WHO_ID) {
-          deviceID = "UNKNOWN";
-          control = who;
-        } else {
-          deviceID = readStr;
-          control = unknown;
+    bool messageEnd = false;
+    if ((chr == DELIM) || (chr == END_DELIM)) {
+        if ((readStr.length() > 0) || (segmentCount == 1)) { // segmentCount == 1 allows for empty second field ??? maybe should be 2 for empty third field now that we've added deviceID at the front
+        switch (segmentCount) {
+        case 0:
+            if (readStr == WHO_ID) {
+                deviceID = "UNKNOWN";
+                control = who;
+            } else {
+                deviceID = readStr;
+                control = unknown;
+            }
+                  
+            idStr = "";
+            payloadStr = "";
+            break;
+        case 1:
+            if (readStr == WHO_ID) {
+                control = who;
+            } else if (readStr == CONNECT_ID) {
+                control = connect;
+            } else if (readStr == STATUS_ID) {
+                control = status;
+            } else if (readStr == CONFIG_ID) {
+                control = config;
+            } else if (readStr == BUTTON_ID) {
+                control = button;
+            } else if (readStr == SLIDER_ID) {
+                control = slider;
+            } else if (readStr == KNOB_ID) {
+                control = knob;
+            } else if (readStr == TEXT_BOX_ID) {
+                control = textBox;
+            } else if (readStr == TIME_GRAPH_ID) {
+                control = timeGraph;
+            } else if (readStr == MENU_ID) {
+                control = menu;
+            } else if (readStr == BUTTON_GROUP_ID) {
+                control = buttonGroup;
+            } else if (readStr == EVENT_LOG_ID) {
+                control = eventLog;
+            } else if (readStr == SELECTOR_ID) {
+                control = selector;
+            } else if (readStr == DEVICE_NAME_ID) {
+                control = deviceName;
+            } else if (readStr == WIFI_SETUP_ID) {
+                control = wifiSetup;
+            } else if (readStr == TCP_SETUP_ID) {
+                control = tcpSetup;
+            } else if (readStr == DASHIO_SETUP_ID) {
+                control = dashioSetup;
+            } else if (readStr == MQTT_SETUP_ID) {
+                control = mqttSetup;
+            } else {
+                control = unknown;
+                segmentCount == -1;
+            }
+            break;
+        case 2:
+            idStr = readStr;
+            break;
+        case 3:
+            payloadStr = readStr;
+        break;
+            case 4:
+            payloadStr2 = readStr;
+            break;
+        default:
+                segmentCount = 0;
         }
-              
-        idStr = "";
-        payloadStr = "";
-        break;
-      case 1:
-        if (readStr == WHO_ID) {
-          control = who;
-        } else if (readStr == CONNECT_ID) {
-          control = connect;
-        } else if (readStr == STATUS_ID) {
-          control = status;
-        } else if (readStr == CONFIG_ID) {
-          control = config;
-        } else if (readStr == BUTTON_ID) {
-          control = button;
-        } else if (readStr == SLIDER_ID) {
-          control = slider;
-        } else if (readStr == KNOB_ID) {
-          control = knob;
-        } else if (readStr == TEXT_BOX_ID) {
-          control = textBox;
-        } else if (readStr == TIME_GRAPH_ID) {
-          control = timeGraph;
-        } else if (readStr == MENU_ID) {
-          control = menu;
-        } else if (readStr == BUTTON_GROUP_ID) {
-          control = buttonGroup;
-        } else if (readStr == EVENT_LOG_ID) {
-          control = eventLog;
-        } else if (readStr == SELECTOR_ID) {
-          control = selector;
-        } else if (readStr == DEVICE_NAME_ID) {
-          control = deviceName;
-        } else if (readStr == WIFI_SETUP_ID) {
-          control = wifiSetup;
-        } else if (readStr == TCP_SETUP_ID) {
-          control = tcpSetup;
-        } else if (readStr == DASHIO_SETUP_ID) {
-          control = dashioSetup;
-        } else if (readStr == MQTT_SETUP_ID) {
-          control = mqttSetup;
-        } else {
-          control = unknown;
-          segmentCount == -1;
-        }
-        break;
-      case 2:
-        idStr = readStr;
-        break;
-      case 3:
-        payloadStr = readStr;
-        break;
-      case 4:
-        payloadStr2 = readStr;
-        break;
-      default:
-        segmentCount = 0;
-      }
-        
-      if (segmentCount >= 0) {
+
+        if (segmentCount >= 0) {
         segmentCount++;
         if (chr == END_DELIM) { // End of message, so process message
           messageEnd = true;
             segmentCount = -1; // Wait for next start of message
         }
-      }
+        }
     } else {
-      segmentCount = 0; // Must have no data before DELIM or a DELIM + DELIM, so must be start of message
+        segmentCount = 0; // Must have no data before DELIM or a DELIM + DELIM, so must be start of message
     }
     readStr = "";
-  } else {
-    readStr += chr;
-  }
-  return messageEnd;
+    } else {
+        readStr += chr;
+    }
+    return messageEnd;
 }
 
 
@@ -215,365 +215,630 @@ void DashDevice::setDeviceID(String deviceIdentifier) {
 }
 
 void DashDevice::setDeviceID(uint8_t m_address[6]) {
-  char buffer[20];
-  String macStr = "";
-    
-  sprintf(buffer, "%x", m_address[0]);
-  if (m_address[0] < 16) {
-    macStr += "0";
-  }
-  macStr += buffer;
-  sprintf(buffer, "%x", m_address[1]);
-  if (m_address[1] < 16) {
-    macStr += "0";
-  }
-  macStr += buffer;
-  sprintf(buffer, "%x", m_address[2]);
-  if (m_address[2] < 16) {
-    macStr += "0";
-  }
-  macStr += buffer;
-  sprintf(buffer, "%x", m_address[3]);
-  if (m_address[3] < 16) {
-    macStr += "0";
-  }
-  macStr += buffer;
-  sprintf(buffer, "%x", m_address[4]);
-  if (m_address[4] < 16) {
-    macStr += "0";
-  }
-  macStr += buffer;
-  sprintf(buffer, "%x", m_address[5]);
-  if (m_address[5] < 16) {
-    macStr += "0";
-  }
-  macStr += buffer;
+    char buffer[20];
+    String macStr = "";
 
-  deviceID = macStr.c_str();
+    sprintf(buffer, "%x", m_address[0]);
+    if (m_address[0] < 16) {
+        macStr += "0";
+    }
+    macStr += buffer;
+    sprintf(buffer, "%x", m_address[1]);
+    if (m_address[1] < 16) {
+        macStr += "0";
+    }
+    macStr += buffer;
+    sprintf(buffer, "%x", m_address[2]);
+    if (m_address[2] < 16) {
+        macStr += "0";
+    }
+    macStr += buffer;
+    sprintf(buffer, "%x", m_address[3]);
+    if (m_address[3] < 16) {
+        macStr += "0";
+    }
+    macStr += buffer;
+    sprintf(buffer, "%x", m_address[4]);
+    if (m_address[4] < 16) {
+        macStr += "0";
+    }
+    macStr += buffer;
+    sprintf(buffer, "%x", m_address[5]);
+    if (m_address[5] < 16) {
+        macStr += "0";
+    }
+    macStr += buffer;
+
+    deviceID = macStr.c_str();
 };
 
-/*??? not yet in use
-String getMessageHeader(String controlType, String identifier = "") {
-    String message = String(DELIM) + deviceID + String(DELIM) + controlType + String(DELIM)
-    if (identifier != "") {
-        message += identifier + String(DELIM)
-    }
-    return message
-}
-*/
-
 String DashDevice::getOnlineMessage() {
-    return String(DELIM) + deviceID + MQTT_ONLINE_MSSG;
+    String message = String(DELIM);
+    message += deviceID;
+    message += MQTT_ONLINE_MSSG;
+    return message;
 }
 
 String DashDevice::getOfflineMessage() {
-    return String(DELIM) + deviceID + MQTT_OFFLINE_MSSG;
+    String message = String(DELIM);
+    message += deviceID;
+    message += MQTT_OFFLINE_MSSG;
+    return message;
 }
 
-String DashDevice::getWhoMessage(String deviceName, String deviceType) {
-    String message = String(DELIM) + deviceID + String(DELIM) + WHO_ID + String(DELIM);
-    message += deviceType + String(DELIM) + deviceName + String(END_DELIM);
+String DashDevice::getWhoMessage(const String& deviceName, const String& deviceType) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += WHO_ID;
+    message += String(DELIM);
+    message += deviceType;
+    message += String(DELIM);
+    message += deviceName;
+    message += String(END_DELIM);
     return message;
 }
 
 String DashDevice::getConnectMessage() {
-    return String(DELIM) + deviceID + String(DELIM) + CONNECT_ID + String(END_DELIM);
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += CONNECT_ID;
+    message += String(END_DELIM);
+    return  message;
 }
 
-String DashDevice::getPopupMessage(String header, String body, String caption) {
-    String message = String(DELIM) + deviceID + String(DELIM) + POPUP_MESSAGE_ID + String(DELIM) + header;
+String DashDevice::getPopupMessage(const String& header, const String& body, const String& caption) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += POPUP_MESSAGE_ID;
+    message += String(DELIM);
+    message += header;
     if (body != "") {
         message += (String(DELIM) + body);
         if (caption != "") {
-            message += (String(DELIM) + caption);
+            message += String(DELIM);
+            message += caption;
         }
     }
     message += String(END_DELIM);
     return message;
 }
 
-String DashDevice::getDeviceNameMessage(String deviceName) {
-    return String(DELIM) + deviceID + String(DELIM) + DEVICE_NAME_ID + String(DELIM) + deviceName + String(END_DELIM);
+String DashDevice::getDeviceNameMessage(const String& deviceName) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += DEVICE_NAME_ID;
+    message += String(DELIM);
+    message += deviceName;
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashDevice::getWifiUpdateAckMessage() {
-    return String(DELIM) + deviceID + String(DELIM) + WIFI_SETUP_ID + String(END_DELIM);
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += WIFI_SETUP_ID;
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashDevice::getTCPUpdateAckMessage() {
-    return String(DELIM) + deviceID + String(DELIM) + TCP_SETUP_ID + String(END_DELIM);
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += TCP_SETUP_ID;
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashDevice::getDashioUpdateAckMessage() {
-    return String(DELIM) + deviceID + String(DELIM) + DASHIO_SETUP_ID  + String(END_DELIM);
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += DASHIO_SETUP_ID;
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashDevice::getMQTTUpdateAckMessage() {
-    return String(DELIM) + deviceID + String(DELIM) + MQTT_SETUP_ID + String(END_DELIM);
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += MQTT_SETUP_ID;
+    message += String(END_DELIM);
+    return message;
 }
 
-String DashDevice::getAlarmMessage(String controlID, String title, String description) {
-    return String(DELIM) + deviceID + String(DELIM) + controlID + String(DELIM) + title + String(DELIM) + description + String(END_DELIM);
+String DashDevice::getAlarmMessage(const String& controlID, const String& title, const String& description) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += controlID;
+    message += String(DELIM);
+    message += title;
+    message += String(DELIM);
+    message += description;
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashDevice::getAlarmMessage(Notification alarm) {
     return getAlarmMessage(alarm.identifier, alarm.title, alarm.description);
 }
 
-String DashDevice::getButtonMessage(String controlID, bool on, String iconName, String text) {
-  String writeStr = String(DELIM) + deviceID + String(DELIM) + BUTTON_ID + String(DELIM) + controlID + String(DELIM);
-  if (on) {
-    writeStr += BUTTON_ON;
-  } else {
-    writeStr += BUTTON_OFF;
-  }
-  if (text != "") {
-      writeStr += (String(DELIM) + iconName);
-      writeStr += (String(DELIM) + text);
-  } else {
-      if (iconName != "") {
-        writeStr += (String(DELIM) + iconName);
-      }
-  }
-  writeStr += String(END_DELIM);
-  return writeStr;
-}
-
-String DashDevice::getTextBoxMessage(String controlID, String text) {
-  return String(DELIM) + deviceID + String(DELIM) + TEXT_BOX_ID + String(DELIM) + controlID + String(DELIM) + text + String(END_DELIM);
-}
-
-String DashDevice::getSelectorMessage(String controlID, int index) {
-    return String(DELIM) + deviceID + String(DELIM) + SELECTOR_ID + String(DELIM) + controlID + String(DELIM) + String(index) + String(END_DELIM);
-}
-
-String DashDevice::getSelectorMessage(String controlID, int index, String* selectionItems, int rows) {
-  String writeStr = String(DELIM) + deviceID + String(DELIM) + SELECTOR_ID + String(DELIM) + controlID + String(DELIM) + String(index);
-  for (int i = 0; i < rows; i++) {
+String DashDevice::getButtonMessage(const String& controlID, bool on, const String& iconName, const String& text) {
+    String writeStr = String(DELIM);
+    writeStr += deviceID;
     writeStr += String(DELIM);
-    writeStr += selectionItems[i];
-  }
-  writeStr += String(END_DELIM);
-  return writeStr;
-}
-
-String DashDevice::getSliderMessage(String controlID, int value) {
-  return String(DELIM) + deviceID + String(DELIM) + SLIDER_ID + String(DELIM) + controlID + String(DELIM) + String(value) + String(END_DELIM);
-}
-
-String DashDevice::getSingleBarMessage(String controlID, int value) {
-  return String(DELIM) + deviceID + String(DELIM) + BAR_ID + String(DELIM) + controlID + String(DELIM) + String(value) + String(END_DELIM);
-}
-
-String DashDevice::getKnobMessage(String controlID, int value) {
-  return String(DELIM) + deviceID + String(DELIM) + KNOB_ID + String(DELIM) + controlID + String(DELIM) + String(value) + String(END_DELIM);
-}
-
-String DashDevice::getKnobDialMessage(String controlID, int value) {
-  return String(DELIM) + deviceID + String(DELIM) + KNOB_DIAL_ID + String(DELIM) + controlID + String(DELIM) + String(value) + String(END_DELIM);
-}
-
-String DashDevice::getDirectionMessage(String controlID, int value, String text) {
-  String writeStr = String(DELIM) + deviceID + String(DELIM) + DIRECTION_ID + String(DELIM) + controlID + String(DELIM) + String(value);
-  if (text != "") {
-      writeStr += (String(DELIM) + text);
-  }
-  writeStr += String(END_DELIM);
-  return writeStr;
-}
-
-String DashDevice::getDialMessage(String controlID, String text) {
-  return String(DELIM) + deviceID + String(DELIM) + DIAL_ID + String(DELIM) + controlID + String(DELIM) + text + String(END_DELIM);
-}
-
-String DashDevice::getMapMessage(String controlID, String latitude, String longitude, String message) {
-  return String(DELIM) + deviceID + String(DELIM) + MAP_ID + String(DELIM) + controlID + String(DELIM) + latitude + String(DELIM) + longitude + String(DELIM) + message + String(END_DELIM);
-}
-
-String DashDevice::getEventLogMessage(String controlID, String timeStr, String color, String text[], int dataLength) {
-    String writeStr = String(DELIM) + deviceID + String(DELIM) + EVENT_LOG_ID + String(DELIM) + controlID + String(DELIM) + timeStr + String(DELIM) + color;
-    for (int i = 0; i < dataLength; i++) {
-      writeStr += String(DELIM) +  text[i];
-    }
-    writeStr += String(END_DELIM);
-    return writeStr;
-}
-
-String DashDevice::getDoubleBarMessage(String controlID, int value1, int value2) {
-  int barValues[2];
-  barValues[0] = value1;
-  barValues[1] = value2;
-  return getIntArray(BAR_ID, controlID, barValues, 2);
-}
-
-String DashDevice::getBasicConfigData(ControlType controlType, String controlID, String controlTitle) {
-  return (String(DELIM) + getControlTypeStr(controlType) + String(DELIM) + controlID + String(DELIM) + controlTitle);
-}
-
-String DashDevice::getBasicConfigMessage(ControlType controlType, String controlID, String controlTitle) {
-  String configData = getBasicConfigData(controlType, controlID, controlTitle);
-  return (String(DELIM) + deviceID + String(DELIM) + CONFIG_ID + String(DELIM) + BASIC_CONFIG_ID + configData + String(END_DELIM));
-}
-
-String DashDevice::getBasicConfigMessage(String configData) {
-  return (String(DELIM) + deviceID + String(DELIM) + CONFIG_ID + String(DELIM) + BASIC_CONFIG_ID + configData + String(END_DELIM));
-}
-
-String DashDevice::getFullConfigMessage(ControlType controlType, String configData) {
-  return (String(DELIM) + deviceID + String(DELIM) + CONFIG_ID + String(DELIM) + getControlTypeStr(controlType) + String(DELIM) + configData + String(END_DELIM));
-}
-
-String DashDevice::getGraphLineInts(String controlID, String graphLineID, String lineName, LineType lineType, String color, int lineData[], int dataLength) {
-  String writeStr = String(DELIM) + deviceID + String(DELIM) + GRAPH_ID + String(DELIM) + controlID + String(DELIM) + graphLineID + String(DELIM) + lineName + String(DELIM) + getLineTypeStr(lineType) + String(DELIM) + color;
-  for (int i = 0; i < dataLength; i++) {
-    writeStr += String(DELIM) +  String(lineData[i]);
-  }
-  writeStr += String(END_DELIM);
-  return writeStr;
-}
-
-String DashDevice::getGraphLineFloats(String controlID, String graphLineID, String lineName, LineType lineType, String color, float lineData[], int dataLength) {
-  String writeStr = String(DELIM) + deviceID + String(DELIM) + GRAPH_ID + String(DELIM) + controlID + String(DELIM) + graphLineID + String(DELIM) + lineName + String(DELIM) + getLineTypeStr(lineType) + String(DELIM) + color;
-  for (int i = 0; i < dataLength; i++) {
-    char lineDataBuffer[8];
-    String floatStr = dtostrf(lineData[i], 5, 2, lineDataBuffer);
-    writeStr += String(DELIM) +  floatStr;
-  }
-  writeStr += String(END_DELIM);
-  return writeStr;
-}
-
-String DashDevice::getTimeGraphLineFloats(String controlID, String graphLineID, String lineName, LineType lineType, String color, String times[], float lineData[], int dataLength, bool breakLine) {
-    String writeStr = String(DELIM) + deviceID + String(DELIM) + TIME_GRAPH_ID + String(DELIM) + controlID + String(DELIM) + graphLineID + String(DELIM) + lineName + String(DELIM) + getLineTypeStr(lineType) + String(DELIM) + color;
-    if (breakLine && (dataLength > 0)) {
-        writeStr += String(DELIM) + times[0] + "," + "B";
-    }
-    for (int i = 0; i < dataLength; i++) {
-      char lineDataBuffer[8];
-      String lineDataStr = dtostrf(lineData[i], 5, 2, lineDataBuffer);
-      writeStr += String(DELIM) + times[i] + "," +  lineDataStr;
-    }
-    writeStr += String(END_DELIM);
-    return writeStr;
-}
-
-String DashDevice::getTimeGraphLineBools(String controlID, String graphLineID, String lineName, LineType lineType, String color, String times[], bool lineData[], int dataLength) {
-  String writeStr = String(DELIM) + deviceID + String(DELIM) + TIME_GRAPH_ID + String(DELIM) + controlID + String(DELIM) + graphLineID + String(DELIM) + lineName + String(DELIM) + getLineTypeStr(lineType) + String(DELIM) + color;
-  for (int i = 0; i < dataLength; i++) {
-    writeStr += String(DELIM) + times[i] + ",";
-    if (lineData[i]) {
-      writeStr += "T";
+    writeStr += BUTTON_ID;
+    writeStr += String(DELIM);
+    writeStr += controlID;
+    writeStr += String(DELIM);
+    if (on) {
+        writeStr += BUTTON_ON;
     } else {
-      writeStr += "F";
+        writeStr += BUTTON_OFF;
     }
-  }
-  writeStr += String(END_DELIM);
+    if (text != "") {
+        writeStr += String(DELIM);
+        writeStr += iconName;
+        writeStr += String(DELIM);
+        writeStr += text;
+    } else {
+        if (iconName != "") {
+            writeStr += String(DELIM);
+            writeStr += iconName;
+        }
+    }
+    writeStr += String(END_DELIM);
+    return writeStr;
+}
+
+String DashDevice::getTextBoxMessage(const String& controlID, const String& text) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += TEXT_BOX_ID;
+    message += String(DELIM);
+    message += controlID;
+    message += String(DELIM);
+    message += text;
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashDevice::getSelectorMessage(const String& controlID, int index) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += SELECTOR_ID;
+    message += String(DELIM);
+    message += controlID;
+    message += String(DELIM);
+    message += String(index);
+    message += String(END_DELIM);
+  return message;
+}
+
+String DashDevice::getSelectorMessage(const String& controlID, int index, String* selectionItems, int rows) {
+    String writeStr = String(DELIM);
+    writeStr += deviceID;
+    writeStr += String(DELIM);
+    writeStr += SELECTOR_ID;
+    writeStr += String(DELIM);
+    writeStr += controlID;
+    writeStr += String(DELIM);
+    writeStr += String(index);
+    for (int i = 0; i < rows; i++) {
+        writeStr += String(DELIM);
+        writeStr += selectionItems[i];
+    }
+    writeStr += String(END_DELIM);
+    return writeStr;
+}
+
+String DashDevice::getSliderMessage(const String& controlID, int value) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += SLIDER_ID;
+    message += String(DELIM);
+    message += controlID;
+    message += String(DELIM);
+    message += String(value);
+    message += String(END_DELIM);
+  return message;
+}
+
+String DashDevice::getSingleBarMessage(const String& controlID, int value) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += String(DELIM);
+    message += BAR_ID;
+    message += String(DELIM);
+    message += controlID;
+    message += String(DELIM);
+    message += String(value);
+    message += String(END_DELIM);
+  return message;
+}
+
+String DashDevice::getKnobMessage(const String& controlID, int value) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += KNOB_ID;
+    message += String(DELIM);
+    message += controlID;
+    message += String(DELIM);
+    message += String(value);
+    message += String(END_DELIM);
+  return message;
+}
+
+String DashDevice::getKnobDialMessage(const String& controlID, int value) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += KNOB_DIAL_ID;
+    message += String(DELIM);
+    message += controlID;
+    message += String(DELIM);
+    message += String(value);
+    message += String(END_DELIM);
+  return message;
+}
+
+String DashDevice::getDirectionMessage(const String& controlID, int value, const String& text) {
+    String writeStr = String(DELIM);
+    writeStr += deviceID;
+    writeStr += String(DELIM);
+    writeStr += DIRECTION_ID;
+    writeStr += String(DELIM);
+    writeStr += controlID;
+    writeStr + String(DELIM);
+    writeStr + String(value);
+    if (text != "") {
+        writeStr += String(DELIM);
+        writeStr += text;
+    }
+    writeStr += String(END_DELIM);
+    return writeStr;
+}
+
+String DashDevice::getDialMessage(const String& controlID, const String& text) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += DIAL_ID;
+    message += String(DELIM);
+    message += controlID;
+    message += String(DELIM);
+    message += text;
+    message += String(END_DELIM);
+  return message;
+}
+
+String DashDevice::getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& message) {
+    String writeStr = String(DELIM);
+    writeStr += deviceID;
+    writeStr += String(DELIM);
+    writeStr += MAP_ID;
+    writeStr += String(DELIM);
+    writeStr += controlID;
+    writeStr += String(DELIM);
+    writeStr += latitude;
+    writeStr += String(DELIM);
+    writeStr += longitude;
+    writeStr += String(DELIM);
+    writeStr += message;
+    writeStr += String(END_DELIM);
   return writeStr;
+}
+
+String DashDevice::getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength) {
+    String writeStr = String(DELIM);
+    writeStr += deviceID ;
+    writeStr += String(DELIM);
+    writeStr += EVENT_LOG_ID;
+    writeStr += String(DELIM);
+    writeStr += controlID;
+    writeStr += String(DELIM);
+    writeStr += timeStr;
+    writeStr += String(DELIM);
+    writeStr += color;
+    for (int i = 0; i < dataLength; i++) {
+        writeStr += String(DELIM);
+        writeStr += text[i];
+    }
+    writeStr += String(END_DELIM);
+    return writeStr;
+}
+
+String DashDevice::getDoubleBarMessage(const String& controlID, int value1, int value2) {
+    int barValues[2];
+    barValues[0] = value1;
+    barValues[1] = value2;
+    return getIntArray(BAR_ID, controlID, barValues, 2);
+}
+
+String DashDevice::getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle) {
+    String message = String(DELIM);
+    message += getControlTypeStr(controlType);
+    message += String(DELIM);
+    message += controlID;
+    message += String(DELIM);
+    message += controlTitle;
+    return message;
+}
+
+String DashDevice::getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += CONFIG_ID;
+    message += String(DELIM);
+    message += BASIC_CONFIG_ID;
+    message += getBasicConfigData(controlType, controlID, controlTitle);
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashDevice::getBasicConfigMessage(const String& configData) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += CONFIG_ID;
+    message += String(DELIM);
+    message += BASIC_CONFIG_ID;
+    message += configData;
+    message += String(END_DELIM);
+    return  message;
+}
+
+String DashDevice::getFullConfigMessage(ControlType controlType, const String& configData) {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += CONFIG_ID;
+    message += String(DELIM);
+    message += getControlTypeStr(controlType);
+    message += String(DELIM);
+    message += configData;
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashDevice::getGraphLineInts(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength) {
+    String writeStr = String(DELIM);
+    writeStr += deviceID;
+    writeStr += String(DELIM);
+    writeStr += GRAPH_ID;
+    writeStr += String(DELIM);
+    writeStr += controlID;
+    writeStr += String(DELIM);
+    writeStr += graphLineID;
+    writeStr += String(DELIM);
+    writeStr += lineName;
+    writeStr += String(DELIM);
+    writeStr += getLineTypeStr(lineType);
+    writeStr += String(DELIM);
+    writeStr += color;
+    for (int i = 0; i < dataLength; i++) {
+        writeStr += String(DELIM);
+        writeStr += String(lineData[i]);
+    }
+    writeStr += String(END_DELIM);
+    return writeStr;
+}
+
+String DashDevice::getGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, float lineData[], int dataLength) {
+    String writeStr = String(DELIM);
+    writeStr += deviceID;
+    writeStr += String(DELIM);
+    writeStr += GRAPH_ID;
+    writeStr += String(DELIM);
+    writeStr += controlID;
+    writeStr += String(DELIM);
+    writeStr += graphLineID;
+    writeStr += String(DELIM);
+    writeStr += lineName;
+    writeStr += String(DELIM);
+    writeStr += getLineTypeStr(lineType);
+    writeStr += String(DELIM);
+    writeStr += color;
+    for (int i = 0; i < dataLength; i++) {
+        char lineDataBuffer[8];
+        String floatStr = dtostrf(lineData[i], 5, 2, lineDataBuffer);
+        writeStr += String(DELIM);
+        writeStr += floatStr;
+    }
+    writeStr += String(END_DELIM);
+    return writeStr;
+}
+
+String DashDevice::getTimeGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine) {
+    String writeStr = String(DELIM);
+    writeStr += deviceID;
+    writeStr += String(DELIM);
+    writeStr += TIME_GRAPH_ID;
+    writeStr += String(DELIM);
+    writeStr += controlID;
+    writeStr += String(DELIM);
+    writeStr += graphLineID;
+    writeStr += String(DELIM);
+    writeStr += lineName;
+    writeStr += String(DELIM);
+    writeStr += getLineTypeStr(lineType);
+    writeStr += String(DELIM);
+    writeStr += color;
+    if (breakLine && (dataLength > 0)) {
+        writeStr += String(DELIM);
+        writeStr += times[0];
+        writeStr += ",";
+        writeStr += "B";
+    }
+    for (int i = 0; i < dataLength; i++) {
+        char lineDataBuffer[8];
+        String lineDataStr = dtostrf(lineData[i], 5, 2, lineDataBuffer);
+        writeStr += String(DELIM);
+        writeStr += times[i];
+        writeStr += ",";
+        writeStr += lineDataStr;
+    }
+    writeStr += String(END_DELIM);
+    return writeStr;
+}
+
+String DashDevice::getTimeGraphLineBools(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
+    String writeStr = String(DELIM);
+    writeStr += deviceID;
+    writeStr += String(DELIM);
+    writeStr += TIME_GRAPH_ID;
+    writeStr += String(DELIM);
+    writeStr += controlID;
+    writeStr += String(DELIM);
+    writeStr += graphLineID;
+    writeStr += String(DELIM);
+    writeStr += lineName;
+    writeStr += String(DELIM);
+    writeStr += getLineTypeStr(lineType);
+    writeStr += String(DELIM);
+    writeStr += color;
+    for (int i = 0; i < dataLength; i++) {
+        writeStr += String(DELIM);
+        writeStr += times[i];
+        writeStr += ",";
+        if (lineData[i]) {
+            writeStr += "T";
+        } else {
+            writeStr += "F";
+        }
+    }
+    writeStr += String(END_DELIM);
+    return writeStr;
 }
 
 String DashDevice::getControlTypeStr(ControlType controltype) {
-  switch (controltype) {
-    case connect: return CONNECT_ID;
-    case who: return WHO_ID;
-    case status: return STATUS_ID;
-    case config: return CONFIG_ID;
-          
-    case device: return DEVICE_ID;
-    case deviceView: return DEVICE_VIEW_ID;
-    case label: return LABEL_ID;
-    case button: return BUTTON_ID;
-    case menu: return MENU_ID;
-    case buttonGroup: return BUTTON_GROUP_ID;
-    case eventLog: return EVENT_LOG_ID;
-    case slider: return SLIDER_ID;
-    case knob: return KNOB_ID;
-    case dial: return DIAL_ID;
-    case direction: return DIRECTION_ID;
-    case textBox: return TEXT_BOX_ID;
-    case selector: return SELECTOR_ID;
-    case graph: return GRAPH_ID;
-    case timeGraph: return TIME_GRAPH_ID;
-    case mapper: return MAP_ID;
-          
-    case deviceName: return DEVICE_NAME_ID;
-    case wifiSetup: return WIFI_SETUP_ID;
-    case tcpSetup: return TCP_SETUP_ID;
-    case dashioSetup: return DASHIO_SETUP_ID;
-    case mqttSetup: return MQTT_SETUP_ID;
-    case popupMessage: return POPUP_MESSAGE_ID;
+    switch (controltype) {
+        case connect: return CONNECT_ID;
+        case who: return WHO_ID;
+        case status: return STATUS_ID;
+        case config: return CONFIG_ID;
+              
+        case device: return DEVICE_ID;
+        case deviceView: return DEVICE_VIEW_ID;
+        case label: return LABEL_ID;
+        case button: return BUTTON_ID;
+        case menu: return MENU_ID;
+        case buttonGroup: return BUTTON_GROUP_ID;
+        case eventLog: return EVENT_LOG_ID;
+        case slider: return SLIDER_ID;
+        case knob: return KNOB_ID;
+        case dial: return DIAL_ID;
+        case direction: return DIRECTION_ID;
+        case textBox: return TEXT_BOX_ID;
+        case selector: return SELECTOR_ID;
+        case graph: return GRAPH_ID;
+        case timeGraph: return TIME_GRAPH_ID;
+        case mapper: return MAP_ID;
+              
+        case deviceName: return DEVICE_NAME_ID;
+        case wifiSetup: return WIFI_SETUP_ID;
+        case tcpSetup: return TCP_SETUP_ID;
+        case dashioSetup: return DASHIO_SETUP_ID;
+        case mqttSetup: return MQTT_SETUP_ID;
+        case popupMessage: return POPUP_MESSAGE_ID;
 
-    case mqttConn: return MQTT_CONNECTION_ID;
-    case bleConn: return BLE_CONNECTION_ID;
-    case tcpConn: return TCP_CONNECTION_ID;
-          
-    case alarmNotify: return ALARM_ID;
+        case mqttConn: return MQTT_CONNECTION_ID;
+        case bleConn: return BLE_CONNECTION_ID;
+        case tcpConn: return TCP_CONNECTION_ID;
+              
+        case alarmNotify: return ALARM_ID;
 
-    case pushToken: return "";
-    case unknown: return "";
-  }
-  return "";
+        case pushToken: return "";
+        case unknown: return "";
+    }
+    return "";
 }
 
-String DashDevice::getMQTTSubscribeTopic(String userName) {
-  mqttSubscrberTopic = getMQTTTopic(userName, control_topic);
-  return mqttSubscrberTopic;
+String DashDevice::getMQTTSubscribeTopic(const String& userName) {
+    mqttSubscrberTopic = getMQTTTopic(userName, control_topic);
+    return mqttSubscrberTopic;
 }
 
-String DashDevice::getMQTTTopic(String userName, MQTTTopicType topic) {
-  String tip;
-  switch (topic) {
-    case data_topic:
-      tip = DATA_TOPIC_TIP;
-      break;
-    case control_topic:
-      tip = CONTROL_TOPIC_TIP;
-      break;
-    case alarm_topic:
-      tip = ALARM_TOPIC_TIP;
-      break;
-    case announce_topic:
-      tip = ANNOUNCE_TOPIC_TIP;
-      break;
-    case will_topic:
-      tip = WILL_TOPIC_TIP;
-      break;
-  }
-  return userName + "/" + deviceID + "/" + tip;
+String DashDevice::getMQTTTopic(const String& userName, MQTTTopicType topic) {
+    String tip;
+    switch (topic) {
+        case data_topic:
+            tip = DATA_TOPIC_TIP;
+            break;
+        case control_topic:
+            tip = CONTROL_TOPIC_TIP;
+            break;
+        case alarm_topic:
+            tip = ALARM_TOPIC_TIP;
+            break;
+        case announce_topic:
+            tip = ANNOUNCE_TOPIC_TIP;
+            break;
+        case will_topic:
+            tip = WILL_TOPIC_TIP;
+            break;
+    }
+    return userName + "/" + deviceID + "/" + tip;
 }
 
 String DashDevice::getLineTypeStr(LineType lineType) {
-  switch (lineType) {
-    case line:
-      return LINE_ID;
-    case bar:
-      return BAR_GRAPH_ID;
-    case segBar:
-      return SEGMENTED_BAR_ID;
-    case peakBar:
-      return PEAK_BAR_ID;
-    default:
-      return LINE_ID;
-  }
+    switch (lineType) {
+        case line:
+            return LINE_ID;
+        case bar:
+            return BAR_GRAPH_ID;
+        case segBar:
+            return SEGMENTED_BAR_ID;
+        case peakBar:
+            return PEAK_BAR_ID;
+        default:
+            return LINE_ID;
+    }
 }
 
-String DashDevice::getIntArray(String controlType, String ID, int idata[], int dataLength) {
-  String writeStr = String(DELIM) + deviceID + String(DELIM) + controlType + String(DELIM) + ID;
-  for (int i = 0; i < dataLength; i++) {
-    writeStr += String(DELIM) + String(idata[i]);
-  }
-  writeStr += String(END_DELIM);
-  return writeStr;
+String DashDevice::getIntArray(const String& controlType, const String& ID, int idata[], int dataLength) {
+    String writeStr = String(DELIM);
+    writeStr += deviceID;
+    writeStr + String(DELIM);
+    writeStr + controlType;
+    writeStr + String(DELIM);
+    writeStr + ID;
+    for (int i = 0; i < dataLength; i++) {
+        writeStr += String(DELIM);
+        writeStr += String(idata[i]);
+    }
+    writeStr += String(END_DELIM);
+    return writeStr;
 }
 
-String DashDevice::getFloatArray(String controlType, String ID, float fdata[], int dataLength) {
-  String writeStr = String(DELIM) + deviceID + String(DELIM) + controlType + String(DELIM) + ID;
-  for (int i = 0; i < dataLength; i++) {
-    char fbuffer[8];
-    String floatStr = dtostrf(fdata[i], 5, 2, fbuffer);
-    writeStr += String(DELIM) +  floatStr;
-  }
-  writeStr += String(END_DELIM);
-  return writeStr;
+String DashDevice::getFloatArray(const String& controlType, const String& ID, float fdata[], int dataLength) {
+    String writeStr = String(DELIM);
+    writeStr + deviceID;
+    writeStr + String(DELIM);
+    writeStr + controlType;
+    writeStr + String(DELIM);
+    writeStr + ID;
+    for (int i = 0; i < dataLength; i++) {
+        char fbuffer[8];
+        String floatStr = dtostrf(fdata[i], 5, 2, fbuffer);
+        writeStr += String(DELIM);
+        writeStr +=  floatStr;
+    }
+    writeStr += String(END_DELIM);
+    return writeStr;
 }
 
 // Configuration

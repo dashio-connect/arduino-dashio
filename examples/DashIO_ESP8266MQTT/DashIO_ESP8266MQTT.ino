@@ -16,9 +16,6 @@
 #define WIFI_PASSWORD "yourWiFiPassword"
 #define WIFI_TIMEOUT_S 300 // Restart after 5 minutes
 
-// TCP
-#define TCP_PORT 5050
-
 // MQTT
 #define MQTT_SERVER      "dash.dashio.io"
 #define MQTT_PORT        8883 // 8883 for SSL

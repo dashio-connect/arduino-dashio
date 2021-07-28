@@ -32,34 +32,41 @@ void DashJSON::start() {
     jsonStr = "{";
 }
 
-void DashJSON::addKeyString(String key, String text, bool last) {
-    String keyVal = "\"" + key + "\":\"" + text + "\"";
-    jsonStr += keyVal;
+void DashJSON::addKeyString(const String& key, const String& text, bool last) {
+    jsonStr += "\"";
+    jsonStr += key;
+    jsonStr += "\":\"";
+    jsonStr += text;
+    jsonStr += "\"";
     nextChar(last);
 }
 
-void DashJSON::addKeyFloat(String key, float number, bool last) {
+void DashJSON::addKeyFloat(const String& key, float number, bool last) {
     char numberBuffer[8];
-    String floatStr = dtostrf(number, 5, 2, numberBuffer);
-    String keyVal = "\"" + key + "\":" + floatStr;
-    jsonStr += keyVal;
+    jsonStr += "\"";
+    jsonStr += key;
+    jsonStr += "\":";
+    jsonStr += dtostrf(number, 5, 2, numberBuffer);
     nextChar(last);
 }
 
-void DashJSON::addKeyInt(String key, int number, bool last) {
-    String keyVal = "\"" + key + "\":" + String(number);
-    jsonStr += keyVal;
+void DashJSON::addKeyInt(const String& key, int number, bool last) {
+    jsonStr += "\"";
+    jsonStr += key;
+    jsonStr += "\":";
+    jsonStr += String(number);
     nextChar(last);
 }
 
-void DashJSON::addKeyBool(String key, bool boolean, bool last) {
-    String keyVal = "\"" + key + "\":";
+void DashJSON::addKeyBool(const String& key, bool boolean, bool last) {
+    jsonStr += "\"";
+    jsonStr += key;
+    jsonStr += "\":";
     if (boolean) {
-        keyVal += "true";
+        jsonStr += "true";
     } else {
-        keyVal += "false";
+        jsonStr += "false";
     }
-    jsonStr += keyVal;
     nextChar(last);
 }
 

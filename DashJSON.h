@@ -36,10 +36,10 @@ public:
     String jsonStr = "";
 
     void start();
-    void addKeyString(String key, String text, bool last = false);
-    void addKeyFloat(String key, float number, bool last = false);
-    void addKeyInt(String key, int number, bool last = false);
-    void addKeyBool(String key, bool boolean, bool last = false);
+    void addKeyString(const String& key, const String& text, bool last = false);
+    void addKeyFloat(const String& key, float number, bool last = false);
+    void addKeyInt(const String& key, int number, bool last = false);
+    void addKeyBool(const String& key, bool boolean, bool last = false);
 
 private:
     void nextChar(bool last);

@@ -32,9 +32,9 @@
 #include "Arduino.h"
 
 enum ConnectionType {
-  TCP_CONN,
-  BLE_CONN,
-  MQTT_CONN
+    TCP_CONN,
+    BLE_CONN,
+    MQTT_CONN
 };
 
 enum ControlType {
@@ -73,23 +73,23 @@ enum ControlType {
 };
 
 enum LineType {
-  line,
-  bar,
-  segBar,
-  peakBar
+    line,
+    bar,
+    segBar,
+    peakBar
 };
 
 enum ButtonMultiState {
-  off,
-  on
+    off,
+    on
 };
 
 enum MQTTTopicType {
-  data_topic,
-  control_topic,
-  alarm_topic,
-  announce_topic,
-  will_topic
+    data_topic,
+    control_topic,
+    alarm_topic,
+    announce_topic,
+    will_topic
 };
 
 enum TitlePosition {
@@ -424,116 +424,116 @@ struct MapCfg : CommonControl {
 
 
 class DashConnection {
-  public:
-    ConnectionType connectionType;
-    bool messageReceived = false;
-    String deviceID = "";
-    ControlType control = unknown;
-    String idStr = "";
-    String payloadStr = "";
-    String payloadStr2 = "";
+    public:
+        ConnectionType connectionType;
+        bool messageReceived = false;
+        String deviceID = "";
+        ControlType control = unknown;
+        String idStr = "";
+        String payloadStr = "";
+        String payloadStr2 = "";
 
-    DashConnection(ConnectionType connType);
-    void processMessage(String message);
-    bool processChar(char chr);
+        DashConnection(ConnectionType connType);
+        void processMessage(String message);
+        bool processChar(char chr);
 
-  private:
-    int segmentCount = -1;
-    String readStr;
+    private:
+        int segmentCount = -1;
+        String readStr;
 };
 
 class DashDevice {
-  public:
-    String mqttSubscrberTopic;
-    String deviceID = "";
+    public:
+        String mqttSubscrberTopic;
+        String deviceID = "";
     
-    void setDeviceID(uint8_t m_address[6]);
-    void setDeviceID(String deviceIdentifier);
+        void setDeviceID(uint8_t m_address[6]);
+        void setDeviceID(String deviceIdentifier);
 
-    String getWhoMessage(String deviceName, String deviceType);
-    String getConnectMessage();
-    String getPopupMessage(String header, String body = "", String caption = "");
+        String getWhoMessage(const String& deviceName, const String& deviceType);
+        String getConnectMessage();
+        String getPopupMessage(const String& header, const String& body = "", const String& caption = "");
     
-    String getDeviceNameMessage(String deviceName);
-    String getWifiUpdateAckMessage();
-    String getTCPUpdateAckMessage();
-    String getDashioUpdateAckMessage();
-    String getMQTTUpdateAckMessage();
+        String getDeviceNameMessage(const String& deviceName);
+        String getWifiUpdateAckMessage();
+        String getTCPUpdateAckMessage();
+        String getDashioUpdateAckMessage();
+        String getMQTTUpdateAckMessage();
     
-    String getAlarmMessage(String alarmID, String title, String description);
-    String getAlarmMessage(Notification alarm);
-    String getButtonMessage(String controlID, bool on, String iconName = "", String text = "");
-    String getTextBoxMessage(String controlID, String text);
-    String getSelectorMessage(String controlID, int index);
-    String getSelectorMessage(String controlID, int index, String* selectionItems, int rows);
-    String getSliderMessage(String controlID, int value);
-    String getSingleBarMessage(String controlID, int value);
-    String getKnobMessage(String controlID, int value);
-    String getKnobDialMessage(String controlID, int value);
-    String getDirectionMessage(String controlID, int direction, String text = "");
-    String getDialMessage(String controlID, String text);
-    String getMapMessage(String controlID, String latitude, String longitude, String message);
-    String getEventLogMessage(String controlID, String timeStr, String color, String text[], int dataLength);
-    String getDoubleBarMessage(String controlID, int value1, int value2);
-    String getBasicConfigData(ControlType controlType, String controlID, String controlTitle);
-    String getBasicConfigMessage(ControlType controlType, String controlID, String controlTitle);
-    String getBasicConfigMessage(String configData);
-    String getFullConfigMessage(ControlType controlType, String configData);
+        String getAlarmMessage(const String& alarmID, const String& title, const String& description);
+        String getAlarmMessage(Notification alarm);
+        String getButtonMessage(const String& controlID, bool on, const String& iconName = "", const String& text = "");
+        String getTextBoxMessage(const String& controlID, const String& text);
+        String getSelectorMessage(const String& controlID, int index);
+        String getSelectorMessage(const String& controlID, int index, String* selectionItems, int rows);
+        String getSliderMessage(const String& controlID, int value);
+        String getSingleBarMessage(const String& controlID, int value);
+        String getKnobMessage(const String& controlID, int value);
+        String getKnobDialMessage(const String& controlID, int value);
+        String getDirectionMessage(const String& controlID, int direction, const String& text = "");
+        String getDialMessage(const String& controlID, const String& text);
+        String getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& message);
+        String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength);
+        String getDoubleBarMessage(const String& controlID, int value1, int value2);
+        String getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle);
+        String getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle);
+        String getBasicConfigMessage(const String& configData);
+        String getFullConfigMessage(ControlType controlType, const String& configData);
     
-    String getGraphLineInts(String controlID, String graphLineID, String lineName, LineType lineType, String color, int lineData[], int dataLength);
-    String getGraphLineFloats(String controlID, String graphLineID, String lineName, LineType lineType, String color, float lineData[], int dataLength);
-    String getTimeGraphLineFloats(String controlID, String graphLineID, String lineName, LineType lineType, String color, String times[], float lineData[], int dataLength, bool breakLine = false);
-    String getTimeGraphLineBools(String controlID, String graphLineID, String lineName, LineType lineType, String color, String times[], bool lineData[], int dataLength);
+        String getGraphLineInts(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength);
+        String getGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, float lineData[], int dataLength);
+        String getTimeGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine = false);
+        String getTimeGraphLineBools(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength);
     
     //  Config messages
-    String getConfigMessage(DeviceCfg deviceConfigData);
-    String getConfigMessage(DeviceViewCfg deviceViewData);
+        String getConfigMessage(DeviceCfg deviceConfigData);
+        String getConfigMessage(DeviceViewCfg deviceViewData);
 
-    String getConfigMessage(BLEConnCfg connectionData);
-    String getConfigMessage(TCPConnCfg connectionData);
-    String getConfigMessage(MQTTConnCfg connectionData);
+        String getConfigMessage(BLEConnCfg connectionData);
+        String getConfigMessage(TCPConnCfg connectionData);
+        String getConfigMessage(MQTTConnCfg connectionData);
     
-    String getConfigMessage(AlarmCfg alarmData);
+        String getConfigMessage(AlarmCfg alarmData);
 
-    String getConfigMessage(LabelCfg labelData);
-    String getConfigMessage(ButtonCfg buttonData);
-    String getConfigMessage(MenuCfg menuData);
-    String getConfigMessage(ButtonGroupCfg groupData);
-    String getConfigMessage(EventLogCfg eventLogData);
-    String getConfigMessage(KnobCfg knobData);
-    String getConfigMessage(DialCfg dialData);
-    String getConfigMessage(DirectionCfg directionData);
-    String getConfigMessage(TextBoxCfg textBoxData);
-    String getConfigMessage(SelectorCfg selectorData);
-    String getConfigMessage(SliderCfg sliderData);
-    String getConfigMessage(GraphCfg graphData);
-    String getConfigMessage(TimeGraphCfg timeGraphData);
-    String getConfigMessage(MapCfg mapData);
+        String getConfigMessage(LabelCfg labelData);
+        String getConfigMessage(ButtonCfg buttonData);
+        String getConfigMessage(MenuCfg menuData);
+        String getConfigMessage(ButtonGroupCfg groupData);
+        String getConfigMessage(EventLogCfg eventLogData);
+        String getConfigMessage(KnobCfg knobData);
+        String getConfigMessage(DialCfg dialData);
+        String getConfigMessage(DirectionCfg directionData);
+        String getConfigMessage(TextBoxCfg textBoxData);
+        String getConfigMessage(SelectorCfg selectorData);
+        String getConfigMessage(SliderCfg sliderData);
+        String getConfigMessage(GraphCfg graphData);
+        String getConfigMessage(TimeGraphCfg timeGraphData);
+        String getConfigMessage(MapCfg mapData);
 
-    String getOnlineMessage();
-    String getOfflineMessage();
+        String getOnlineMessage();
+        String getOfflineMessage();
     
-    String getControlTypeStr(ControlType controltype);
+        String getControlTypeStr(ControlType controltype);
 
-    String getMQTTSubscribeTopic(String userName);
-    String getMQTTTopic(String userName, MQTTTopicType topic);
+        String getMQTTSubscribeTopic(const String& userName);
+        String getMQTTTopic(const String& userName, MQTTTopicType topic);
     
-  private:
-    String getLineTypeStr(LineType lineType);
-    String getIntArray(String controlType, String ID, int idata[], int dataLength);
-    String getFloatArray(String controlType, String ID, float fdata[], int dataLength);
+    private:
+        String getLineTypeStr(LineType lineType);
+        String getIntArray(const String& controlType, const String& ID, int idata[], int dataLength);
+        String getFloatArray(const String& controlType, const String& ID, float fdata[], int dataLength);
 
-    String getTitlePositionStr(TitlePosition tbp);
-    String getLabelStyle(LabelStyle labelStyle);
-    String getKnobPresentationStyle(KnobPresentationStyle presentationStyle);
-    String getDialNumberPosition(DialNumberPosition numberPosition);
-    String getDialPresentationStyle(DialPresentationStyle presentationStyle);
-    String getDirectionPresentationStyle(DirectionPresentationStyle presentationStyle);
-    String getTextFormatStr(TextFormat format);
-    String getKeyboardTypeStr(KeyboardType kbd);
-    String getTextAlignStr(TextAlign align);
-    String getBarStyleStr(BarStyle barStyle);
-    String getXAxisLabelsStyleStr(XAxisLabelsStyle xls);
+        String getTitlePositionStr(TitlePosition tbp);
+        String getLabelStyle(LabelStyle labelStyle);
+        String getKnobPresentationStyle(KnobPresentationStyle presentationStyle);
+        String getDialNumberPosition(DialNumberPosition numberPosition);
+        String getDialPresentationStyle(DialPresentationStyle presentationStyle);
+        String getDirectionPresentationStyle(DirectionPresentationStyle presentationStyle);
+        String getTextFormatStr(TextFormat format);
+        String getKeyboardTypeStr(KeyboardType kbd);
+        String getTextAlignStr(TextAlign align);
+        String getBarStyleStr(BarStyle barStyle);
+        String getXAxisLabelsStyleStr(XAxisLabelsStyle xls);
 };
 
 #endif
