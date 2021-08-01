@@ -434,7 +434,7 @@ class DashConnection {
         String payloadStr2 = "";
 
         DashConnection(ConnectionType connType);
-        void processMessage(String message);
+        void processMessage(const String& message);
         bool processChar(char chr);
 
     private:

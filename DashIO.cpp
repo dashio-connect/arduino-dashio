@@ -98,20 +98,17 @@ DashConnection::DashConnection(ConnectionType connType) {
     connectionType = connType;
 };
 
-void DashConnection::processMessage(String message) {
-    Serial.println(F("---- MQTT Received ----"));
-    Serial.print(F("Message: "));
-    Serial.println(message);
-    Serial.println();
-
+void DashConnection::processMessage(const String& message) {
     if (message.length() > 0) {
-        for (unsigned int i = 0; i < message.length(); i++) {
-            char chr = message[i];
-            if (messageReceived) {
-                Serial.println(F("Incoming message overflow"));
-            }
-            if (processChar(chr)) {
-                messageReceived = true;
+        if (messageReceived) {
+            Serial.println(F("Incoming message overflow. Can't process:"));
+            Serial.println(message);
+        } else {
+            for (unsigned int i = 0; i < message.length(); i++) {
+                char chr = message[i];
+                if (processChar(chr)) {
+                    messageReceived = true;
+                }
             }
         }
     }
