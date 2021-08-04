@@ -197,6 +197,13 @@ struct TCPConnCfg {
         ipAddress = _ipAddress;
         port = _port;
     }
+
+    TCPConnCfg(IPAddress _ipAddress, int _port) {
+        static char a[16];
+        sprintf(a, "%d.%d.%d.%d", _ipAddress[0], _ipAddress[1], _ipAddress[2], _ipAddress[3]);
+        ipAddress = a;
+        port = _port;
+    }
 };
 
 struct MQTTConnCfg {
