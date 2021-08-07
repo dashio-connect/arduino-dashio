@@ -91,10 +91,19 @@
 #define MQTT_ONLINE_MSSG  "\tONLINE\n"
 #define MQTT_OFFLINE_MSSG "\tOFFLINE\n"
 
+#define MAX_STRING_LEN 64
+#define MAX_DEVICE_NAME_LEN 32
+#define MAX_DEVICE_TYPE_LEN 32
+
 const char END_DELIM = '\n';
 const char DELIM = '\t';
 
 DashConnection::DashConnection(ConnectionType connType) {
+    deviceID.reserve(MAX_STRING_LEN);
+    idStr.reserve(MAX_STRING_LEN);
+    payloadStr.reserve(MAX_STRING_LEN);
+    payloadStr2.reserve(MAX_STRING_LEN);
+    
     connectionType = connType;
 };
 
@@ -203,17 +212,61 @@ bool DashConnection::processChar(char chr) {
     return messageEnd;
 }
 
+String DashConnection::getReceivedMessageForPrint(const String& controlStr) {
+    String message((char *)0);
+    message.reserve(200);
+
+    message += F("**** ");
+    switch (connectionType) {
+        case BLE_CONN:
+            message += "BLE";
+            break;
+        case TCP_CONN:
+            message += "TCP";
+            break;
+        case MQTT_CONN:
+            message += "MQTT";
+            break;
+    }
+    message += F("Received ****\n");
+    message += deviceID;
+    message += F("  ");
+    message += controlStr;
+    message += F("  ");
+    message += idStr;
+    message += F("  ");
+    message += payloadStr;
+    message += F("  ");
+    message += payloadStr2;
+
+    return message;
+}
 
 /* --------------- */
 
+DashDevice::DashDevice(const String& deviceType, const String& deviceName) {
+    type.reserve(MAX_DEVICE_TYPE_LEN);
+    type = deviceType;
 
-void DashDevice::setDeviceID(String deviceIdentifier) {
+    name.reserve(MAX_DEVICE_NAME_LEN);
+    name = deviceName;
+}
+
+DashDevice::DashDevice() {
+    type.reserve(MAX_DEVICE_TYPE_LEN);
+    name.reserve(MAX_DEVICE_NAME_LEN);
+}
+
+void DashDevice::setDeviceID(const String& deviceIdentifier) {
+    deviceID.reserve(MAX_STRING_LEN);
+
     deviceID = deviceIdentifier;
 }
 
 void DashDevice::setDeviceID(uint8_t m_address[6]) {
     char buffer[20];
-    String macStr = "";
+    String macStr((char *)0);
+    macStr.reserve(20);
 
     sprintf(buffer, "%x", m_address[0]);
     if (m_address[0] < 16) {
@@ -263,15 +316,15 @@ String DashDevice::getOfflineMessage() {
     return message;
 }
 
-String DashDevice::getWhoMessage(const String& deviceName, const String& deviceType) {
+String DashDevice::getWhoMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
     message += WHO_ID;
     message += String(DELIM);
-    message += deviceType;
+    message += type;
     message += String(DELIM);
-    message += deviceName;
+    message += name;
     message += String(END_DELIM);
     return message;
 }
@@ -303,13 +356,13 @@ String DashDevice::getPopupMessage(const String& header, const String& body, con
     return message;
 }
 
-String DashDevice::getDeviceNameMessage(const String& deviceName) {
+String DashDevice::getDeviceNameMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
     message += DEVICE_NAME_ID;
     message += String(DELIM);
-    message += deviceName;
+    message += name;
     message += String(END_DELIM);
     return message;
 }

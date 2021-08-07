@@ -197,13 +197,16 @@ struct TCPConnCfg {
         ipAddress = _ipAddress;
         port = _port;
     }
-
+/*
+#ifdef ESP32
     TCPConnCfg(IPAddress _ipAddress, int _port) {
         static char a[16];
         sprintf(a, "%d.%d.%d.%d", _ipAddress[0], _ipAddress[1], _ipAddress[2], _ipAddress[3]);
         ipAddress = a;
         port = _port;
     }
+#endif
+*/
 };
 
 struct MQTTConnCfg {
@@ -434,15 +437,17 @@ class DashConnection {
     public:
         ConnectionType connectionType;
         bool messageReceived = false;
-        String deviceID = "";
+        String deviceID = ((char *)0);
+    
         ControlType control = unknown;
-        String idStr = "";
-        String payloadStr = "";
-        String payloadStr2 = "";
+        String idStr = ((char *)0);
+        String payloadStr = ((char *)0);
+        String payloadStr2 = ((char *)0);
 
         DashConnection(ConnectionType connType);
         void processMessage(const String& message);
         bool processChar(char chr);
+        String getReceivedMessageForPrint(const String& controlStr);
 
     private:
         int segmentCount = -1;
@@ -452,16 +457,20 @@ class DashConnection {
 class DashDevice {
     public:
         String mqttSubscrberTopic;
-        String deviceID = "";
-    
-        void setDeviceID(uint8_t m_address[6]);
-        void setDeviceID(String deviceIdentifier);
+        String deviceID = ((char *)0);
+        String type = ((char *)0);
+        String name = ((char *)0);
 
-        String getWhoMessage(const String& deviceName, const String& deviceType);
+        DashDevice(const String& deviceType, const String& deviceName);
+        DashDevice();
+        void setDeviceID(uint8_t m_address[6]);
+        void setDeviceID(const String& deviceIdentifier);
+
+        String getWhoMessage();
         String getConnectMessage();
         String getPopupMessage(const String& header, const String& body = "", const String& caption = "");
     
-        String getDeviceNameMessage(const String& deviceName);
+        String getDeviceNameMessage();
         String getWifiUpdateAckMessage();
         String getTCPUpdateAckMessage();
         String getDashioUpdateAckMessage();
@@ -524,7 +533,7 @@ class DashDevice {
 
         String getMQTTSubscribeTopic(const String& userName);
         String getMQTTTopic(const String& userName, MQTTTopicType topic);
-    
+        
     private:
         String getLineTypeStr(LineType lineType);
         String getIntArray(const String& controlType, const String& ID, int idata[], int dataLength);
