@@ -98,7 +98,7 @@
 const char END_DELIM = '\n';
 const char DELIM = '\t';
 
-DashConnection::DashConnection(ConnectionType connType) {
+DashioConnection::DashioConnection(ConnectionType connType) {
     deviceID.reserve(MAX_STRING_LEN);
     idStr.reserve(MAX_STRING_LEN);
     payloadStr.reserve(MAX_STRING_LEN);
@@ -107,7 +107,7 @@ DashConnection::DashConnection(ConnectionType connType) {
     connectionType = connType;
 };
 
-void DashConnection::processMessage(const String& message) {
+void DashioConnection::processMessage(const String& message) {
     if (message.length() > 0) {
         if (messageReceived) {
             Serial.println(F("Incoming message overflow. Can't process:"));
@@ -123,7 +123,7 @@ void DashConnection::processMessage(const String& message) {
     }
 }
 
-bool DashConnection::processChar(char chr) {
+bool DashioConnection::processChar(char chr) {
     bool messageEnd = false;
     if ((chr == DELIM) || (chr == END_DELIM)) {
         if ((readStr.length() > 0) || (segmentCount == 1)) { // segmentCount == 1 allows for empty second field ??? maybe should be 2 for empty third field now that we've added deviceID at the front
@@ -212,7 +212,7 @@ bool DashConnection::processChar(char chr) {
     return messageEnd;
 }
 
-String DashConnection::getReceivedMessageForPrint(const String& controlStr) {
+String DashioConnection::getReceivedMessageForPrint(const String& controlStr) {
     String message((char *)0);
     message.reserve(200);
 
@@ -244,7 +244,7 @@ String DashConnection::getReceivedMessageForPrint(const String& controlStr) {
 
 /* --------------- */
 
-DashDevice::DashDevice(const String& deviceType, const String& deviceName) {
+DashioDevice::DashioDevice(const String& deviceType, const String& deviceName) {
     type.reserve(MAX_DEVICE_TYPE_LEN);
     type = deviceType;
 
@@ -252,18 +252,18 @@ DashDevice::DashDevice(const String& deviceType, const String& deviceName) {
     name = deviceName;
 }
 
-DashDevice::DashDevice() {
+DashioDevice::DashioDevice() {
     type.reserve(MAX_DEVICE_TYPE_LEN);
     name.reserve(MAX_DEVICE_NAME_LEN);
 }
 
-void DashDevice::setDeviceID(const String& deviceIdentifier) {
+void DashioDevice::setDeviceID(const String& deviceIdentifier) {
     deviceID.reserve(MAX_STRING_LEN);
 
     deviceID = deviceIdentifier;
 }
 
-void DashDevice::setDeviceID(uint8_t m_address[6]) {
+void DashioDevice::setDeviceID(uint8_t m_address[6]) {
     char buffer[20];
     String macStr((char *)0);
     macStr.reserve(20);
@@ -302,21 +302,21 @@ void DashDevice::setDeviceID(uint8_t m_address[6]) {
     deviceID = macStr.c_str();
 };
 
-String DashDevice::getOnlineMessage() {
+String DashioDevice::getOnlineMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += MQTT_ONLINE_MSSG;
     return message;
 }
 
-String DashDevice::getOfflineMessage() {
+String DashioDevice::getOfflineMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += MQTT_OFFLINE_MSSG;
     return message;
 }
 
-String DashDevice::getWhoMessage() {
+String DashioDevice::getWhoMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -329,7 +329,7 @@ String DashDevice::getWhoMessage() {
     return message;
 }
 
-String DashDevice::getConnectMessage() {
+String DashioDevice::getConnectMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -338,7 +338,7 @@ String DashDevice::getConnectMessage() {
     return  message;
 }
 
-String DashDevice::getPopupMessage(const String& header, const String& body, const String& caption) {
+String DashioDevice::getPopupMessage(const String& header, const String& body, const String& caption) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -356,7 +356,7 @@ String DashDevice::getPopupMessage(const String& header, const String& body, con
     return message;
 }
 
-String DashDevice::getDeviceNameMessage() {
+String DashioDevice::getDeviceNameMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -367,7 +367,7 @@ String DashDevice::getDeviceNameMessage() {
     return message;
 }
 
-String DashDevice::getWifiUpdateAckMessage() {
+String DashioDevice::getWifiUpdateAckMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -376,7 +376,7 @@ String DashDevice::getWifiUpdateAckMessage() {
     return message;
 }
 
-String DashDevice::getTCPUpdateAckMessage() {
+String DashioDevice::getTCPUpdateAckMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -385,7 +385,7 @@ String DashDevice::getTCPUpdateAckMessage() {
     return message;
 }
 
-String DashDevice::getDashioUpdateAckMessage() {
+String DashioDevice::getDashioUpdateAckMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -394,7 +394,7 @@ String DashDevice::getDashioUpdateAckMessage() {
     return message;
 }
 
-String DashDevice::getMQTTUpdateAckMessage() {
+String DashioDevice::getMQTTUpdateAckMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -403,7 +403,7 @@ String DashDevice::getMQTTUpdateAckMessage() {
     return message;
 }
 
-String DashDevice::getAlarmMessage(const String& controlID, const String& title, const String& description) {
+String DashioDevice::getAlarmMessage(const String& controlID, const String& title, const String& description) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -416,11 +416,11 @@ String DashDevice::getAlarmMessage(const String& controlID, const String& title,
     return message;
 }
 
-String DashDevice::getAlarmMessage(Notification alarm) {
+String DashioDevice::getAlarmMessage(Notification alarm) {
     return getAlarmMessage(alarm.identifier, alarm.title, alarm.description);
 }
 
-String DashDevice::getButtonMessage(const String& controlID, bool on, const String& iconName, const String& text) {
+String DashioDevice::getButtonMessage(const String& controlID, bool on, const String& iconName, const String& text) {
     String writeStr = String(DELIM);
     writeStr += deviceID;
     writeStr += String(DELIM);
@@ -448,7 +448,7 @@ String DashDevice::getButtonMessage(const String& controlID, bool on, const Stri
     return writeStr;
 }
 
-String DashDevice::getTextBoxMessage(const String& controlID, const String& text) {
+String DashioDevice::getTextBoxMessage(const String& controlID, const String& text) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -461,7 +461,7 @@ String DashDevice::getTextBoxMessage(const String& controlID, const String& text
     return message;
 }
 
-String DashDevice::getSelectorMessage(const String& controlID, int index) {
+String DashioDevice::getSelectorMessage(const String& controlID, int index) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -474,7 +474,7 @@ String DashDevice::getSelectorMessage(const String& controlID, int index) {
   return message;
 }
 
-String DashDevice::getSelectorMessage(const String& controlID, int index, String* selectionItems, int rows) {
+String DashioDevice::getSelectorMessage(const String& controlID, int index, String* selectionItems, int rows) {
     String writeStr = String(DELIM);
     writeStr += deviceID;
     writeStr += String(DELIM);
@@ -491,7 +491,7 @@ String DashDevice::getSelectorMessage(const String& controlID, int index, String
     return writeStr;
 }
 
-String DashDevice::getSliderMessage(const String& controlID, int value) {
+String DashioDevice::getSliderMessage(const String& controlID, int value) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -504,7 +504,7 @@ String DashDevice::getSliderMessage(const String& controlID, int value) {
   return message;
 }
 
-String DashDevice::getSingleBarMessage(const String& controlID, int value) {
+String DashioDevice::getSingleBarMessage(const String& controlID, int value) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -518,7 +518,7 @@ String DashDevice::getSingleBarMessage(const String& controlID, int value) {
   return message;
 }
 
-String DashDevice::getKnobMessage(const String& controlID, int value) {
+String DashioDevice::getKnobMessage(const String& controlID, int value) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -531,7 +531,7 @@ String DashDevice::getKnobMessage(const String& controlID, int value) {
   return message;
 }
 
-String DashDevice::getKnobDialMessage(const String& controlID, int value) {
+String DashioDevice::getKnobDialMessage(const String& controlID, int value) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -544,7 +544,7 @@ String DashDevice::getKnobDialMessage(const String& controlID, int value) {
   return message;
 }
 
-String DashDevice::getDirectionMessage(const String& controlID, int value, const String& text) {
+String DashioDevice::getDirectionMessage(const String& controlID, int value, const String& text) {
     String writeStr = String(DELIM);
     writeStr += deviceID;
     writeStr += String(DELIM);
@@ -561,7 +561,7 @@ String DashDevice::getDirectionMessage(const String& controlID, int value, const
     return writeStr;
 }
 
-String DashDevice::getDialMessage(const String& controlID, const String& text) {
+String DashioDevice::getDialMessage(const String& controlID, const String& text) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -574,7 +574,7 @@ String DashDevice::getDialMessage(const String& controlID, const String& text) {
   return message;
 }
 
-String DashDevice::getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& message) {
+String DashioDevice::getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& message) {
     String writeStr = String(DELIM);
     writeStr += deviceID;
     writeStr += String(DELIM);
@@ -591,7 +591,7 @@ String DashDevice::getMapMessage(const String& controlID, const String& latitude
   return writeStr;
 }
 
-String DashDevice::getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength) {
+String DashioDevice::getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength) {
     String writeStr = String(DELIM);
     writeStr += deviceID ;
     writeStr += String(DELIM);
@@ -610,14 +610,14 @@ String DashDevice::getEventLogMessage(const String& controlID, const String& tim
     return writeStr;
 }
 
-String DashDevice::getDoubleBarMessage(const String& controlID, int value1, int value2) {
+String DashioDevice::getDoubleBarMessage(const String& controlID, int value1, int value2) {
     int barValues[2];
     barValues[0] = value1;
     barValues[1] = value2;
     return getIntArray(BAR_ID, controlID, barValues, 2);
 }
 
-String DashDevice::getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle) {
+String DashioDevice::getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle) {
     String message = String(DELIM);
     message += getControlTypeStr(controlType);
     message += String(DELIM);
@@ -627,7 +627,7 @@ String DashDevice::getBasicConfigData(ControlType controlType, const String& con
     return message;
 }
 
-String DashDevice::getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle) {
+String DashioDevice::getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -639,7 +639,7 @@ String DashDevice::getBasicConfigMessage(ControlType controlType, const String& 
     return message;
 }
 
-String DashDevice::getBasicConfigMessage(const String& configData) {
+String DashioDevice::getBasicConfigMessage(const String& configData) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -651,7 +651,7 @@ String DashDevice::getBasicConfigMessage(const String& configData) {
     return  message;
 }
 
-String DashDevice::getFullConfigMessage(ControlType controlType, const String& configData) {
+String DashioDevice::getFullConfigMessage(ControlType controlType, const String& configData) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -664,7 +664,7 @@ String DashDevice::getFullConfigMessage(ControlType controlType, const String& c
     return message;
 }
 
-String DashDevice::getGraphLineInts(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength) {
+String DashioDevice::getGraphLineInts(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength) {
     String writeStr = String(DELIM);
     writeStr += deviceID;
     writeStr += String(DELIM);
@@ -687,7 +687,7 @@ String DashDevice::getGraphLineInts(const String& controlID, const String& graph
     return writeStr;
 }
 
-String DashDevice::getGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, float lineData[], int dataLength) {
+String DashioDevice::getGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, float lineData[], int dataLength) {
     String writeStr = String(DELIM);
     writeStr += deviceID;
     writeStr += String(DELIM);
@@ -712,7 +712,7 @@ String DashDevice::getGraphLineFloats(const String& controlID, const String& gra
     return writeStr;
 }
 
-String DashDevice::getTimeGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine) {
+String DashioDevice::getTimeGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine) {
     String writeStr = String(DELIM);
     writeStr += deviceID;
     writeStr += String(DELIM);
@@ -745,7 +745,7 @@ String DashDevice::getTimeGraphLineFloats(const String& controlID, const String&
     return writeStr;
 }
 
-String DashDevice::getTimeGraphLineBools(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
+String DashioDevice::getTimeGraphLineBools(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
     String writeStr = String(DELIM);
     writeStr += deviceID;
     writeStr += String(DELIM);
@@ -774,7 +774,7 @@ String DashDevice::getTimeGraphLineBools(const String& controlID, const String& 
     return writeStr;
 }
 
-String DashDevice::getControlTypeStr(ControlType controltype) {
+String DashioDevice::getControlTypeStr(ControlType controltype) {
     switch (controltype) {
         case connect: return CONNECT_ID;
         case who: return WHO_ID;
@@ -817,12 +817,12 @@ String DashDevice::getControlTypeStr(ControlType controltype) {
     return "";
 }
 
-String DashDevice::getMQTTSubscribeTopic(const String& userName) {
+String DashioDevice::getMQTTSubscribeTopic(const String& userName) {
     mqttSubscrberTopic = getMQTTTopic(userName, control_topic);
     return mqttSubscrberTopic;
 }
 
-String DashDevice::getMQTTTopic(const String& userName, MQTTTopicType topic) {
+String DashioDevice::getMQTTTopic(const String& userName, MQTTTopicType topic) {
     String tip;
     switch (topic) {
         case data_topic:
@@ -844,7 +844,7 @@ String DashDevice::getMQTTTopic(const String& userName, MQTTTopicType topic) {
     return userName + "/" + deviceID + "/" + tip;
 }
 
-String DashDevice::getLineTypeStr(LineType lineType) {
+String DashioDevice::getLineTypeStr(LineType lineType) {
     switch (lineType) {
         case line:
             return LINE_ID;
@@ -859,7 +859,7 @@ String DashDevice::getLineTypeStr(LineType lineType) {
     }
 }
 
-String DashDevice::getIntArray(const String& controlType, const String& ID, int idata[], int dataLength) {
+String DashioDevice::getIntArray(const String& controlType, const String& ID, int idata[], int dataLength) {
     String writeStr = String(DELIM);
     writeStr += deviceID;
     writeStr + String(DELIM);
@@ -874,7 +874,7 @@ String DashDevice::getIntArray(const String& controlType, const String& ID, int 
     return writeStr;
 }
 
-String DashDevice::getFloatArray(const String& controlType, const String& ID, float fdata[], int dataLength) {
+String DashioDevice::getFloatArray(const String& controlType, const String& ID, float fdata[], int dataLength) {
     String writeStr = String(DELIM);
     writeStr + deviceID;
     writeStr + String(DELIM);
@@ -892,7 +892,7 @@ String DashDevice::getFloatArray(const String& controlType, const String& ID, fl
 }
 
 // Configuration
-String DashDevice::getConfigMessage(DeviceCfg deviceConfigData) {
+String DashioDevice::getConfigMessage(DeviceCfg deviceConfigData) {
     DashJSON json;
     json.start();
     json.addKeyInt(F("numDeviceViews"), deviceConfigData.numDeviceViews);
@@ -900,7 +900,7 @@ String DashDevice::getConfigMessage(DeviceCfg deviceConfigData) {
     return getFullConfigMessage(device, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(DeviceViewCfg deviceViewData) {
+String DashioDevice::getConfigMessage(DeviceViewCfg deviceViewData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), deviceViewData.controlID);
@@ -925,7 +925,7 @@ String DashDevice::getConfigMessage(DeviceViewCfg deviceViewData) {
     return getFullConfigMessage(deviceView, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(BLEConnCfg connectionData) {
+String DashioDevice::getConfigMessage(BLEConnCfg connectionData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("serviceUUID"), connectionData.serviceUUID);
@@ -934,7 +934,7 @@ String DashDevice::getConfigMessage(BLEConnCfg connectionData) {
     return getFullConfigMessage(bleConn, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(TCPConnCfg connectionData) {
+String DashioDevice::getConfigMessage(TCPConnCfg connectionData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("ipAddress"), connectionData.ipAddress);
@@ -942,7 +942,7 @@ String DashDevice::getConfigMessage(TCPConnCfg connectionData) {
     return getFullConfigMessage(tcpConn, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(MQTTConnCfg connectionData) {
+String DashioDevice::getConfigMessage(MQTTConnCfg connectionData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("userName"), connectionData.userName);
@@ -950,7 +950,7 @@ String DashDevice::getConfigMessage(MQTTConnCfg connectionData) {
     return getFullConfigMessage(mqttConn, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(AlarmCfg alarmData) {
+String DashioDevice::getConfigMessage(AlarmCfg alarmData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), alarmData.controlID);
@@ -959,7 +959,7 @@ String DashDevice::getConfigMessage(AlarmCfg alarmData) {
     return getFullConfigMessage(alarmNotify, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(LabelCfg labelData) {
+String DashioDevice::getConfigMessage(LabelCfg labelData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), labelData.controlID);
@@ -976,7 +976,7 @@ String DashDevice::getConfigMessage(LabelCfg labelData) {
     return getFullConfigMessage(label, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(ButtonCfg buttonData) {
+String DashioDevice::getConfigMessage(ButtonCfg buttonData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), buttonData.controlID);
@@ -996,7 +996,7 @@ String DashDevice::getConfigMessage(ButtonCfg buttonData) {
     return getFullConfigMessage(button, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(MenuCfg menuData) {
+String DashioDevice::getConfigMessage(MenuCfg menuData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), menuData.controlID);
@@ -1013,7 +1013,7 @@ String DashDevice::getConfigMessage(MenuCfg menuData) {
     return getFullConfigMessage(menu, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(ButtonGroupCfg groupData) {
+String DashioDevice::getConfigMessage(ButtonGroupCfg groupData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), groupData.controlID);
@@ -1031,7 +1031,7 @@ String DashDevice::getConfigMessage(ButtonGroupCfg groupData) {
     return getFullConfigMessage(buttonGroup, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(EventLogCfg eventLogData) {
+String DashioDevice::getConfigMessage(EventLogCfg eventLogData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), eventLogData.controlID);
@@ -1045,7 +1045,7 @@ String DashDevice::getConfigMessage(EventLogCfg eventLogData) {
     return getFullConfigMessage(eventLog, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(KnobCfg knobData) {
+String DashioDevice::getConfigMessage(KnobCfg knobData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), knobData.controlID);
@@ -1069,7 +1069,7 @@ String DashDevice::getConfigMessage(KnobCfg knobData) {
     return getFullConfigMessage(knob, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(DialCfg dialData) {
+String DashioDevice::getConfigMessage(DialCfg dialData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), dialData.controlID);
@@ -1094,7 +1094,7 @@ String DashDevice::getConfigMessage(DialCfg dialData) {
     return getFullConfigMessage(dial, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(DirectionCfg directionData) {
+String DashioDevice::getConfigMessage(DirectionCfg directionData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), directionData.controlID);
@@ -1114,7 +1114,7 @@ String DashDevice::getConfigMessage(DirectionCfg directionData) {
     return getFullConfigMessage(direction, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(TextBoxCfg textBoxData) {
+String DashioDevice::getConfigMessage(TextBoxCfg textBoxData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), textBoxData.controlID);
@@ -1135,7 +1135,7 @@ String DashDevice::getConfigMessage(TextBoxCfg textBoxData) {
     return getFullConfigMessage(textBox, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(SelectorCfg selectorData) {
+String DashioDevice::getConfigMessage(SelectorCfg selectorData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), selectorData.controlID);
@@ -1149,7 +1149,7 @@ String DashDevice::getConfigMessage(SelectorCfg selectorData) {
     return getFullConfigMessage(selector, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(SliderCfg sliderData) {
+String DashioDevice::getConfigMessage(SliderCfg sliderData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), sliderData.controlID);
@@ -1174,7 +1174,7 @@ String DashDevice::getConfigMessage(SliderCfg sliderData) {
     return getFullConfigMessage(slider, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(GraphCfg graphData) {
+String DashioDevice::getConfigMessage(GraphCfg graphData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), graphData.controlID);
@@ -1198,7 +1198,7 @@ String DashDevice::getConfigMessage(GraphCfg graphData) {
     return getFullConfigMessage(graph, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(TimeGraphCfg timeGraphData) {
+String DashioDevice::getConfigMessage(TimeGraphCfg timeGraphData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), timeGraphData.controlID);
@@ -1217,7 +1217,7 @@ String DashDevice::getConfigMessage(TimeGraphCfg timeGraphData) {
     return getFullConfigMessage(timeGraph, json.jsonStr);
 }
 
-String DashDevice::getConfigMessage(MapCfg mapData) {
+String DashioDevice::getConfigMessage(MapCfg mapData) {
     DashJSON json;
     json.start();
     json.addKeyString(F("controlID"), mapData.controlID);
@@ -1232,7 +1232,7 @@ String DashDevice::getConfigMessage(MapCfg mapData) {
 }
 
 
-String DashDevice::getTitlePositionStr(TitlePosition tbp) {
+String DashioDevice::getTitlePositionStr(TitlePosition tbp) {
     switch (tbp) {
         case titleTop:
             return "TOP";
@@ -1243,7 +1243,7 @@ String DashDevice::getTitlePositionStr(TitlePosition tbp) {
     }
 }
 
-String DashDevice::getLabelStyle(LabelStyle labelStyle) {
+String DashioDevice::getLabelStyle(LabelStyle labelStyle) {
     switch (labelStyle) {
         case basic:
             return "BASIC";
@@ -1254,7 +1254,7 @@ String DashDevice::getLabelStyle(LabelStyle labelStyle) {
     }
 }
 
-String DashDevice::getDialNumberPosition(DialNumberPosition numberPosition) {
+String DashioDevice::getDialNumberPosition(DialNumberPosition numberPosition) {
     switch (numberPosition) {
         case numberLeft:
             return "LEFT";
@@ -1267,7 +1267,7 @@ String DashDevice::getDialNumberPosition(DialNumberPosition numberPosition) {
     }
 }
 
-String DashDevice::getKnobPresentationStyle(KnobPresentationStyle presentationStyle) {
+String DashioDevice::getKnobPresentationStyle(KnobPresentationStyle presentationStyle) {
     switch (presentationStyle) {
         case knobPan:
             return "PAN";
@@ -1276,7 +1276,7 @@ String DashDevice::getKnobPresentationStyle(KnobPresentationStyle presentationSt
     }
 }
 
-String DashDevice::getDialPresentationStyle(DialPresentationStyle presentationStyle) {
+String DashioDevice::getDialPresentationStyle(DialPresentationStyle presentationStyle) {
     switch (presentationStyle) {
         case dialPie:
             return "PIE";
@@ -1287,7 +1287,7 @@ String DashDevice::getDialPresentationStyle(DialPresentationStyle presentationSt
     }
 }
 
-String DashDevice::getDirectionPresentationStyle(DirectionPresentationStyle presentationStyle) {
+String DashioDevice::getDirectionPresentationStyle(DirectionPresentationStyle presentationStyle) {
     switch (presentationStyle) {
         case dirDeg:
             return "DEG";
@@ -1298,7 +1298,7 @@ String DashDevice::getDirectionPresentationStyle(DirectionPresentationStyle pres
     }
 }
 
-String DashDevice::getTextFormatStr(TextFormat format) {
+String DashioDevice::getTextFormatStr(TextFormat format) {
     switch (format) {
         case numFmt:
             return "NUM";
@@ -1313,7 +1313,7 @@ String DashDevice::getTextFormatStr(TextFormat format) {
     }
 }
 
-String DashDevice::getKeyboardTypeStr(KeyboardType kbd) {
+String DashioDevice::getKeyboardTypeStr(KeyboardType kbd) {
     switch (kbd) {
         case hexKbd:
             return "HEX";
@@ -1336,7 +1336,7 @@ String DashDevice::getKeyboardTypeStr(KeyboardType kbd) {
     }
 }
 
-String DashDevice::getTextAlignStr(TextAlign align) {
+String DashioDevice::getTextAlignStr(TextAlign align) {
     switch (align) {
         case textLeft:
             return "LEFT";
@@ -1347,7 +1347,7 @@ String DashDevice::getTextAlignStr(TextAlign align) {
     }
 }
 
-String DashDevice::getBarStyleStr(BarStyle barStyle) {
+String DashioDevice::getBarStyleStr(BarStyle barStyle) {
     switch (barStyle) {
         case segmentedBar:
             return "SEG";
@@ -1356,7 +1356,7 @@ String DashDevice::getBarStyleStr(BarStyle barStyle) {
     }
 }
 
-String DashDevice::getXAxisLabelsStyleStr(XAxisLabelsStyle xls) {
+String DashioDevice::getXAxisLabelsStyleStr(XAxisLabelsStyle xls) {
     switch (xls) {
         case labelsOnLines:
             return "ON";

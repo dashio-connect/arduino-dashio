@@ -433,7 +433,7 @@ struct MapCfg : CommonControl {
 };
 
 
-class DashConnection {
+class DashioConnection {
     public:
         ConnectionType connectionType;
         bool messageReceived = false;
@@ -444,7 +444,7 @@ class DashConnection {
         String payloadStr = ((char *)0);
         String payloadStr2 = ((char *)0);
 
-        DashConnection(ConnectionType connType);
+        DashioConnection(ConnectionType connType);
         void processMessage(const String& message);
         bool processChar(char chr);
         String getReceivedMessageForPrint(const String& controlStr);
@@ -454,15 +454,15 @@ class DashConnection {
         String readStr;
 };
 
-class DashDevice {
+class DashioDevice {
     public:
         String mqttSubscrberTopic;
         String deviceID = ((char *)0);
         String type = ((char *)0);
         String name = ((char *)0);
 
-        DashDevice(const String& deviceType, const String& deviceName);
-        DashDevice();
+        DashioDevice(const String& deviceType, const String& deviceName);
+        DashioDevice();
         void setDeviceID(uint8_t m_address[6]);
         void setDeviceID(const String& deviceIdentifier);
 
