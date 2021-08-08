@@ -5,7 +5,7 @@
 #include "DashIO.h"
 #include <EEPROM.h> // Arduino EEPROM library
 
-#define EEPROM_SIZE 191
+#define EEPROM_SIZE 200
 
 struct DeviceData {
     char deviceName[32];

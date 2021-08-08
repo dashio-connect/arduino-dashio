@@ -11,6 +11,8 @@ const int   MQTT_PORT    = 8883;
 // ---------------------------------------- WiFi ---------------------------------------
 
 void DashioESP_WiFi::setup(char *ssid, char *password, void (*connectCallback)(void)) {
+    wifiConnectCallback = connectCallback;
+
     // Below is required to get WiFi to connect reliably on ESP32
     WiFi.disconnect(true);
     delay(1000);
@@ -48,15 +50,22 @@ String DashioESP_WiFi::macAddress() {
     return WiFi.macAddress();
 }
 
-
 // ---------------------------------------- TCP ----------------------------------------
 
-DashioESP_TCP::DashioESP_TCP(DashioDevice *_dashioDevice, int _tcpPort, bool _printMessages) : dashioConnection(TCP_CONN) {
+#ifdef ESP32
+DashioESP_TCP::DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : dashioConnection(TCP_CONN) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
-    wifiServer = WiFiServer(tcpPort);
+    wifiServer = WiFiServer(_tcpPort);
 }
+#elif ESP8266
+DashioESP_TCP::DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), dashioConnection(TCP_CONN) {
+    dashioDevice = _dashioDevice;
+    tcpPort = _tcpPort;
+    printMessages = _printMessages;
+}
+#endif
 
 void DashioESP_TCP::setup(void (*processIncomingMessage)(DashioConnection *connection)) {
     processTCPmessageCallback = processIncomingMessage;
@@ -75,13 +84,23 @@ void DashioESP_TCP::sendMessage(const String& message) {
 }
 
 void DashioESP_TCP::setupmDNSservice() {
-    if(!MDNS.begin("esp32")) {
+#ifdef ESP32
+    if (!MDNS.begin("esp32")) {
+#elif ESP8266
+    if (!MDNS.begin("esp8266")) {
+#endif
        Serial.println(F("Error starting mDNS"));
        return;
     }
     Serial.println(F("mDNS started"));
     MDNS.addService("DashIO", "tcp", tcpPort);
 }
+
+#ifdef ESP8266
+void DashioESP_TCP::updatemDNS() {
+    MDNS.update();
+}
+#endif
 
 void DashioESP_TCP::startupServer() {
     wifiServer.begin();
@@ -180,6 +199,10 @@ void DashioESP_MQTT::checkForMessage() {
 
 void DashioESP_MQTT::hostConnect() { // Non-blocking
     Serial.print(F("Connecting to MQTT..."));
+#ifdef ESP8266
+    wifiClient.setInsecure(); // For MQTT SSL
+#endif
+
     if (mqttClient.connect(dashioDevice->deviceID.c_str(), username, password, false)) { // skip = false is the default. Used in order to establish and verify TLS connections manually before giving control to the MQTT client
         Serial.print(F("connected "));
         Serial.println(String(mqttClient.returnCode()));
@@ -250,7 +273,7 @@ void DashioESP_MQTT::checkConnection() {
 }
 
 // ---------------------------------------- BLE ----------------------------------------
-
+#ifdef ESP32
 class securityBLECallbacks : public BLESecurityCallbacks {
     bool onConfirmPIN(uint32_t pin){
         Serial.print(F("Confirm Pin: "));
@@ -401,5 +424,5 @@ void DashioESP_BLE::setup(void (*processIncomingMessage)(DashioConnection *conne
     pAdvertising->setMaxPreferred(0x12);
     pAdvertising->start();
 }
-
+#endif
 // -------------------------------------------------------------------------------------

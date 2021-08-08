@@ -31,6 +31,7 @@ void DashioProvisionESP::save() {
 }
 
 void DashioProvisionESP::load() {
+#ifdef ESP32
     if (eepromSave) {
         if (!EEPROM.begin(EEPROM_SIZE)) {
             Serial.println(F("Failed to init EEPROM"));
@@ -46,6 +47,18 @@ void DashioProvisionESP::load() {
             }
         }
     }
+#elif  ESP8266
+    EEPROM.begin(EEPROM_SIZE);
+    DeviceData deviceDataRead;
+    EEPROM.get(0, deviceDataRead);
+    if (deviceDataRead.saved != 'Y') {
+        save();
+        Serial.println(F("User setup DEFAULTS used!"));
+    } else {
+        update(&deviceDataRead);
+        Serial.println(F("User setup read from EEPROM"));
+    }
+#endif
     
     Serial.print(F("Device Name: "));
     Serial.println(dashioDevice->name);

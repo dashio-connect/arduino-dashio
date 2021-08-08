@@ -5,10 +5,11 @@
 
 #include <WiFiClientSecure.h> // Included in the espressif library
 #include <MQTT.h>             // arduino-mqtt library created by Joël Gähwiler.
-#include <BLEDevice.h>        // ESP32 BLE Arduino library by Neil Kolban. Included in Arduino IDE
 #ifdef ESP8266
+    #include <ESP8266WiFi.h>
     #include <ESP8266mDNS.h>
 #elif ESP32
+    #include <BLEDevice.h>        // ESP32 BLE Arduino library by Neil Kolban. Included in Arduino IDE
     #include <ESPmDNS.h>      // Included in the espressif library
 #endif
 
@@ -42,18 +43,21 @@ class DashioESP_TCP {
         bool printMessages;
         DashioDevice *dashioDevice;
         DashioConnection dashioConnection;
-        int tcpPort = 5000;
+        uint16_t tcpPort = 5000;
         WiFiClient client;
         WiFiServer wifiServer;
         void (*processTCPmessageCallback)(DashioConnection *connection);
     
     public:    
-        DashioESP_TCP(DashioDevice *_dashioDevice, int _tcpPort, bool _printMessages = false);
+        DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
         void setup(void (*processIncomingMessage)(DashioConnection *connection));
         void sendMessage(const String& message);
         void setupmDNSservice();
         void startupServer();
         void checkForMessage();
+#ifdef ESP8266
+        void updatemDNS();
+#endif
 };
 
 // ---------------------------------------- MQTT ---------------------------------------
@@ -86,7 +90,7 @@ class DashioESP_MQTT {
 };
 
 // ---------------------------------------- BLE ----------------------------------------
-
+#ifdef ESP32
 class DashioESP_BLE {
     private:
         bool printMessages;
@@ -105,7 +109,7 @@ class DashioESP_BLE {
         void checkForMessage();
         void setup(void (*processIncomingMessage)(DashioConnection *connection), bool secureBLE = false);
 };
-
+#endif
 // -------------------------------------------------------------------------------------
 
 #endif
