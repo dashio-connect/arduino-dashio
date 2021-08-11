@@ -16,7 +16,6 @@ void DashioTCPshield::sendMessage(const String& message) {
         if (printMessages) {
             Serial.println(F("---- TCP Sent ----"));
             Serial.println(message);
-            Serial.println();
         }
     }
 }

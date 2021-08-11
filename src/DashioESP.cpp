@@ -78,7 +78,6 @@ void DashioESP_TCP::sendMessage(const String& message) {
         if (printMessages) {
             Serial.println(F("---- TCP Sent ----"));
             Serial.println(message);
-            Serial.println();
         }
     }
 }
@@ -163,7 +162,6 @@ void DashioESP_MQTT::sendMessage(const String& message, MQTTTopicType topic) {
             Serial.print(F("---- MQTT Sent ---- Topic: "));
             Serial.println(publishTopic);
             Serial.println(message);
-            Serial.println();
         }
     }
 }
@@ -359,7 +357,6 @@ void DashioESP_BLE::sendMessage(const String& message) {
         if (printMessages) {
             Serial.println(F("---- BLE Sent ----"));
             Serial.println(message);
-            Serial.println();
         }
     }
 }

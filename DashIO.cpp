@@ -29,6 +29,10 @@
 #include "DashIO.h"
 #include "DashJSON.h"
 
+#ifdef ARDUINO_SAMD_NANO_33_IOT
+    #include <avr/dtostrf.h>
+#endif
+
 // Control type IDs
 #define CONNECT_ID "CONNECT"
 #define WHO_ID "WHO"
@@ -130,7 +134,7 @@ bool DashioConnection::processChar(char chr) {
         switch (segmentCount) {
         case 0:
             if (readStr == WHO_ID) {
-                deviceID = "UNKNOWN";
+                deviceID = "---";
                 control = who;
             } else {
                 deviceID = readStr;
@@ -214,7 +218,7 @@ bool DashioConnection::processChar(char chr) {
 
 String DashioConnection::getReceivedMessageForPrint(const String& controlStr) {
     String message((char *)0);
-    message.reserve(200);
+    message.reserve(100);
 
     message += F("**** ");
     switch (connectionType) {
@@ -229,15 +233,17 @@ String DashioConnection::getReceivedMessageForPrint(const String& controlStr) {
             break;
     }
     message += F("Received ****\n");
+    message += String(DELIM);
     message += deviceID;
-    message += F("  ");
+    message += String(DELIM);
     message += controlStr;
-    message += F("  ");
+    message += String(DELIM);
     message += idStr;
-    message += F("  ");
+    message += String(DELIM);
     message += payloadStr;
-    message += F("  ");
+    message += String(DELIM);
     message += payloadStr2;
+    message += String(END_DELIM);
 
     return message;
 }

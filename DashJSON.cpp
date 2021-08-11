@@ -28,6 +28,10 @@
 
 #include "DashJSON.h"
 
+#ifdef ARDUINO_SAMD_NANO_33_IOT
+    #include <avr/dtostrf.h>
+#endif
+
 void DashJSON::start() {
     jsonStr = "{";
 }

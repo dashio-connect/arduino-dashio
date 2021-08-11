@@ -16,7 +16,6 @@ void DashioBluefruit_BLE::sendMessage(const String& writeStr) {
         if (printMessages) {
             Serial.println(F("---- BLE Sent ----"));
             Serial.println(writeStr);
-            Serial.println();
         }
     }
 }
