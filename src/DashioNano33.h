@@ -26,6 +26,7 @@ class DashioNano33_WiFi {
     public:
         void connect(char *ssid, char *password);
         byte * macAddress();
+        void end();
 };
 
 // ---------------------------------------- TCP ----------------------------------------
@@ -44,8 +45,9 @@ class DashioNano33_TCP {
         DashioNano33_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
         void setup(void (*processIncomingMessage)(DashioConnection *connection));
         void sendMessage(const String& message);
-        void startupServer();
+        void begin();
         void checkForMessage();
+//???        void end();
 //???        void setupmDNSservice();
 //???        void updatemDNS();
 
@@ -78,6 +80,7 @@ class DashioNano_MQTT {
         void checkForMessage();
         void checkConnection();
         void setup(char *_username, char *_password, void (*processIncomingMessage)(DashioConnection *connection));
+        void end();
 };
 
 // ---------------------------------------- BLE ----------------------------------------
@@ -101,6 +104,9 @@ class DashioNano_BLE {
         void sendMessage(const String& message);
         void checkForMessage();
         void setup(void (*processIncomingMessage)(DashioConnection *connection));
+        void begin();
+        bool connected();
+        void end();
 };
 
 // -------------------------------------------------------------------------------------

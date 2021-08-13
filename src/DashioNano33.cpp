@@ -1,5 +1,8 @@
 #include "DashioNano33.h"
 
+// WiFi
+const int WIFI_CONNECT_TIMEOUT_MS = 10000; // 10s
+
 // MQTT
 const int  MQTT_QOS     = 1; // QoS = 1, as 2 causes subscribe to fail
 const int  MQTT_RETRY_S = 10; // Retry after 10 seconds
@@ -12,13 +15,19 @@ const int BLE_MAX_SEND_MESSAGE_LENGTH = 100;
 // ---------------------------------------- WiFi ---------------------------------------
 
 void DashioNano33_WiFi::connect(char *ssid, char *password) {
+    wiFiDrv.wifiDriverDeinit(); // Required when switching from BLE to WiFi
+    wiFiDrv.wifiDriverInit();
+
     // Check for the WiFi module:
     if (WiFi.status() == WL_NO_MODULE) {
         Serial.println("WiFi module failed!");
         while (true);
     }
 
+    WiFi.setTimeout(WIFI_CONNECT_TIMEOUT_MS); // 10s
+
     // Connect to Wifi Access Point
+    status = WL_IDLE_STATUS;
     while (status != WL_CONNECTED) {
         Serial.print("Attempting to connect to SSID: ");
         Serial.println(ssid);
@@ -38,10 +47,39 @@ void DashioNano33_WiFi::connect(char *ssid, char *password) {
     Serial.println(ip);
 }
 
+
 byte * DashioNano33_WiFi::macAddress() {
     byte mac[6];
     WiFi.macAddress(mac);
     return mac;
+}
+/*???
+String WlStatusToStr(uint8_t wlStatus)
+{
+    switch (wlStatus)
+    {
+    case WL_NO_SHIELD: return "WL_NO_SHIELD";
+    case WL_IDLE_STATUS: return "WL_IDLE_STATUS";
+    case WL_NO_SSID_AVAIL: return "WL_NO_SSID_AVAIL";
+    case WL_SCAN_COMPLETED: return "WL_SCAN_COMPLETED";
+    case WL_CONNECTED: return "WL_CONNECTED";
+    case WL_CONNECT_FAILED: return "WL_CONNECT_FAILED";
+    case WL_CONNECTION_LOST: return "WL_CONNECTION_LOST";
+    case WL_DISCONNECTED: return "WL_DISCONNECTED";
+    default: return "Unknown";
+    }
+}
+
+bool DashioNano33_WiFi::connected() {
+    return (status == WL_CONNECTED);
+}
+*/
+
+void DashioNano33_WiFi::end() {
+    WiFi.end();
+    WiFi.disconnect();
+    wiFiDrv.wifiDriverDeinit();
+    status = WL_DISCONNECTED;
 }
 
 // ---------------------------------------- TCP ----------------------------------------
@@ -67,22 +105,7 @@ void DashioNano33_TCP::sendMessage(const String& message) {
     }
 }
 
-/*???
-void DashioNano33_TCP::setupmDNSservice() {
-    if (!client.begin("nano33iot")) {
-       Serial.println(F("Error starting mDNS"));
-       return;
-    }
-    Serial.println(F("mDNS started"));
-    client.addService("DashIO", "tcp", tcpPort);
-}
-
-void DashioNano33_TCP::updatemDNS() {
-    MDNS.update();
-}
-*/
-
-void DashioNano33_TCP::startupServer() {
+void DashioNano33_TCP::begin() {
     wifiServer.begin();
 }
 
@@ -119,6 +142,27 @@ void DashioNano33_TCP::checkForMessage() {
         }
     }
 }
+
+/*???
+void DashioNano33_TCP::end() {
+    wifiServer.end();
+}
+*/
+
+/*???
+void DashioNano33_TCP::setupmDNSservice() {
+    if (!client.begin("nano33iot")) {
+       Serial.println(F("Error starting mDNS"));
+       return;
+    }
+    Serial.println(F("mDNS started"));
+    client.addService("DashIO", "tcp", tcpPort);
+}
+
+void DashioNano33_TCP::updatemDNS() {
+    MDNS.update();
+}
+*/
 
 // ---------------------------------------- MQTT ---------------------------------------
 
@@ -242,12 +286,22 @@ void DashioNano_MQTT::checkConnection() {
     }
 }
 
+void DashioNano_MQTT::end() {
+    mqttClient.disconnect();
+}
+
 // ---------------------------------------- BLE ----------------------------------------
 
 DashioNano_BLE::DashioNano_BLE(DashioDevice *_dashioDevice, bool _printMessages) : bleService(SERVICE_UUID),
                                                                                    bleCharacteristic(CHARACTERISTIC_UUID, BLERead | BLEWriteWithoutResponse | BLENotify, BLE_MAX_SEND_MESSAGE_LENGTH, false) {
     dashioDevice = _dashioDevice;
     printMessages = _printMessages;
+
+    // Event driven reads.
+    bleCharacteristic.setEventHandler(BLEWritten, onReadValueUpdate);
+
+    // add the characteristic to the service
+    bleService.addCharacteristic(bleCharacteristic);
 }
 
 DashioConnection DashioNano_BLE::dashioConnection(BLE_CONN);
@@ -266,7 +320,9 @@ void DashioNano_BLE::onReadValueUpdate(BLEDevice central, BLECharacteristic char
 
 void DashioNano_BLE::setup(void (*processIncomingMessage)(DashioConnection *connection)) {
     processBLEmessageCallback = processIncomingMessage;
+}
 
+void DashioNano_BLE::begin() {
     if (BLE.begin()) {
         // set advertised local name and service UUID:
         String localName = F("DashIO_");
@@ -274,25 +330,19 @@ void DashioNano_BLE::setup(void (*processIncomingMessage)(DashioConnection *conn
         Serial.print("BLE local name: ");
         Serial.println(localName);
         BLE.setLocalName(localName.c_str());
+        BLE.setDeviceName(localName.c_str());
         
         BLE.setConnectable(true);
         BLE.setAdvertisedService(bleService);
 
-        // add the characteristic to the service
-        bleService.addCharacteristic(bleCharacteristic);
-
         // add service
         BLE.addService(bleService);
-
-        // Event driven reads.
-        bleCharacteristic.setEventHandler(BLEWritten, onReadValueUpdate);
 
         // start advertising
         BLE.advertise();
     } else {
         Serial.println(F("Starting BLE failed"));
     }
-
 }
 
 void DashioNano_BLE::sendMessage(const String& message) {
@@ -329,26 +379,37 @@ void DashioNano_BLE::sendMessage(const String& message) {
 
 
 void DashioNano_BLE::checkForMessage() {
-    BLE.poll(); // Required for event handlers
-    if (dashioConnection.messageReceived) {
-        dashioConnection.messageReceived = false;
-
-        if (printMessages) {
-            Serial.println(dashioConnection.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(dashioConnection.control)));
-        }
-
-        switch (dashioConnection.control) {
-        case who:
-            sendMessage(dashioDevice->getWhoMessage());
-            break;
-        case connect:
-            sendMessage(dashioDevice->getConnectMessage());
-            break;
-        default:
-            processBLEmessageCallback(&dashioConnection);
-            break;
+    if (BLE.connected()) {
+        BLE.poll(); // Required for event handlers
+        if (dashioConnection.messageReceived) {
+            dashioConnection.messageReceived = false;
+    
+            if (printMessages) {
+                Serial.println(dashioConnection.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(dashioConnection.control)));
+            }
+    
+            switch (dashioConnection.control) {
+            case who:
+                sendMessage(dashioDevice->getWhoMessage());
+                break;
+            case connect:
+                sendMessage(dashioDevice->getConnectMessage());
+                break;
+            default:
+                processBLEmessageCallback(&dashioConnection);
+                break;
+            }
         }
     }
+}
+
+bool DashioNano_BLE::connected() {
+    return BLE.connected();
+}
+
+void DashioNano_BLE::end() {
+    BLE.stopAdvertise();
+    BLE.end();
 }
 
 // -------------------------------------------------------------------------------------
