@@ -1,4 +1,6 @@
-#include "DashioNano33.h"
+#ifdef ARDUINO_SAMD_NANO_33_IOT
+
+#include "DashioNano33IoT.h"
 
 // WiFi
 const int WIFI_CONNECT_TIMEOUT_MS = 10000; // 10s
@@ -287,6 +289,7 @@ void DashioNano_MQTT::checkConnection() {
 }
 
 void DashioNano_MQTT::end() {
+    sendMessage(dashioDevice->getOfflineMessage());
     mqttClient.disconnect();
 }
 
@@ -413,3 +416,5 @@ void DashioNano_BLE::end() {
 }
 
 // -------------------------------------------------------------------------------------
+
+#endif

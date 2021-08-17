@@ -1,11 +1,15 @@
-#include "DashIOProvisionESP.h"
+#ifdef ARDUINO_SAMD_NANO_33_IOT
 
-DashioProvisionESP::DashioProvisionESP(DashioDevice *_dashioDevice, bool _eepromSave) {
+#include "DashIOProvisionNano.h"
+
+FlashStorage(flash_store, DeviceData);
+
+DashioProvisionNano::DashioProvisionNano(DashioDevice *_dashioDevice, bool _eepromSave) {
     dashioDevice = _dashioDevice;
     eepromSave = _eepromSave;
 }
 
-void DashioProvisionESP::update(DeviceData *deviceData) {
+void DashioProvisionNano::update(DeviceData *deviceData) {
     dashioDevice->name = String(deviceData->deviceName);
     strcpy(wifiSSID,     deviceData->wifiSSID);
     strcpy(wifiPassword, deviceData->wifiPassword);
@@ -13,7 +17,7 @@ void DashioProvisionESP::update(DeviceData *deviceData) {
     strcpy(dashPassword, deviceData->dashPassword);
 }
 
-void DashioProvisionESP::save() {
+void DashioProvisionNano::save() {
     if (eepromSave) {
         Serial.println(F("User setup saving to EEPROM"));
         
@@ -25,41 +29,24 @@ void DashioProvisionESP::save() {
         strcpy(deviceDataWrite.dashPassword, dashPassword);
 
         deviceDataWrite.saved = 'Y';
-        EEPROM.put(0, deviceDataWrite);
-        EEPROM.commit();
+        flash_store.write(deviceDataWrite);
     }
 }
 
-void DashioProvisionESP::load() {
-#ifdef ESP32
+void DashioProvisionNano::load() {
     if (eepromSave) {
-        if (!EEPROM.begin(EEPROM_SIZE)) {
-            Serial.println(F("Failed to init EEPROM"));
+        DeviceData deviceDataRead;
+        deviceDataRead = flash_store.read();
+
+        if (deviceDataRead.saved != 'Y') {
+            save();
+            Serial.println(F("User setup DEFAULTS used!"));
         } else {
-            DeviceData deviceDataRead;
-            EEPROM.get(0, deviceDataRead);
-            if (deviceDataRead.saved != 'Y') {
-                save();
-                Serial.println(F("User setup DEFAULTS used!"));
-            } else {
-                update(&deviceDataRead);
-                Serial.println(F("User setup read from EEPROM"));
-            }
+            update(&deviceDataRead);
+            Serial.println(F("User setup read from Flash"));
         }
     }
-#elif  ESP8266
-    EEPROM.begin(EEPROM_SIZE);
-    DeviceData deviceDataRead;
-    EEPROM.get(0, deviceDataRead);
-    if (deviceDataRead.saved != 'Y') {
-        save();
-        Serial.println(F("User setup DEFAULTS used!"));
-    } else {
-        update(&deviceDataRead);
-        Serial.println(F("User setup read from EEPROM"));
-    }
-#endif
-    
+
     Serial.print(F("Device Name: "));
     Serial.println(dashioDevice->name);
     Serial.print(F("WiFi SSID: "));
@@ -71,3 +58,5 @@ void DashioProvisionESP::load() {
     Serial.print(F("Dash password: "));
     Serial.println(dashPassword);
 }
+
+#endif

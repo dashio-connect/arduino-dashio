@@ -1,3 +1,5 @@
+#if defined ESP32 || defined ESP8266
+
 #include "DashioESP.h"
 
 #define WIFI_TIMEOUT_S 300 // Restart after 5 minutes
@@ -421,5 +423,8 @@ void DashioESP_BLE::setup(void (*processIncomingMessage)(DashioConnection *conne
     pAdvertising->setMaxPreferred(0x12);
     pAdvertising->start();
 }
-#endif
+
 // -------------------------------------------------------------------------------------
+
+#endif
+#endif

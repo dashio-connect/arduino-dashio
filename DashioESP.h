@@ -1,13 +1,21 @@
-#ifndef Dashionano33_h
-#define Dashionano33_h
+#if defined ESP32 || defined ESP8266
+
+#ifndef DashioESP_h
+#define DashioESP_h
 
 #include "Arduino.h"
-#include "DashIO.h"
 
-#include <SPI.h>
-#include <WiFiNINA.h>
-#include <PubSubClient.h>
-#include <ArduinoBLE.h>
+#include <WiFiClientSecure.h> // Included in the espressif library
+#include <MQTT.h>             // arduino-mqtt library created by Joël Gähwiler.
+#ifdef ESP8266
+    #include <ESP8266WiFi.h>
+    #include <ESP8266mDNS.h>
+#elif ESP32
+    #include <BLEDevice.h>        // ESP32 BLE Arduino library by Neil Kolban. Included in Arduino IDE
+    #include <ESPmDNS.h>      // Included in the espressif library
+#endif
+
+#include "DashIO.h"
 
 extern const char *MQTT_SERVER;
 extern const int MQTT_PORT;
@@ -19,19 +27,20 @@ extern const int MQTT_PORT;
 
 // ---------------------------------------- WiFi ---------------------------------------
 
-class DashioNano33_WiFi {
+class DashioESP_WiFi {
     private:
-        int status = WL_IDLE_STATUS;
+        int wifiConnectCount = 1;
+        void (*wifiConnectCallback)(void);
 
     public:
-        void connect(char *ssid, char *password);
-        byte * macAddress();
-        void end();
+        void setup(char *ssid, char *password, void (*connectCallback)(void));
+        void checkConnection();
+        String macAddress();
 };
 
 // ---------------------------------------- TCP ----------------------------------------
 
-class DashioNano33_TCP {
+class DashioESP_TCP {
     private:
         bool printMessages;
         DashioDevice *dashioDevice;
@@ -40,74 +49,70 @@ class DashioNano33_TCP {
         WiFiClient client;
         WiFiServer wifiServer;
         void (*processTCPmessageCallback)(DashioConnection *connection);
-            
-    public:
-        DashioNano33_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
+    
+    public:    
+        DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
         void setup(void (*processIncomingMessage)(DashioConnection *connection));
         void sendMessage(const String& message);
-        void begin();
+        void setupmDNSservice();
+        void startupServer();
         void checkForMessage();
-//???        void end();
-//???        void setupmDNSservice();
-//???        void updatemDNS();
-
+#ifdef ESP8266
+        void updatemDNS();
+#endif
 };
 
 // ---------------------------------------- MQTT ---------------------------------------
 
-class DashioNano_MQTT {
+class DashioESP_MQTT {
     private:
         bool reboot = true;
         bool printMessages;
         DashioDevice *dashioDevice;
         static DashioConnection dashioConnection;
-        WiFiSSLClient wifiClient;
-        PubSubClient mqttClient;
+        WiFiClientSecure wifiClient;
+        MQTTClient mqttClient;
         int mqttConnectCount = 0;
-        int bufferSize = 1024;
         bool sendRebootAlarm;
         char *username;
         char *password;
         void (*processMQTTmessageCallback)(DashioConnection *connection);
-
-        static void messageReceivedMQTTCallback(char* topic, byte* payload, unsigned int length);
+    
+        static void messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length);
         void hostConnect();
+        void setupLWT();
 
     public:    
-        DashioNano_MQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
+        DashioESP_MQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
         void sendMessage(const String& message, MQTTTopicType topic = data_topic);
         void sendAlarmMessage(const String& message);
         void checkForMessage();
         void checkConnection();
         void setup(char *_username, char *_password, void (*processIncomingMessage)(DashioConnection *connection));
-        void end();
 };
 
 // ---------------------------------------- BLE ----------------------------------------
-
-class DashioNano_BLE {
+#ifdef ESP32
+class DashioESP_BLE {
     private:
         bool printMessages;
         DashioDevice *dashioDevice;
-        static DashioConnection dashioConnection;
-        BLEService bleService;
-        BLECharacteristic bleCharacteristic;
+        BLEServer *pServer;
+        BLECharacteristic *pCharacteristic;
 
-        static void onBLEConnected(BLEDevice central);
-        static void onBLEDisconnected(BLEDevice central);
-        static void onReadValueUpdate(BLEDevice central, BLECharacteristic characteristic);
+        void bleNotifyValue(const String& message);
 
     public:    
+        DashioConnection dashioConnection;
         void (*processBLEmessageCallback)(DashioConnection *connection);
 
-        DashioNano_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
+        DashioESP_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
         void sendMessage(const String& message);
         void checkForMessage();
-        void setup(void (*processIncomingMessage)(DashioConnection *connection));
-        void begin();
-        bool connected();
-        void end();
+        void setup(void (*processIncomingMessage)(DashioConnection *connection), bool secureBLE = false);
 };
-
+#endif
 // -------------------------------------------------------------------------------------
+
+#endif
 #endif

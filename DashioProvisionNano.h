@@ -1,25 +1,24 @@
-#ifndef DashioProvisionESP_h
-#define DashioProvisionESP_h
+#ifdef ARDUINO_SAMD_NANO_33_IOT
+
+#ifndef DashioProvisionNano_h
+#define DashioProvisionNano_h
 
 #include "Arduino.h"
 #include "DashIO.h"
-#include <EEPROM.h> // Arduino EEPROM library
+#include <FlashStorage.h>
 
-#define EEPROM_SIZE 200
-
-struct DeviceData {
+typedef struct {
     char deviceName[32];
     char wifiSSID[32];
     char wifiPassword[63];
     char dashUserName[32];
     char dashPassword[32];
     char saved;
-};
+} DeviceData;
 
-class DashioProvisionESP {
+class DashioProvisionNano {
     public:
         bool eepromSave = true;
-        
         DashioDevice *dashioDevice;
         
         char wifiSSID[32];
@@ -27,10 +26,11 @@ class DashioProvisionESP {
         char dashUserName[32];
         char dashPassword[32];
     
-        DashioProvisionESP(DashioDevice *_dashioDevice, bool _eepromSave);
+        DashioProvisionNano(DashioDevice *_dashioDevice, bool _eepromSave);
         void update(DeviceData *deviceData);
         void save();
         void load();
 };
 
+#endif
 #endif
