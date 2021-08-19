@@ -71,6 +71,8 @@ DashioESP_TCP::DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, boo
 
 void DashioESP_TCP::setup(void (*processIncomingMessage)(DashioConnection *connection)) {
     processTCPmessageCallback = processIncomingMessage;
+
+    wifiServer.begin();
 }
 
 void DashioESP_TCP::sendMessage(const String& message) {
@@ -103,10 +105,6 @@ void DashioESP_TCP::updatemDNS() {
 }
 #endif
 
-void DashioESP_TCP::startupServer() {
-    wifiServer.begin();
-}
-
 void DashioESP_TCP::checkForMessage() {
     if (!client) {
         client = wifiServer.available();
@@ -128,7 +126,9 @@ void DashioESP_TCP::checkForMessage() {
                         sendMessage(dashioDevice->getConnectMessage());
                         break;
                     default:
-                        processTCPmessageCallback(&dashioConnection);
+                        if (processTCPmessageCallback != NULL) {
+                            processTCPmessageCallback(&dashioConnection);
+                        }
                         break;
                     }
                 }
@@ -139,6 +139,10 @@ void DashioESP_TCP::checkForMessage() {
             client.setTimeout(2000);
         }
     }
+    
+#ifdef ESP8266
+    updatemDNS();
+#endif
 }
 
 // ---------------------------------------- MQTT ---------------------------------------
@@ -190,7 +194,9 @@ void DashioESP_MQTT::checkForMessage() {
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
             default:
-                processMQTTmessageCallback(&dashioConnection);
+                if (processMQTTmessageCallback != NULL) {
+                    processMQTTmessageCallback(&dashioConnection);
+                }
                 break;
             }
         }
@@ -379,7 +385,9 @@ void DashioESP_BLE::checkForMessage() {
             sendMessage(dashioDevice->getConnectMessage());
             break;
         default:
-            processBLEmessageCallback(&dashioConnection);
+            if (processBLEmessageCallback != NULL) {
+                processBLEmessageCallback(&dashioConnection);
+            }
             break;
         }
     }
@@ -422,6 +430,11 @@ void DashioESP_BLE::setup(void (*processIncomingMessage)(DashioConnection *conne
     pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
     pAdvertising->setMaxPreferred(0x12);
     pAdvertising->start();
+}
+    
+    String DashioESP_BLE::macAddress() {
+    BLEAddress bdAddr = BLEDevice::getAddress();
+    return bdAddr.toString().c_str();
 }
 
 // -------------------------------------------------------------------------------------

@@ -132,7 +132,9 @@ void DashioNano33_TCP::checkForMessage() {
                         sendMessage(dashioDevice->getConnectMessage());
                         break;
                     default:
-                        processTCPmessageCallback(&dashioConnection);
+                        if (processTCPmessageCallback != NULL) {
+                            processTCPmessageCallback(&dashioConnection);
+                        }
                         break;
                     }
                 }
@@ -220,7 +222,9 @@ void DashioNano_MQTT::checkForMessage() {
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
             default:
-                processMQTTmessageCallback(&dashioConnection);
+                if (processMQTTmessageCallback != NULL) {
+                    processMQTTmessageCallback(&dashioConnection);
+                }
                 break;
             }
         }
@@ -330,7 +334,7 @@ void DashioNano_BLE::begin() {
         // set advertised local name and service UUID:
         String localName = F("DashIO_");
         localName += dashioDevice->type;
-        Serial.print("BLE local name: ");
+        Serial.print(F("BLE local name: "));
         Serial.println(localName);
         BLE.setLocalName(localName.c_str());
         BLE.setDeviceName(localName.c_str());
@@ -399,7 +403,9 @@ void DashioNano_BLE::checkForMessage() {
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
             default:
-                processBLEmessageCallback(&dashioConnection);
+                if (processBLEmessageCallback != NULL) {
+                    processBLEmessageCallback(&dashioConnection);
+                }
                 break;
             }
         }
@@ -413,6 +419,10 @@ bool DashioNano_BLE::connected() {
 void DashioNano_BLE::end() {
     BLE.stopAdvertise();
     BLE.end();
+}
+
+String DashioNano_BLE::macAddress() {
+    return BLE.address();
 }
 
 // -------------------------------------------------------------------------------------

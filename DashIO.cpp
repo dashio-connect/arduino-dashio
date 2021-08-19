@@ -263,13 +263,20 @@ DashioDevice::DashioDevice() {
     name.reserve(MAX_DEVICE_NAME_LEN);
 }
 
-void DashioDevice::setDeviceID(const String& deviceIdentifier) {
+void DashioDevice::setup(const String& deviceType, const String& deviceIdentifier, const String& deviceName) {
     deviceID.reserve(MAX_STRING_LEN);
 
+    type = deviceType;
+    name = deviceName;
     deviceID = deviceIdentifier;
 }
 
-void DashioDevice::setDeviceID(uint8_t m_address[6]) {
+void DashioDevice::setup(const String& deviceType, uint8_t m_address[6], const String& deviceName) {
+    deviceID.reserve(MAX_STRING_LEN);
+
+    type = deviceType;
+    name = deviceName;
+
     char buffer[20];
     String macStr((char *)0);
     macStr.reserve(20);
@@ -306,7 +313,7 @@ void DashioDevice::setDeviceID(uint8_t m_address[6]) {
     macStr += buffer;
 
     deviceID = macStr.c_str();
-};
+}
 
 String DashioDevice::getOnlineMessage() {
     String message = String(DELIM);
@@ -567,7 +574,7 @@ String DashioDevice::getDirectionMessage(const String& controlID, int value, con
     return writeStr;
 }
 
-String DashioDevice::getDialMessage(const String& controlID, const String& text) {
+String DashioDevice::getDialMessage(const String& controlID, int value) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
@@ -575,7 +582,7 @@ String DashioDevice::getDialMessage(const String& controlID, const String& text)
     message += String(DELIM);
     message += controlID;
     message += String(DELIM);
-    message += text;
+    message += String(value);
     message += String(END_DELIM);
   return message;
 }

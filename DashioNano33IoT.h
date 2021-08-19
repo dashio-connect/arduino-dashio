@@ -109,6 +109,7 @@ class DashioNano_BLE {
         void begin();
         bool connected();
         void end();
+        String macAddress();
 };
 
 // -------------------------------------------------------------------------------------

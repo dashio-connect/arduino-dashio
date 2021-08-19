@@ -463,8 +463,8 @@ class DashioDevice {
 
         DashioDevice(const String& deviceType, const String& deviceName);
         DashioDevice();
-        void setDeviceID(uint8_t m_address[6]);
-        void setDeviceID(const String& deviceIdentifier);
+        void setup(const String& deviceType, const String& deviceIdentifier, const String& deviceName);
+        void setup(const String& deviceType, uint8_t m_address[6], const String& deviceName);
 
         String getWhoMessage();
         String getConnectMessage();
@@ -487,7 +487,7 @@ class DashioDevice {
         String getKnobMessage(const String& controlID, int value);
         String getKnobDialMessage(const String& controlID, int value);
         String getDirectionMessage(const String& controlID, int direction, const String& text = "");
-        String getDialMessage(const String& controlID, const String& text);
+        String getDialMessage(const String& controlID, int value);
         String getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& message);
         String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength);
         String getDoubleBarMessage(const String& controlID, int value1, int value2);
