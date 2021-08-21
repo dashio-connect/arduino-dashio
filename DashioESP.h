@@ -4,6 +4,7 @@
 #define DashioESP_h
 
 #include "Arduino.h"
+#include <timer.h>
 
 #include <WiFiClientSecure.h> // Included in the espressif library
 #include <MQTT.h>             // arduino-mqtt library created by Joël Gähwiler.
@@ -29,12 +30,16 @@ extern const int MQTT_PORT;
 
 class DashioESP_WiFi {
     private:
+        Timer<> timer;
+        static bool oneSecond;
         int wifiConnectCount = 1;
         void (*wifiConnectCallback)(void);
 
+        static bool onTimerCallback(void *argument);
+
     public:
         void setup(char *ssid, char *password, void (*connectCallback)(void));
-        void checkConnection();
+        bool checkConnection();
         String macAddress();
 };
 
@@ -55,7 +60,8 @@ class DashioESP_TCP {
 
     public:    
         DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
-        void setup(void (*processIncomingMessage)(DashioConnection *connection));
+        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+        void begin();
         void sendMessage(const String& message);
         void setupmDNSservice();
         void startupServer();
@@ -88,7 +94,8 @@ class DashioESP_MQTT {
         void sendAlarmMessage(const String& message);
         void checkForMessage();
         void checkConnection();
-        void setup(char *_username, char *_password, void (*processIncomingMessage)(DashioConnection *connection));
+        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+        void begin(char *_username, char *_password);
 };
 
 // ---------------------------------------- BLE ----------------------------------------
@@ -109,7 +116,8 @@ class DashioESP_BLE {
         DashioESP_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
         void sendMessage(const String& message);
         void checkForMessage();
-        void setup(void (*processIncomingMessage)(DashioConnection *connection), bool secureBLE = false);
+        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+        void begin(bool secureBLE = false);
         String macAddress();
 };
 #endif

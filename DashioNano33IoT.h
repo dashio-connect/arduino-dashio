@@ -4,9 +4,10 @@
 #define Dashionano33IoT_h
 
 #include "Arduino.h"
-#include "DashIO.h"
-
 #include <SPI.h>
+#include <timer.h>
+
+#include "DashIO.h"
 #include <WiFiNINA.h>
 #include <PubSubClient.h>
 #include <ArduinoBLE.h>
@@ -21,7 +22,7 @@ extern const int MQTT_PORT;
 
 // ---------------------------------------- WiFi ---------------------------------------
 
-class DashioNano33_WiFi {
+class DashioNano_WiFi {
     private:
         int status = WL_IDLE_STATUS;
 
@@ -33,7 +34,7 @@ class DashioNano33_WiFi {
 
 // ---------------------------------------- TCP ----------------------------------------
 
-class DashioNano33_TCP {
+class DashioNano_TCP {
     private:
         bool printMessages;
         DashioDevice *dashioDevice;
@@ -42,10 +43,10 @@ class DashioNano33_TCP {
         WiFiClient client;
         WiFiServer wifiServer;
         void (*processTCPmessageCallback)(DashioConnection *connection);
-            
+
     public:
-        DashioNano33_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
-        void setup(void (*processIncomingMessage)(DashioConnection *connection));
+        DashioNano_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
+        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
         void sendMessage(const String& message);
         void begin();
         void checkForMessage();
@@ -59,6 +60,8 @@ class DashioNano33_TCP {
 
 class DashioNano_MQTT {
     private:
+        Timer<> timer;
+        static bool oneSecond;
         bool reboot = true;
         bool printMessages;
         DashioDevice *dashioDevice;
@@ -74,14 +77,16 @@ class DashioNano_MQTT {
 
         static void messageReceivedMQTTCallback(char* topic, byte* payload, unsigned int length);
         void hostConnect();
+        static bool onTimerCallback(void *argument);
+        void checkConnection();
 
     public:    
         DashioNano_MQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
         void sendMessage(const String& message, MQTTTopicType topic = data_topic);
         void sendAlarmMessage(const String& message);
         void checkForMessage();
-        void checkConnection();
-        void setup(char *_username, char *_password, void (*processIncomingMessage)(DashioConnection *connection));
+        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+        void begin(char *_username, char *_password);
         void end();
 };
 
@@ -105,7 +110,7 @@ class DashioNano_BLE {
         DashioNano_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
         void sendMessage(const String& message);
         void checkForMessage();
-        void setup(void (*processIncomingMessage)(DashioConnection *connection));
+        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
         void begin();
         bool connected();
         void end();

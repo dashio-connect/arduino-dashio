@@ -12,6 +12,14 @@ const int   MQTT_PORT    = 8883;
 
 // ---------------------------------------- WiFi ---------------------------------------
 
+bool DashioESP_WiFi::oneSecond = false;
+
+// Timer Interrupt
+bool DashioESP_WiFi::onTimerCallback(void *argument) {
+    oneSecond = true;
+    return true; // to repeat the timer action - false to stop
+}
+
 void DashioESP_WiFi::setup(char *ssid, char *password, void (*connectCallback)(void)) {
     wifiConnectCallback = connectCallback;
 
@@ -22,30 +30,40 @@ void DashioESP_WiFi::setup(char *ssid, char *password, void (*connectCallback)(v
     delay(1000);
     WiFi.begin(ssid, password);
     wifiConnectCount = 1;
+
+    timer.every(1000, onTimerCallback); // 1000ms
 }
 
-void DashioESP_WiFi::checkConnection() {
-    // First, check WiFi and connect if necessary
-    if (WiFi.status() != WL_CONNECTED) {
-        wifiConnectCount++;
-        Serial.print(F("Connecting to Wi-Fi "));
-        Serial.println(String(wifiConnectCount));
+bool DashioESP_WiFi::checkConnection() {
+    timer.tick();
 
-        if (wifiConnectCount > WIFI_TIMEOUT_S) { // If too many fails, restart the ESP32. Sometimes ESP32's WiFi gets tied up in a knot.
-            ESP.restart();
-        }
-    } else {
-        // WiFi OK
-        if (wifiConnectCount > 0) {
-            wifiConnectCount = 0; // So that we only execute the following once after WiFI connection
-            Serial.print("Connected with IP: ");
-            Serial.println(WiFi.localIP());
+    if (oneSecond) {
+        oneSecond = false;
 
-            if (wifiConnectCallback != NULL) {
-                wifiConnectCallback();
+        // First, check WiFi and connect if necessary
+        if (WiFi.status() != WL_CONNECTED) {
+            wifiConnectCount++;
+            Serial.print(F("Connecting to Wi-Fi "));
+            Serial.println(String(wifiConnectCount));
+
+            if (wifiConnectCount > WIFI_TIMEOUT_S) { // If too many fails, restart the ESP32. Sometimes ESP32's WiFi gets tied up in a knot.
+                ESP.restart();
             }
+        } else {
+            // WiFi OK
+            if (wifiConnectCount > 0) {
+                wifiConnectCount = 0; // So that we only execute the following once after WiFI connection
+                Serial.print("Connected with IP: ");
+                Serial.println(WiFi.localIP());
+
+                if (wifiConnectCallback != NULL) {
+                    wifiConnectCallback();
+                }
+            }
+            return true;
         }
     }
+    return false;
 }
 
 String DashioESP_WiFi::macAddress() {
@@ -69,9 +87,11 @@ DashioESP_TCP::DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, boo
 }
 #endif
 
-void DashioESP_TCP::setup(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioESP_TCP::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
     processTCPmessageCallback = processIncomingMessage;
+}
 
+void DashioESP_TCP::begin() {
     wifiServer.begin();
 }
 
@@ -248,10 +268,13 @@ void DashioESP_MQTT::setupLWT() {
     Serial.println(offlineMessage);
 }
 
-void DashioESP_MQTT::setup(char *_username, char *_password, void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioESP_MQTT::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
+    processMQTTmessageCallback = processIncomingMessage;
+}
+    
+void DashioESP_MQTT::begin(char *_username, char *_password) {
     username = _username;
     password = _password;
-    processMQTTmessageCallback = processIncomingMessage;
 
     mqttClient.begin(MQTT_SERVER, MQTT_PORT, wifiClient);
     mqttClient.setOptions(10, true, 10000);  // 10s timeout
@@ -393,9 +416,11 @@ void DashioESP_BLE::checkForMessage() {
     }
 }
 
-void DashioESP_BLE::setup(void (*processIncomingMessage)(DashioConnection *connection), bool secureBLE) {
+void DashioESP_BLE::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
     processBLEmessageCallback = processIncomingMessage;
-
+}
+        
+void DashioESP_BLE::begin(bool secureBLE) {
     esp_bt_controller_enable(ESP_BT_MODE_BLE); // Make sure we're only using BLE
     esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT); // Release memory for Bluetooth Classic as we're not using it
 
@@ -432,7 +457,7 @@ void DashioESP_BLE::setup(void (*processIncomingMessage)(DashioConnection *conne
     pAdvertising->start();
 }
     
-    String DashioESP_BLE::macAddress() {
+String DashioESP_BLE::macAddress() {
     BLEAddress bdAddr = BLEDevice::getAddress();
     return bdAddr.toString().c_str();
 }

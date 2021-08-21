@@ -16,7 +16,7 @@ const int BLE_MAX_SEND_MESSAGE_LENGTH = 100;
 
 // ---------------------------------------- WiFi ---------------------------------------
 
-void DashioNano33_WiFi::connect(char *ssid, char *password) {
+void DashioNano_WiFi::connect(char *ssid, char *password) {
     wiFiDrv.wifiDriverDeinit(); // Required when switching from BLE to WiFi
     wiFiDrv.wifiDriverInit();
 
@@ -50,7 +50,7 @@ void DashioNano33_WiFi::connect(char *ssid, char *password) {
 }
 
 
-byte * DashioNano33_WiFi::macAddress() {
+byte * DashioNano_WiFi::macAddress() {
     byte mac[6];
     WiFi.macAddress(mac);
     return mac;
@@ -72,12 +72,12 @@ String WlStatusToStr(uint8_t wlStatus)
     }
 }
 
-bool DashioNano33_WiFi::connected() {
+bool DashioNano_WiFi::connected() {
     return (status == WL_CONNECTED);
 }
 */
 
-void DashioNano33_WiFi::end() {
+void DashioNano_WiFi::end() {
     WiFi.end();
     WiFi.disconnect();
     wiFiDrv.wifiDriverDeinit();
@@ -86,17 +86,17 @@ void DashioNano33_WiFi::end() {
 
 // ---------------------------------------- TCP ----------------------------------------
 
-DashioNano33_TCP::DashioNano33_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), dashioConnection(TCP_CONN) {
+DashioNano_TCP::DashioNano_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), dashioConnection(TCP_CONN) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
 }
 
-void DashioNano33_TCP::setup(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioNano_TCP::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
     processTCPmessageCallback = processIncomingMessage;
 }
 
-void DashioNano33_TCP::sendMessage(const String& message) {
+void DashioNano_TCP::sendMessage(const String& message) {
     if (client.connected()) {
         client.print(message);
 
@@ -107,11 +107,11 @@ void DashioNano33_TCP::sendMessage(const String& message) {
     }
 }
 
-void DashioNano33_TCP::begin() {
+void DashioNano_TCP::begin() {
     wifiServer.begin();
 }
 
-void DashioNano33_TCP::checkForMessage() {
+void DashioNano_TCP::checkForMessage() {
     if (!client) {
         client = wifiServer.available();
         client.setTimeout(2000);
@@ -148,13 +148,13 @@ void DashioNano33_TCP::checkForMessage() {
 }
 
 /*???
-void DashioNano33_TCP::end() {
+void DashioNano_TCP::end() {
     wifiServer.end();
 }
 */
 
 /*???
-void DashioNano33_TCP::setupmDNSservice() {
+void DashioNano_TCP::setupmDNSservice() {
     if (!client.begin("nano33iot")) {
        Serial.println(F("Error starting mDNS"));
        return;
@@ -163,12 +163,21 @@ void DashioNano33_TCP::setupmDNSservice() {
     client.addService("DashIO", "tcp", tcpPort);
 }
 
-void DashioNano33_TCP::updatemDNS() {
+void DashioNano_TCP::updatemDNS() {
     MDNS.update();
 }
 */
 
 // ---------------------------------------- MQTT ---------------------------------------
+
+DashioConnection DashioNano_MQTT::dashioConnection(MQTT_CONN);
+bool DashioNano_MQTT::oneSecond = false;
+
+// Timer Interrupt
+bool DashioNano_MQTT::onTimerCallback(void *argument) {
+    oneSecond = true;
+    return true; // to repeat the timer action - false to stop
+}
 
 DashioNano_MQTT::DashioNano_MQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages) {
     dashioDevice = _dashioDevice;
@@ -176,9 +185,10 @@ DashioNano_MQTT::DashioNano_MQTT(DashioDevice *_dashioDevice, int _bufferSize, b
     sendRebootAlarm  = _sendRebootAlarm;
     printMessages = _printMessages;
     mqttClient = PubSubClient(wifiClient);
+
+    timer.every(1000, onTimerCallback); // 1000ms
 }
 
-DashioConnection DashioNano_MQTT::dashioConnection(MQTT_CONN);
 
 void DashioNano_MQTT::messageReceivedMQTTCallback(char* topic, byte* payload, unsigned int length) {
     String message;
@@ -206,6 +216,12 @@ void DashioNano_MQTT::sendAlarmMessage(const String& message) {
 }
 
 void DashioNano_MQTT::checkForMessage() {
+    timer.tick();
+    if (oneSecond) {
+        oneSecond = false;
+        checkConnection();
+    }
+    
     if (mqttClient.loop()) {
         if (dashioConnection.messageReceived) {
             dashioConnection.messageReceived = false;
@@ -262,10 +278,13 @@ void DashioNano_MQTT::hostConnect() { // Non-blocking
     }
 }
 
-void DashioNano_MQTT::setup(char *_username, char *_password, void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioNano_MQTT::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
+    processMQTTmessageCallback = processIncomingMessage;
+}
+
+void DashioNano_MQTT::begin(char *_username, char *_password) {
     username = _username;
     password = _password;
-    processMQTTmessageCallback = processIncomingMessage;
 
     mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
     mqttClient.setCallback(messageReceivedMQTTCallback);
@@ -325,7 +344,7 @@ void DashioNano_BLE::onReadValueUpdate(BLEDevice central, BLECharacteristic char
     }
 }
 
-void DashioNano_BLE::setup(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioNano_BLE::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
     processBLEmessageCallback = processIncomingMessage;
 }
 
