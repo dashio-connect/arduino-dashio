@@ -16,6 +16,7 @@ void DashioBluefruit_BLE::sendMessage(const String& writeStr) {
         if (printMessages) {
             Serial.println(F("---- BLE Sent ----"));
             Serial.println(writeStr);
+            Serial.println();
         }
     }
 }
@@ -38,16 +39,20 @@ void DashioBluefruit_BLE::checkForMessage() {
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
             default:
-                processBLEmessageCallback(&dashioConnection);
+                if (processBLEmessageCallback != NULL) {
+                    processBLEmessageCallback(&dashioConnection);
+                }
                 break;
             }
         }
     }
 }
 
-void DashioBluefruit_BLE::setup(void (*processIncomingMessage)(DashioConnection *connection), bool factoryResetEnable) {
+void DashioBluefruit_BLE::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
     processBLEmessageCallback = processIncomingMessage;
+}
 
+void DashioBluefruit_BLE::begin(bool factoryResetEnable, bool useMacForDeviceID) {
   // Initialise the module
     Serial.print(F("Initialising Bluefruit LE module: "));
     if (!bluefruit.begin(VERBOSE_MODE)) {
@@ -78,19 +83,21 @@ void DashioBluefruit_BLE::setup(void (*processIncomingMessage)(DashioConnection 
         bluefruit.sendCommandCheckOK("AT+HWModeLED=" MODE_LED_BEHAVIOUR);
     }
 
-  // Get deviceID for mac address
-    bluefruit.println("AT+BLEGETADDR");
-    delay(1000); // Wait a while for reply
-    dashioDevice->deviceID = "";
-    while(bluefruit.available() > 0) {
-        char c = bluefruit.read();
-        if ((c == '\n') || (c == '\r')) { // Before the OK
-            break;
+    if (useMacForDeviceID) {
+        // Get deviceID for mac address
+        bluefruit.println("AT+BLEGETADDR");
+        delay(1000); // Wait a while for reply
+        dashioDevice->deviceID = "";
+        while(bluefruit.available() > 0) {
+            char c = bluefruit.read();
+            if ((c == '\n') || (c == '\r')) { // Before the OK
+                break;
+            }
+            dashioDevice->deviceID += c;
         }
-        dashioDevice->deviceID += c;
+        Serial.print(F("DeviceID: "));
+        Serial.println(dashioDevice->deviceID);
     }
-    Serial.print(F("DeviceID: "));
-    Serial.println(dashioDevice->deviceID);
 
     // Set local name name
     Serial.print(F("Set local name to DashIO_"));

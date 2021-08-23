@@ -18,9 +18,9 @@ class DashioTCPshield {
     
     public:    
         DashioTCPshield(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
-        void setup(void (*processIncomingMessage)(DashioConnection *connection));
+        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
         void sendMessage(const String& message);
-        void startupServer(byte mac[]);
+        void begin(byte mac[]);
         void checkForMessage();
 
 //???        void setupmDNSservice();

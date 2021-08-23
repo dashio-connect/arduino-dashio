@@ -7,7 +7,7 @@ DashioTCPshield::DashioTCPshield(DashioDevice *_dashioDevice, uint16_t _tcpPort,
     printMessages = _printMessages;
 }
 
-void DashioTCPshield::setup(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioTCPshield::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
     processTCPmessageCallback = processIncomingMessage;
 }
 
@@ -23,7 +23,7 @@ void DashioTCPshield::sendMessage(const String& message) {
     }
 }
 
-void DashioTCPshield::startupServer(byte mac[]) {
+void DashioTCPshield::begin(byte mac[]) {
     Ethernet.begin(mac); // start listening for clients
     server.begin(); // Open serial communications and wait for port to open:
     

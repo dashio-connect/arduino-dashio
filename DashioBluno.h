@@ -18,7 +18,8 @@ class DashioBluno {
         DashioBluno(DashioDevice *_dashioDevice);
         void sendMessage(const String& message);
         void checkForMessage();
-        void setup(void (*processIncomingMessage)(DashioConnection *connection));
+        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+    void begin(bool useMacForDeviceID = true);
 };
 
 #endif

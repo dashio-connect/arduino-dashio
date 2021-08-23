@@ -1,11 +1,9 @@
-#if defined ARDUINO_ARCH_AVR || defined TEENSYDUINO
-
 #ifndef DashioBluefruitSPI_h
 #define DashioBluefruitSPI_h
 
 #include "Arduino.h"
-#include <Adafruit_BLE.h>
-#include <Adafruit_BluefruitLE_SPI.h>
+#include "Adafruit_BLE.h"
+#include "Adafruit_BluefruitLE_SPI.h"
 #include "bluefruitConfig.h"
 #include "DashIO.h"
 
@@ -26,8 +24,8 @@ class DashioBluefruit_BLE {
         DashioBluefruit_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
         void sendMessage(const String& message);
         void checkForMessage();
-        void setup(void (*processIncomingMessage)(DashioConnection *connection), bool factoryResetEnable);
+        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+        void begin(bool factoryResetEnable, bool useMacForDeviceID = true);
 };
 
-#endif
 #endif

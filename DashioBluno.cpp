@@ -31,9 +31,11 @@ void DashioBluno::checkForMessage() {
     }
 }
 
-void DashioBluno::setup(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioBluno::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
     processBLEmessageCallback = processIncomingMessage;
+}
 
+void DashioBluno::begin(bool useMacForDeviceID) {
     Serial.begin(115200); //initialise the Serial
     
     // Set peripheral name
@@ -45,23 +47,25 @@ void DashioBluno::setup(void (*processIncomingMessage)(DashioConnection *connect
     Serial.println("AT+NAME=?");
     delay(500);
     
-    // Get deviceID for mac address.
-    while(Serial.available() > 0) {Serial.read();} // But first, clear the serial.
-    Serial.println("AT+MAC=?");
-    delay(1000); // Wait a while for reply
-    dashioDevice->deviceID = "";
-    while(Serial.available() > 0) {
-        char c = Serial.read();
-        if ((c == '\n') || (c == '\r')) { // Before the OK
-            break;
+    if (useMacForDeviceID) {
+        // Get deviceID for mac address.
+        while(Serial.available() > 0) {Serial.read();} // But first, clear the serial.
+        Serial.println("AT+MAC=?");
+        delay(1000); // Wait a while for reply
+        dashioDevice->deviceID = "";
+        while(Serial.available() > 0) {
+            char c = Serial.read();
+            if ((c == '\n') || (c == '\r')) { // Before the OK
+                break;
+            }
+            dashioDevice->deviceID += c;
         }
-        dashioDevice->deviceID += c;
+        
+        Serial.println("AT+EXIT");
+        delay(1000);
+        
+        Serial.print(dashioDevice->getWhoMessage()); // In case WHO message is received when in AT mode
     }
-    
-    Serial.println("AT+EXIT");
-    delay(1000);
-    
-    Serial.print(dashioDevice->getWhoMessage()); // In case WHO message is received when in AT mode
 }
 
 #endif
