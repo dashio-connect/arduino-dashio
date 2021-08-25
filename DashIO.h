@@ -451,7 +451,9 @@ class DashioDevice {
         String name = ((char *)0);
 
         DashioDevice(const String& _deviceType);
+        void setup(const String& deviceIdentifier);
         void setup(const String& deviceIdentifier, const String& _deviceName);
+        void setup(uint8_t m_address[6]);
         void setup(uint8_t m_address[6], const String& _deviceName);
 
         String getWhoMessage();

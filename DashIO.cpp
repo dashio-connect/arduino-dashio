@@ -256,17 +256,26 @@ DashioDevice::DashioDevice(const String& _deviceType) {
     name.reserve(MAX_DEVICE_NAME_LEN);
 }
 
-void DashioDevice::setup(const String& deviceIdentifier, const String& _deviceName) {
+void DashioDevice::setup(const String& deviceIdentifier) {
     deviceID.reserve(MAX_STRING_LEN);
+    deviceID = deviceIdentifier;
+}
 
+void DashioDevice::setup(const String& deviceIdentifier, const String& _deviceName) {
     name = _deviceName;
+
+    deviceID.reserve(MAX_STRING_LEN);
     deviceID = deviceIdentifier;
 }
 
 void DashioDevice::setup(uint8_t m_address[6], const String& _deviceName) {
-    deviceID.reserve(MAX_STRING_LEN);
-
     name = _deviceName;
+    
+    DashioDevice::setup(m_address);
+}
+
+void DashioDevice::setup(uint8_t m_address[6]) {
+    deviceID.reserve(MAX_STRING_LEN);
 
     char buffer[20];
     String macStr((char *)0);
