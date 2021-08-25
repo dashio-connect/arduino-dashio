@@ -20,9 +20,11 @@ bool DashioESP_WiFi::onTimerCallback(void *argument) {
     return true; // to repeat the timer action - false to stop
 }
 
-void DashioESP_WiFi::setup(char *ssid, char *password, void (*connectCallback)(void)) {
+void DashioESP_WiFi::setOnConnectCallback(void (*connectCallback)(void)) {
     wifiConnectCallback = connectCallback;
+}
 
+void DashioESP_WiFi::begin(char *ssid, char *password) {
     // Below is required to get WiFi to connect reliably on ESP32
     WiFi.disconnect(true);
     delay(1000);

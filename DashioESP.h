@@ -38,7 +38,8 @@ class DashioESP_WiFi {
         static bool onTimerCallback(void *argument);
 
     public:
-        void setup(char *ssid, char *password, void (*connectCallback)(void));
+        void setOnConnectCallback(void (*connectCallback)(void));
+        void begin(char *ssid, char *password);
         bool checkConnection();
         String macAddress();
 };

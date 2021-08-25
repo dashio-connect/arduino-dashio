@@ -9,6 +9,10 @@
 
 #define EEPROM_SIZE 200
 
+#ifndef DashioProvisionESP_h
+    panic!
+#endif
+
 struct DeviceData {
     char deviceName[32];
     char wifiSSID[32];
@@ -31,7 +35,7 @@ class DashioProvisionESP {
         void save();
         void load();
     
-        private:
+    private:
         void update(DeviceData *deviceData);
 };
 
