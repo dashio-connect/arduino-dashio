@@ -197,16 +197,6 @@ struct TCPConnCfg {
         ipAddress = _ipAddress;
         port = _port;
     }
-/*
-#ifdef ESP32
-    TCPConnCfg(IPAddress _ipAddress, int _port) {
-        static char a[16];
-        sprintf(a, "%d.%d.%d.%d", _ipAddress[0], _ipAddress[1], _ipAddress[2], _ipAddress[3]);
-        ipAddress = a;
-        port = _port;
-    }
-#endif
-*/
 };
 
 struct MQTTConnCfg {
@@ -432,7 +422,6 @@ struct MapCfg : CommonControl {
            : CommonControl(_controlID, _parentID, _title, _graphicsRect) {}
 };
 
-
 class DashioConnection {
     public:
         ConnectionType connectionType;
@@ -461,9 +450,9 @@ class DashioDevice {
         String type = ((char *)0);
         String name = ((char *)0);
 
-        DashioDevice(const String& deviceType);
-        void setup(const String& deviceIdentifier, const String& deviceName);
-        void setup(uint8_t m_address[6], const String& deviceName);
+        DashioDevice(const String& _deviceType);
+        void setup(const String& deviceIdentifier, const String& _deviceName);
+        void setup(uint8_t m_address[6], const String& _deviceName);
 
         String getWhoMessage();
         String getConnectMessage();

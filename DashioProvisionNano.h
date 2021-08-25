@@ -18,7 +18,6 @@ typedef struct {
 
 class DashioProvisionNano {
     public:
-        bool eepromSave = true;
         DashioDevice *dashioDevice;
         
         char wifiSSID[32];
@@ -26,10 +25,12 @@ class DashioProvisionNano {
         char dashUserName[32];
         char dashPassword[32];
     
-        DashioProvisionNano(DashioDevice *_dashioDevice, bool _eepromSave);
-        void update(DeviceData *deviceData);
+        void setup(DashioDevice *_dashioDevice, DeviceData *deviceData);
         void save();
         void load();
+    
+    private:
+        void update(DeviceData *deviceData);
 };
 
 #endif

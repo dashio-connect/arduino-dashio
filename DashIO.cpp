@@ -249,24 +249,24 @@ String DashioConnection::getReceivedMessageForPrint(const String& controlStr) {
 }
 
 /* --------------- */
-DashioDevice::DashioDevice(const String& deviceType) {
+DashioDevice::DashioDevice(const String& _deviceType) {
     type.reserve(MAX_DEVICE_TYPE_LEN);
-    type = deviceType;
+    type = _deviceType;
 
     name.reserve(MAX_DEVICE_NAME_LEN);
 }
 
-void DashioDevice::setup(const String& deviceIdentifier, const String& deviceName) {
+void DashioDevice::setup(const String& deviceIdentifier, const String& _deviceName) {
     deviceID.reserve(MAX_STRING_LEN);
 
-    name = deviceName;
+    name = _deviceName;
     deviceID = deviceIdentifier;
 }
 
-void DashioDevice::setup(uint8_t m_address[6], const String& deviceName) {
+void DashioDevice::setup(uint8_t m_address[6], const String& _deviceName) {
     deviceID.reserve(MAX_STRING_LEN);
 
-    name = deviceName;
+    name = _deviceName;
 
     char buffer[20];
     String macStr((char *)0);
