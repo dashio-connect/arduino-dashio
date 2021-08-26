@@ -16,34 +16,45 @@ const int BLE_MAX_SEND_MESSAGE_LENGTH = 100;
 
 // ---------------------------------------- WiFi ---------------------------------------
 
-void DashioNano_WiFi::begin(char *ssid, char *password) {
+bool DashioNano_WiFi::begin(char *ssid, char *password, int maxRetries) {
     wiFiDrv.wifiDriverDeinit(); // Required when switching from BLE to WiFi
     wiFiDrv.wifiDriverInit();
 
     // Check for the WiFi module:
     if (WiFi.status() == WL_NO_MODULE) {
-        Serial.println("WiFi module failed!");
-        while (true);
+        Serial.println(F("WiFi module failed!"));
+        return false;
     }
 
     WiFi.setTimeout(WIFI_CONNECT_TIMEOUT_MS); // 10s
 
     // Connect to Wifi Access Point
     status = WL_IDLE_STATUS;
+    int retryCount = 0;
     while (status != WL_CONNECTED) {
-        Serial.print("Attempting to connect to SSID: ");
-        Serial.println(ssid);
+        if (retryCount > maxRetries) {
+            return false;
+        }
+        retryCount += 1;
+
+        Serial.print(F("Attempting to connect to SSID: "));
+        Serial.print(ssid);
     
         // Connect to WPA/WPA2 network
         WiFi.disconnect();
         delay(1000);
         status = WiFi.begin(ssid, password);
+        
+        Serial.print(" Status: "); // 1 = no SSID avail = incorrect password, 4 = connection fail, 3 = connected
+        Serial.println(status);
     }
 
     // Device IP address
     IPAddress ip = WiFi.localIP(); 
-    Serial.print("IP Address: ");
+    Serial.print(F("IP Address: "));
     Serial.println(ip);
+    
+    return true;
 }
 
 

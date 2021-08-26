@@ -27,7 +27,7 @@ private:
     int status = WL_IDLE_STATUS;
 
 public:
-    void begin(char *ssid, char *password);
+    bool begin(char *ssid, char *password, int maxRetries = 10000);
     byte * macAddress();
     void end();
 };
