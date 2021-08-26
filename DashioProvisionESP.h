@@ -9,10 +9,6 @@
 
 #define EEPROM_SIZE 200
 
-#ifndef DashioProvisionESP_h
-    panic!
-#endif
-
 struct DeviceData {
     char deviceName[32];
     char wifiSSID[32];
@@ -23,20 +19,24 @@ struct DeviceData {
 };
 
 class DashioProvisionESP {
-    public:
-        DashioDevice *dashioDevice;
-        
-        char wifiSSID[32];
-        char wifiPassword[63];
-        char dashUserName[32];
-        char dashPassword[32];
+public:
+    DashioDevice *dashioDevice;
     
-        void setup(DashioDevice *_dashioDevice, DeviceData *deviceData);
-        void save();
-        void load();
-    
-    private:
-        void update(DeviceData *deviceData);
+    char wifiSSID[32];
+    char wifiPassword[63];
+    char dashUserName[32];
+    char dashPassword[32];
+
+    DashioProvisionESP(DashioDevice *_dashioDevice);
+    void load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
+    void processMessage(DashioConnection *connection);
+
+private:
+    void (*onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged);
+
+    void load();
+    void save();
+    void update(DeviceData *deviceData);
 };
 
 #endif

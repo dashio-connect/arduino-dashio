@@ -5,7 +5,7 @@
 
 #include "Arduino.h"
 #include <SPI.h>
-#include <timer.h>
+//???#include <timer.h>
 
 #include "DashIO.h"
 #include <WiFiNINA.h>
@@ -23,33 +23,33 @@ extern const int MQTT_PORT;
 // ---------------------------------------- WiFi ---------------------------------------
 
 class DashioNano_WiFi {
-    private:
-        int status = WL_IDLE_STATUS;
+private:
+    int status = WL_IDLE_STATUS;
 
-    public:
-        void connect(char *ssid, char *password);
-        byte * macAddress();
-        void end();
+public:
+    void begin(char *ssid, char *password);
+    byte * macAddress();
+    void end();
 };
 
 // ---------------------------------------- TCP ----------------------------------------
 
 class DashioNano_TCP {
-    private:
-        bool printMessages;
-        DashioDevice *dashioDevice;
-        DashioConnection dashioConnection;
-        uint16_t tcpPort = 5000;
-        WiFiClient client;
-        WiFiServer wifiServer;
-        void (*processTCPmessageCallback)(DashioConnection *connection);
+private:
+    bool printMessages;
+    DashioDevice *dashioDevice;
+    DashioConnection dashioConnection;
+    uint16_t tcpPort = 5000;
+    WiFiClient client;
+    WiFiServer wifiServer;
+    void (*processTCPmessageCallback)(DashioConnection *connection);
 
-    public:
-        DashioNano_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
-        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
-        void sendMessage(const String& message);
-        void begin();
-        void checkForMessage();
+public:
+    DashioNano_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
+    void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+    void sendMessage(const String& message);
+    void begin();
+    void checkForMessage();
 //???        void end();
 //???        void setupmDNSservice();
 //???        void updatemDNS();
@@ -59,62 +59,62 @@ class DashioNano_TCP {
 // ---------------------------------------- MQTT ---------------------------------------
 
 class DashioNano_MQTT {
-    private:
-        Timer<> timer;
-        static bool oneSecond;
-        bool reboot = true;
-        bool printMessages;
-        DashioDevice *dashioDevice;
-        static DashioConnection dashioConnection;
-        WiFiSSLClient wifiClient;
-        PubSubClient mqttClient;
-        int mqttConnectCount = 0;
-        int bufferSize = 1024;
-        bool sendRebootAlarm;
-        char *username;
-        char *password;
-        void (*processMQTTmessageCallback)(DashioConnection *connection);
+private:
+//???    Timer<> timer;
+    static bool oneSecond;
+    bool reboot = true;
+    bool printMessages;
+    DashioDevice *dashioDevice;
+    static DashioConnection dashioConnection;
+    WiFiSSLClient wifiClient;
+    PubSubClient mqttClient;
+    int mqttConnectCount = 0;
+    int bufferSize = 1024;
+    bool sendRebootAlarm;
+    char *username;
+    char *password;
+    void (*processMQTTmessageCallback)(DashioConnection *connection);
 
-        static void messageReceivedMQTTCallback(char* topic, byte* payload, unsigned int length);
-        void hostConnect();
-        static bool onTimerCallback(void *argument);
-        void checkConnection();
+    static void messageReceivedMQTTCallback(char* topic, byte* payload, unsigned int length);
+    void hostConnect();
+    static bool onTimerCallback(void *argument);
 
-    public:    
-        DashioNano_MQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
-        void sendMessage(const String& message, MQTTTopicType topic = data_topic);
-        void sendAlarmMessage(const String& message);
-        void checkForMessage();
-        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
-        void begin(char *_username, char *_password);
-        void end();
+public:
+    DashioNano_MQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
+    void sendMessage(const String& message, MQTTTopicType topic = data_topic);
+    void sendAlarmMessage(const String& message);
+    void checkConnection();
+    void checkForMessage();
+    void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+    void begin(char *_username, char *_password);
+    void end();
 };
 
 // ---------------------------------------- BLE ----------------------------------------
 
 class DashioNano_BLE {
-    private:
-        bool printMessages;
-        DashioDevice *dashioDevice;
-        static DashioConnection dashioConnection;
-        BLEService bleService;
-        BLECharacteristic bleCharacteristic;
+private:
+    bool printMessages;
+    DashioDevice *dashioDevice;
+    static DashioConnection dashioConnection;
+    BLEService bleService;
+    BLECharacteristic bleCharacteristic;
 
-        static void onBLEConnected(BLEDevice central);
-        static void onBLEDisconnected(BLEDevice central);
-        static void onReadValueUpdate(BLEDevice central, BLECharacteristic characteristic);
+    static void onBLEConnected(BLEDevice central);
+    static void onBLEDisconnected(BLEDevice central);
+    static void onReadValueUpdate(BLEDevice central, BLECharacteristic characteristic);
 
-    public:    
-        void (*processBLEmessageCallback)(DashioConnection *connection);
+public:
+    void (*processBLEmessageCallback)(DashioConnection *connection);
 
-        DashioNano_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
-        void sendMessage(const String& message);
-        void checkForMessage();
-        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
-        void begin();
-        bool connected();
-        void end();
-        String macAddress();
+    DashioNano_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
+    void sendMessage(const String& message);
+    void checkForMessage();
+    void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+    void begin();
+    bool connected();
+    void end();
+    String macAddress();
 };
 
 // -------------------------------------------------------------------------------------
