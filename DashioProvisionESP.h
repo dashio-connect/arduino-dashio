@@ -5,7 +5,7 @@
 
 #include "Arduino.h"
 #include "DashIO.h"
-#include <EEPROM.h> // Arduino EEPROM library
+#include <EEPROM.h>
 
 #define EEPROM_SIZE 200
 
@@ -29,7 +29,7 @@ public:
 
     DashioProvisionESP(DashioDevice *_dashioDevice);
     void load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
-    void processMessage(DashioConnection *connection);
+    void processMessage(MessageData *connection);
 
 private:
     void (*onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged);

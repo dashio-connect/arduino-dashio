@@ -75,21 +75,21 @@ String DashioESP_WiFi::macAddress() {
 // ---------------------------------------- TCP ----------------------------------------
 
 #ifdef ESP32
-DashioESP_TCP::DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : dashioConnection(TCP_CONN) {
+DashioESP_TCP::DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : data(TCP_CONN) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
     wifiServer = WiFiServer(_tcpPort);
 }
 #elif ESP8266
-DashioESP_TCP::DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), dashioConnection(TCP_CONN) {
+DashioESP_TCP::DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), data(TCP_CONN) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
 }
 #endif
 
-void DashioESP_TCP::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioESP_TCP::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
     processTCPmessageCallback = processIncomingMessage;
 }
 
@@ -135,12 +135,12 @@ void DashioESP_TCP::checkForMessage() {
        if (client.connected()) {
             while (client.available()>0) {
                 char c = client.read();
-                if (dashioConnection.processChar(c)) {
+                if (data.processChar(c)) {
                     if (printMessages) {
-                        Serial.println(dashioConnection.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(dashioConnection.control)));
+                        Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
                     }
       
-                    switch (dashioConnection.control) {
+                    switch (data.control) {
                     case who:
                         sendMessage(dashioDevice->getWhoMessage());
                         break;
@@ -149,7 +149,7 @@ void DashioESP_TCP::checkForMessage() {
                         break;
                     default:
                         if (processTCPmessageCallback != NULL) {
-                            processTCPmessageCallback(&dashioConnection);
+                            processTCPmessageCallback(&data);
                         }
                         break;
                     }
@@ -175,10 +175,10 @@ DashioESP_MQTT::DashioESP_MQTT(DashioDevice *_dashioDevice, int bufferSize, bool
     printMessages = _printMessages;
 }
 
-DashioConnection DashioESP_MQTT::dashioConnection(MQTT_CONN);
+MessageData DashioESP_MQTT::data(MQTT_CONN);
 
 void DashioESP_MQTT::messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length) {
-    dashioConnection.processMessage(String(payload)); // The message components are stored within the connection where the messageReceived flag is set
+    data.processMessage(String(payload)); // The message components are stored within the connection where the messageReceived flag is set
 }
 
 void DashioESP_MQTT::sendMessage(const String& message, MQTTTopicType topic) {
@@ -201,14 +201,14 @@ void DashioESP_MQTT::sendAlarmMessage(const String& message) {
 void DashioESP_MQTT::checkForMessage() {
     if (mqttClient.connected()) {
         mqttClient.loop();
-        if (dashioConnection.messageReceived) {
-            dashioConnection.messageReceived = false;
+        if (data.messageReceived) {
+            data.messageReceived = false;
 
             if (printMessages) {
-                Serial.println(dashioConnection.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(dashioConnection.control)));
+                Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
             }
 
-            switch (dashioConnection.control) {
+            switch (data.control) {
             case who:
                 sendMessage(dashioDevice->getWhoMessage());
                 break;
@@ -217,7 +217,7 @@ void DashioESP_MQTT::checkForMessage() {
                 break;
             default:
                 if (processMQTTmessageCallback != NULL) {
-                    processMQTTmessageCallback(&dashioConnection);
+                    processMQTTmessageCallback(&data);
                 }
                 break;
             }
@@ -270,7 +270,7 @@ void DashioESP_MQTT::setupLWT() {
     Serial.println(offlineMessage);
 }
 
-void DashioESP_MQTT::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioESP_MQTT::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
     processMQTTmessageCallback = processIncomingMessage;
 }
     
@@ -345,14 +345,14 @@ class messageReceivedBLECallback: public BLECharacteristicCallbacks {
         
         void onWrite(BLECharacteristic *pCharacteristic) {
             std::string payload = pCharacteristic->getValue();
-            local_DashioESP_BLE->dashioConnection.processMessage(payload.c_str()); // The message components are stored within the connection where the messageReceived flag is set
+            local_DashioESP_BLE->data.processMessage(payload.c_str()); // The message components are stored within the connection where the messageReceived flag is set
         }
     
     public:
         DashioESP_BLE * local_DashioESP_BLE = NULL;
 };
 
-DashioESP_BLE::DashioESP_BLE(DashioDevice *_dashioDevice, bool _printMessages) : dashioConnection(BLE_CONN) {
+DashioESP_BLE::DashioESP_BLE(DashioDevice *_dashioDevice, bool _printMessages) : data(BLE_CONN) {
     dashioDevice = _dashioDevice;
     printMessages = _printMessages;
 }
@@ -395,14 +395,14 @@ void DashioESP_BLE::sendMessage(const String& message) {
 }
 
 void DashioESP_BLE::checkForMessage() {
-     if (dashioConnection.messageReceived) {
-        dashioConnection.messageReceived = false;
+     if (data.messageReceived) {
+        data.messageReceived = false;
 
         if (printMessages) {
-            Serial.println(dashioConnection.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(dashioConnection.control)));
+            Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
         }
 
-        switch (dashioConnection.control) {
+        switch (data.control) {
         case who:
             sendMessage(dashioDevice->getWhoMessage());
             break;
@@ -411,14 +411,14 @@ void DashioESP_BLE::checkForMessage() {
             break;
         default:
             if (processBLEmessageCallback != NULL) {
-                processBLEmessageCallback(&dashioConnection);
+                processBLEmessageCallback(&data);
             }
             break;
         }
     }
 }
 
-void DashioESP_BLE::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioESP_BLE::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
     processBLEmessageCallback = processIncomingMessage;
 }
         

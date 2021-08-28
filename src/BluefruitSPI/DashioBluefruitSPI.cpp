@@ -1,6 +1,6 @@
 #include "DashioBluefruitSPI.h"
 
-DashioBluefruit_BLE::DashioBluefruit_BLE(DashioDevice *_dashioDevice, bool _printMessages) : dashioConnection(BLE_CONN),
+DashioBluefruit_BLE::DashioBluefruit_BLE(DashioDevice *_dashioDevice, bool _printMessages) : messageData(BLE_CONN),
                                                                                              bluefruit(BLUEFRUIT_SPI_SCK, BLUEFRUIT_SPI_MISO,
                                                                                                        BLUEFRUIT_SPI_MOSI, BLUEFRUIT_SPI_CS,
                                                                                                        BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST) {
@@ -26,12 +26,12 @@ void DashioBluefruit_BLE::checkForMessage() {
         char data;
         data = (char)bluefruit.read(); // Read individual characters.
     
-        if (dashioConnection.processChar(data)) {
+        if (messageData.processChar(data)) {
             if (printMessages) {
-                Serial.println(dashioConnection.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(dashioConnection.control)));
+                Serial.println(messageData.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(messageData.control)));
             }
 
-            switch (dashioConnection.control) {
+            switch (messageData.control) {
             case who:
                 sendMessage(dashioDevice->getWhoMessage());
                 break;
@@ -40,7 +40,7 @@ void DashioBluefruit_BLE::checkForMessage() {
                 break;
             default:
                 if (processBLEmessageCallback != NULL) {
-                    processBLEmessageCallback(&dashioConnection);
+                    processBLEmessageCallback(&messageData);
                 }
                 break;
             }
@@ -48,7 +48,7 @@ void DashioBluefruit_BLE::checkForMessage() {
     }
 }
 
-void DashioBluefruit_BLE::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioBluefruit_BLE::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
     processBLEmessageCallback = processIncomingMessage;
 }
 

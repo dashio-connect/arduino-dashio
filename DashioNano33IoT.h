@@ -38,15 +38,15 @@ class DashioNano_TCP {
 private:
     bool printMessages;
     DashioDevice *dashioDevice;
-    DashioConnection dashioConnection;
+    MessageData messageData;
     uint16_t tcpPort = 5000;
     WiFiClient client;
     WiFiServer wifiServer;
-    void (*processTCPmessageCallback)(DashioConnection *connection);
+    void (*processTCPmessageCallback)(MessageData *connection);
 
 public:
     DashioNano_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
-    void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+    void setCallback(void (*processIncomingMessage)(MessageData *connection));
     void sendMessage(const String& message);
     void begin();
     void checkForMessage();
@@ -65,7 +65,7 @@ private:
     bool reboot = true;
     bool printMessages;
     DashioDevice *dashioDevice;
-    static DashioConnection dashioConnection;
+    static MessageData messageData;
     WiFiSSLClient wifiClient;
     PubSubClient mqttClient;
     int mqttConnectCount = 0;
@@ -73,7 +73,7 @@ private:
     bool sendRebootAlarm;
     char *username;
     char *password;
-    void (*processMQTTmessageCallback)(DashioConnection *connection);
+    void (*processMQTTmessageCallback)(MessageData *connection);
 
     static void messageReceivedMQTTCallback(char* topic, byte* payload, unsigned int length);
     void hostConnect();
@@ -85,7 +85,7 @@ public:
     void sendAlarmMessage(const String& message);
     void checkConnection();
     void checkForMessage();
-    void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+    void setCallback(void (*processIncomingMessage)(MessageData *connection));
     void begin(char *_username, char *_password);
     void end();
 };
@@ -96,7 +96,7 @@ class DashioNano_BLE {
 private:
     bool printMessages;
     DashioDevice *dashioDevice;
-    static DashioConnection dashioConnection;
+    static MessageData messageData;
     BLEService bleService;
     BLECharacteristic bleCharacteristic;
 
@@ -105,12 +105,12 @@ private:
     static void onReadValueUpdate(BLEDevice central, BLECharacteristic characteristic);
 
 public:
-    void (*processBLEmessageCallback)(DashioConnection *connection);
+    void (*processBLEmessageCallback)(MessageData *connection);
 
     DashioNano_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
     void sendMessage(const String& message);
     void checkForMessage();
-    void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+    void setCallback(void (*processIncomingMessage)(MessageData *connection));
     void begin();
     bool connected();
     void end();

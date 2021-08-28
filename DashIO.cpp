@@ -102,7 +102,7 @@
 const char END_DELIM = '\n';
 const char DELIM = '\t';
 
-DashioConnection::DashioConnection(ConnectionType connType) {
+MessageData::MessageData(ConnectionType connType) {
     deviceID.reserve(MAX_STRING_LEN);
     idStr.reserve(MAX_STRING_LEN);
     payloadStr.reserve(MAX_STRING_LEN);
@@ -111,7 +111,7 @@ DashioConnection::DashioConnection(ConnectionType connType) {
     connectionType = connType;
 };
 
-void DashioConnection::processMessage(const String& message) {
+void MessageData::processMessage(const String& message) {
     if (message.length() > 0) {
         if (messageReceived) {
             Serial.println(F("Incoming message overflow. Can't process:"));
@@ -127,7 +127,7 @@ void DashioConnection::processMessage(const String& message) {
     }
 }
 
-bool DashioConnection::processChar(char chr) {
+bool MessageData::processChar(char chr) {
     bool messageEnd = false;
     if ((chr == DELIM) || (chr == END_DELIM)) {
         if ((readStr.length() > 0) || (segmentCount == 1)) { // segmentCount == 1 allows for empty second field ??? maybe should be 2 for empty third field now that we've added deviceID at the front
@@ -216,7 +216,7 @@ bool DashioConnection::processChar(char chr) {
     return messageEnd;
 }
 
-String DashioConnection::getReceivedMessageForPrint(const String& controlStr) {
+String MessageData::getReceivedMessageForPrint(const String& controlStr) {
     String message((char *)0);
     message.reserve(100);
 

@@ -7,7 +7,7 @@ DashioTCPshield::DashioTCPshield(DashioDevice *_dashioDevice, uint16_t _tcpPort,
     printMessages = _printMessages;
 }
 
-void DashioTCPshield::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioTCPshield::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
     processTCPmessageCallback = processIncomingMessage;
 }
 

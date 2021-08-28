@@ -27,7 +27,7 @@ public:
 
     DashioProvisionNano(DashioDevice *_dashioDevice);
     void load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
-    void processMessage(DashioConnection *connection);
+    void processMessage(MessageData *messageData);
 
 private:
     void (*onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged);

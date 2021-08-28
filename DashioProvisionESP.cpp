@@ -12,41 +12,41 @@ void DashioProvisionESP::load(DeviceData *defaultDeviceData, void (*_onProvision
     load();
 }
 
-void DashioProvisionESP::processMessage(DashioConnection *connection) {
-    switch (connection->control) {
+void DashioProvisionESP::processMessage(MessageData *messageData) {
+    switch (messageData->control) {
     case deviceName:
-        if (connection->idStr != "") {
-            dashioDevice->name = connection->idStr;
+        if (messageData->idStr != "") {
+            dashioDevice->name = messageData->idStr;
             save();
             Serial.print(F("Updated Device Name: "));
             Serial.println(dashioDevice->name);
         }
         if (onProvisionCallback != NULL) {
-            onProvisionCallback(connection->connectionType, dashioDevice->getDeviceNameMessage(), false);
+            onProvisionCallback(messageData->connectionType, dashioDevice->getDeviceNameMessage(), false);
         }
         break;
     case wifiSetup:
-        connection->payloadStr.toCharArray(wifiSSID, connection->payloadStr.length() + 1);
-        connection->payloadStr2.toCharArray(wifiPassword, connection->payloadStr2.length() + 1);
+        messageData->payloadStr.toCharArray(wifiSSID, messageData->payloadStr.length() + 1);
+        messageData->payloadStr2.toCharArray(wifiPassword, messageData->payloadStr2.length() + 1);
         save();
         Serial.print(F("Updated WIFI SSID: "));
         Serial.println(wifiSSID);
         Serial.print(F("Updated WIFI Password: "));
         Serial.println(wifiPassword);
         if (onProvisionCallback != NULL) {
-            onProvisionCallback(connection->connectionType, dashioDevice->getWifiUpdateAckMessage(), true);
+            onProvisionCallback(messageData->connectionType, dashioDevice->getWifiUpdateAckMessage(), true);
         }
         break;
     case dashioSetup:
-        connection->idStr.toCharArray(dashUserName, connection->idStr.length() + 1);
-        connection->payloadStr.toCharArray(dashPassword, connection->payloadStr.length() + 1);
+        messageData->idStr.toCharArray(dashUserName, messageData->idStr.length() + 1);
+        messageData->payloadStr.toCharArray(dashPassword, messageData->payloadStr.length() + 1);
         save();
         Serial.print(F("Updated Dash username: "));
         Serial.println(dashUserName);
         Serial.print(F("Updated Dash Password: "));
         Serial.println(dashPassword);
         if (onProvisionCallback != NULL) {
-            onProvisionCallback(connection->connectionType, dashioDevice->getDashioUpdateAckMessage(), true);
+            onProvisionCallback(messageData->connectionType, dashioDevice->getDashioUpdateAckMessage(), true);
         }
         break;
     }

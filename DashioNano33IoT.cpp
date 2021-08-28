@@ -73,13 +73,13 @@ void DashioNano_WiFi::end() {
 
 // ---------------------------------------- TCP ----------------------------------------
 
-DashioNano_TCP::DashioNano_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), dashioConnection(TCP_CONN) {
+DashioNano_TCP::DashioNano_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), messageData(TCP_CONN) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
 }
 
-void DashioNano_TCP::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioNano_TCP::setCallback(void (*processIncomingMessage)(MessageData *connection)) {
     processTCPmessageCallback = processIncomingMessage;
 }
 
@@ -106,12 +106,12 @@ void DashioNano_TCP::checkForMessage() {
        if (client.connected()) {
             while (client.available()>0) {
                 char c = client.read();
-                if (dashioConnection.processChar(c)) {
+                if (messageData.processChar(c)) {
                     if (printMessages) {
-                        Serial.println(dashioConnection.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(dashioConnection.control)));
+                        Serial.println(messageData.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(messageData.control)));
                     }
       
-                    switch (dashioConnection.control) {
+                    switch (messageData.control) {
                     case who:
                         sendMessage(dashioDevice->getWhoMessage());
                         break;
@@ -120,7 +120,7 @@ void DashioNano_TCP::checkForMessage() {
                         break;
                     default:
                         if (processTCPmessageCallback != NULL) {
-                            processTCPmessageCallback(&dashioConnection);
+                            processTCPmessageCallback(&messageData);
                         }
                         break;
                     }
@@ -157,7 +157,7 @@ void DashioNano_TCP::updatemDNS() {
 
 // ---------------------------------------- MQTT ---------------------------------------
 
-DashioConnection DashioNano_MQTT::dashioConnection(MQTT_CONN);
+MessageData DashioNano_MQTT::messageData(MQTT_CONN);
 bool DashioNano_MQTT::oneSecond = false;
 /*???
 // Timer Interrupt
@@ -182,7 +182,7 @@ void DashioNano_MQTT::messageReceivedMQTTCallback(char* topic, byte* payload, un
     for (int i = 0; i < length; i++) {
         message += (char)payload[i];
     }
-    dashioConnection.processMessage(message); // The message components are stored within the connection where the messageReceived flag is set
+    messageData.processMessage(message); // The message components are stored within the connection where the messageReceived flag is set
 }
 
 void DashioNano_MQTT::sendMessage(const String& message, MQTTTopicType topic) {
@@ -204,14 +204,14 @@ void DashioNano_MQTT::sendAlarmMessage(const String& message) {
 
 void DashioNano_MQTT::checkForMessage() {
     if (mqttClient.loop()) {
-        if (dashioConnection.messageReceived) {
-            dashioConnection.messageReceived = false;
+        if (messageData.messageReceived) {
+            messageData.messageReceived = false;
 
             if (printMessages) {
-                Serial.println(dashioConnection.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(dashioConnection.control)));
+                Serial.println(messageData.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(messageData.control)));
             }
 
-            switch (dashioConnection.control) {
+            switch (messageData.control) {
             case who:
                 sendMessage(dashioDevice->getWhoMessage());
                 break;
@@ -220,7 +220,7 @@ void DashioNano_MQTT::checkForMessage() {
                 break;
             default:
                 if (processMQTTmessageCallback != NULL) {
-                    processMQTTmessageCallback(&dashioConnection);
+                    processMQTTmessageCallback(&messageData);
                 }
                 break;
             }
@@ -259,7 +259,7 @@ void DashioNano_MQTT::hostConnect() { // Non-blocking
     }
 }
 
-void DashioNano_MQTT::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioNano_MQTT::setCallback(void (*processIncomingMessage)(MessageData *connection)) {
     processMQTTmessageCallback = processIncomingMessage;
 }
 
@@ -317,7 +317,7 @@ DashioNano_BLE::DashioNano_BLE(DashioDevice *_dashioDevice, bool _printMessages)
     bleService.addCharacteristic(bleCharacteristic);
 }
 
-DashioConnection DashioNano_BLE::dashioConnection(BLE_CONN);
+MessageData DashioNano_BLE::messageData(BLE_CONN);
 
 void DashioNano_BLE::onReadValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
     // central wrote new value to characteristic
@@ -325,13 +325,13 @@ void DashioNano_BLE::onReadValueUpdate(BLEDevice central, BLECharacteristic char
     char data[dataLength];
     int finalLength = characteristic.readValue(data, dataLength);
     for (int i = 0; i < dataLength; i++) {
-        if (dashioConnection.processChar(data[i])) {
-            dashioConnection.messageReceived = true;
+        if (messageData.processChar(data[i])) {
+            messageData.messageReceived = true;
         }
     }
 }
 
-void DashioNano_BLE::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioNano_BLE::setCallback(void (*processIncomingMessage)(MessageData *connection)) {
     processBLEmessageCallback = processIncomingMessage;
 }
 
@@ -394,14 +394,14 @@ void DashioNano_BLE::sendMessage(const String& message) {
 void DashioNano_BLE::checkForMessage() {
     if (BLE.connected()) {
         BLE.poll(); // Required for event handlers
-        if (dashioConnection.messageReceived) {
-            dashioConnection.messageReceived = false;
+        if (messageData.messageReceived) {
+            messageData.messageReceived = false;
     
             if (printMessages) {
-                Serial.println(dashioConnection.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(dashioConnection.control)));
+                Serial.println(messageData.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(messageData.control)));
             }
     
-            switch (dashioConnection.control) {
+            switch (messageData.control) {
             case who:
                 sendMessage(dashioDevice->getWhoMessage());
                 break;
@@ -410,7 +410,7 @@ void DashioNano_BLE::checkForMessage() {
                 break;
             default:
                 if (processBLEmessageCallback != NULL) {
-                    processBLEmessageCallback(&dashioConnection);
+                    processBLEmessageCallback(&messageData);
                 }
                 break;
             }

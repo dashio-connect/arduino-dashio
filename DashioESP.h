@@ -4,7 +4,7 @@
 #define DashioESP_h
 
 #include "Arduino.h"
-#include <timer.h>
+#include <arduino-timer.h>
 
 #include <WiFiClientSecure.h> // Included in the espressif library
 #include <MQTT.h>             // arduino-mqtt library created by Joël Gähwiler.
@@ -50,18 +50,18 @@ class DashioESP_TCP {
     private:
         bool printMessages;
         DashioDevice *dashioDevice;
-        DashioConnection dashioConnection;
+        MessageData data;
         uint16_t tcpPort = 5000;
         WiFiClient client;
         WiFiServer wifiServer;
-        void (*processTCPmessageCallback)(DashioConnection *connection);
+        void (*processTCPmessageCallback)(MessageData *messageData);
 #ifdef ESP8266
         void updatemDNS();
 #endif
 
     public:    
         DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
-        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+        void setCallback(void (*processIncomingMessage)(MessageData *messageData));
         void begin();
         void sendMessage(const String& message);
         void setupmDNSservice();
@@ -76,14 +76,14 @@ class DashioESP_MQTT {
         bool reboot = true;
         bool printMessages;
         DashioDevice *dashioDevice;
-        static DashioConnection dashioConnection;
+        static MessageData data;
         WiFiClientSecure wifiClient;
         MQTTClient mqttClient;
         int mqttConnectCount = 0;
         bool sendRebootAlarm;
         char *username;
         char *password;
-        void (*processMQTTmessageCallback)(DashioConnection *connection);
+        void (*processMQTTmessageCallback)(MessageData *messageData);
     
         static void messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length);
         void hostConnect();
@@ -95,7 +95,7 @@ class DashioESP_MQTT {
         void sendAlarmMessage(const String& message);
         void checkForMessage();
         void checkConnection();
-        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+        void setCallback(void (*processIncomingMessage)(MessageData *messageData));
         void begin(char *_username, char *_password);
 };
 
@@ -111,13 +111,13 @@ class DashioESP_BLE {
         void bleNotifyValue(const String& message);
 
     public:    
-        DashioConnection dashioConnection;
-        void (*processBLEmessageCallback)(DashioConnection *connection);
+        MessageData data;
+        void (*processBLEmessageCallback)(MessageData *messageData);
 
         DashioESP_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
         void sendMessage(const String& message);
         void checkForMessage();
-        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+        void setCallback(void (*processIncomingMessage)(MessageData *messageData));
         void begin(bool secureBLE = false);
         String macAddress();
 };

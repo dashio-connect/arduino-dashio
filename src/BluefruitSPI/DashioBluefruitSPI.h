@@ -14,9 +14,9 @@ class DashioBluefruit_BLE {
     private:
         bool printMessages;
         DashioDevice *dashioDevice;
-        DashioConnection dashioConnection;
+        MessageData messageData;
         Adafruit_BluefruitLE_SPI bluefruit;
-        void (*processBLEmessageCallback)(DashioConnection *connection);
+        void (*processBLEmessageCallback)(MessageData *messageData);
 
         void bleNotifyValue(const String& message);
 
@@ -24,7 +24,7 @@ class DashioBluefruit_BLE {
         DashioBluefruit_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
         void sendMessage(const String& message);
         void checkForMessage();
-        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+        void setCallback(void (*processIncomingMessage)(MessageData *messageData));
         void begin(bool factoryResetEnable, bool useMacForDeviceID = true);
 };
 
