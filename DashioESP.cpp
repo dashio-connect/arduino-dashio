@@ -68,8 +68,37 @@ bool DashioESP_WiFi::checkConnection() {
     return false;
 }
 
+void DashioESP_WiFi::end() {
+    WiFi.disconnect();
+}
+
 String DashioESP_WiFi::macAddress() {
     return WiFi.macAddress();
+}
+
+// --------------------------------------- Soft AP -------------------------------------
+
+bool DasgioESP_SoftAP::begin(const String& password) {
+    IPAddress IP = {192, 168, 68, 100};
+    IPAddress NMask = {255, 255, 255, 0};
+
+    Serial.println(F("Starting soft-AP"));
+    boolean result = WiFi.softAP(F("DashIO_Provision"), password);
+    if (result == true) {
+        WiFi.softAPConfig(IP, IP, NMask);
+
+        Serial.print(F("AP IP address: "));
+        Serial.println(WiFi.softAPIP());
+    }
+    return result;
+}
+
+void DasgioESP_SoftAP::end() {
+    WiFi.softAPdisconnect(false); // false = turn off soft AP
+}
+
+bool DasgioESP_SoftAP::isConnected() {
+    return (WiFi.softAPgetStationNum() > 0);
 }
 
 // ---------------------------------------- TCP ----------------------------------------
@@ -94,7 +123,12 @@ void DashioESP_TCP::setCallback(void (*processIncomingMessage)(MessageData *mess
 }
 
 void DashioESP_TCP::begin() {
-    wifiServer.begin();
+    wifiServer.begin(tcpPort);
+}
+
+void DashioESP_TCP::begin(uint16_t _tcpPort) {
+    tcpPort = _tcpPort;
+    wifiServer.begin(tcpPort);
 }
 
 void DashioESP_TCP::sendMessage(const String& message) {
@@ -119,6 +153,11 @@ void DashioESP_TCP::setupmDNSservice() {
     }
     Serial.println(F("mDNS started"));
     MDNS.addService("DashIO", "tcp", tcpPort);
+}
+    
+void DashioESP_TCP::mDNSend() {
+    MDNS.close();
+    MDNS.end();
 }
 
 #ifdef ESP8266
