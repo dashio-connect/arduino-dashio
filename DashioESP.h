@@ -28,36 +28,6 @@ extern const int MQTT_PORT;
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 
-// ---------------------------------------- WiFi ---------------------------------------
-
-class DashioESP_WiFi {
-private:
-    Timer<> timer;
-    static bool oneSecond;
-    int wifiConnectCount = 1;
-    void (*wifiConnectCallback)(void);
-
-    static bool onTimerCallback(void *argument);
-
-public:
-    void setOnConnectCallback(void (*connectCallback)(void));
-    void begin(char *ssid, char *password);
-    bool checkConnection();
-    void end();
-    String macAddress();
-};
-
-// --------------------------------------- Soft AP -------------------------------------
-
-class DasgioESP_SoftAP {
-private:
-    
-public:
-    bool begin(const String& password);
-    void end();
-    bool isConnected();
-};
-
 // ---------------------------------------- TCP ----------------------------------------
 
 class DashioESP_TCP {
@@ -69,9 +39,6 @@ private:
     WiFiClient client;
     WiFiServer wifiServer;
     void (*processTCPmessageCallback)(MessageData *messageData);
-#ifdef ESP8266
-    void updatemDNS();
-#endif
 
 public:
     DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
@@ -114,9 +81,11 @@ public:
     void checkConnection();
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void begin(char *_username, char *_password);
+    void end();
 };
 
 // ---------------------------------------- BLE ----------------------------------------
+
 #ifdef ESP32
 class DashioESP_BLE {
 private:
@@ -133,12 +102,52 @@ public:
 
     DashioESP_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
     void sendMessage(const String& message);
+    void run();
     void checkForMessage();
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void begin(bool secureBLE = false);
     String macAddress();
 };
 #endif
+
+// ---------------------------------------- WiFi ---------------------------------------
+
+class DashioESP_WiFi {
+private:
+    Timer<> timer;
+    static bool oneSecond;
+    int wifiConnectCount = 1;
+    void (*wifiConnectCallback)(void);
+    DashioESP_TCP *tcpConnection;
+    DashioESP_MQTT *mqttConnection;
+
+    static bool onTimerCallback(void *argument);
+
+public:
+    void attachConnection(DashioESP_TCP *_tcpConnection);
+    void attachConnection(DashioESP_MQTT *_mqttConnection);
+    void setOnConnectCallback(void (*connectCallback)(void));
+    void begin(char *ssid, char *password);
+    void run();
+    void end();
+    String macAddress();
+    String ipAddress();
+};
+
+// --------------------------------------- Soft AP -------------------------------------
+
+class DasgioESP_SoftAP {
+private:
+    DashioESP_TCP *tcpConnection;
+
+public:
+    bool begin(const String& password);
+    void attachConnection(DashioESP_TCP *_tcpConnection);
+    void end();
+    bool isConnected();
+    void run();
+};
+
 // -------------------------------------------------------------------------------------
 
 #endif

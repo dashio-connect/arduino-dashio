@@ -20,6 +20,14 @@ bool DashioESP_WiFi::onTimerCallback(void *argument) {
     return true; // to repeat the timer action - false to stop
 }
 
+void DashioESP_WiFi::attachConnection(DashioESP_TCP *_tcpConnection) {
+    tcpConnection = _tcpConnection;
+}
+
+void DashioESP_WiFi::attachConnection(DashioESP_MQTT *_mqttConnection) {
+    mqttConnection = _mqttConnection;
+}
+
 void DashioESP_WiFi::setOnConnectCallback(void (*connectCallback)(void)) {
     wifiConnectCallback = connectCallback;
 }
@@ -36,8 +44,16 @@ void DashioESP_WiFi::begin(char *ssid, char *password) {
     timer.every(1000, onTimerCallback); // 1000ms
 }
 
-bool DashioESP_WiFi::checkConnection() {
+void DashioESP_WiFi::run() {
     timer.tick();
+    
+    if (mqttConnection != NULL) {
+        mqttConnection->checkForMessage();
+    }
+    
+    if (tcpConnection != NULL) {
+        tcpConnection->checkForMessage();
+    }
 
     if (oneSecond) {
         oneSecond = false;
@@ -58,22 +74,43 @@ bool DashioESP_WiFi::checkConnection() {
                 Serial.print("Connected with IP: ");
                 Serial.println(WiFi.localIP());
 
+                if (tcpConnection != NULL) {
+                    tcpConnection->setupmDNSservice();
+                }
+
                 if (wifiConnectCallback != NULL) {
                     wifiConnectCallback();
                 }
             }
-            return true;
+            
+            if (mqttConnection != NULL) {
+                mqttConnection->checkConnection();
+            }
         }
     }
-    return false;
 }
 
 void DashioESP_WiFi::end() {
+    if (tcpConnection != NULL) {
+        tcpConnection->mDNSend();
+    }
+    
+    if (mqttConnection != NULL) {
+        mqttConnection->end();
+    }
+
     WiFi.disconnect();
 }
 
 String DashioESP_WiFi::macAddress() {
     return WiFi.macAddress();
+}
+
+String DashioESP_WiFi::ipAddress() {
+    IPAddress ip = WiFi.localIP();
+    static char ipStr[16];
+    sprintf(ipStr, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+    return ipStr;
 }
 
 // --------------------------------------- Soft AP -------------------------------------
@@ -83,7 +120,12 @@ bool DasgioESP_SoftAP::begin(const String& password) {
     IPAddress NMask = {255, 255, 255, 0};
 
     Serial.println(F("Starting soft-AP"));
-    boolean result = WiFi.softAP(F("DashIO_Provision"), password);
+
+#ifdef ESP32
+    bool result = WiFi.softAP("DashIO_Provision", password.c_str(), 1, 0, 1);
+#elif ESP8266
+    bool result = WiFi.softAP(F("DashIO_Provision"), password, 1, 0, 1);
+#endif
     if (result == true) {
         WiFi.softAPConfig(IP, IP, NMask);
 
@@ -93,12 +135,22 @@ bool DasgioESP_SoftAP::begin(const String& password) {
     return result;
 }
 
+void DasgioESP_SoftAP::attachConnection(DashioESP_TCP *_tcpConnection) {
+    tcpConnection = _tcpConnection;
+}
+
 void DasgioESP_SoftAP::end() {
     WiFi.softAPdisconnect(false); // false = turn off soft AP
 }
 
 bool DasgioESP_SoftAP::isConnected() {
     return (WiFi.softAPgetStationNum() > 0);
+}
+
+void DasgioESP_SoftAP::run() {
+    if (tcpConnection != NULL) {
+        tcpConnection->checkForMessage();
+    }
 }
 
 // ---------------------------------------- TCP ----------------------------------------
@@ -156,15 +208,11 @@ void DashioESP_TCP::setupmDNSservice() {
 }
     
 void DashioESP_TCP::mDNSend() {
+#ifdef ESP8266
     MDNS.close();
+#endif
     MDNS.end();
 }
-
-#ifdef ESP8266
-void DashioESP_TCP::updatemDNS() {
-    MDNS.update();
-}
-#endif
 
 void DashioESP_TCP::checkForMessage() {
     if (!client) {
@@ -202,7 +250,7 @@ void DashioESP_TCP::checkForMessage() {
     }
     
 #ifdef ESP8266
-    updatemDNS();
+    MDNS.update();
 #endif
 }
 
@@ -341,6 +389,10 @@ void DashioESP_MQTT::checkConnection() {
         }
     }
 }
+    
+void DashioESP_MQTT::end() {
+    mqttClient.disconnect();
+}
 
 // ---------------------------------------- BLE ----------------------------------------
 #ifdef ESP32
@@ -431,6 +483,10 @@ void DashioESP_BLE::sendMessage(const String& message) {
             Serial.println(message);
         }
     }
+}
+    
+void DashioESP_BLE::run() {
+    checkForMessage();
 }
 
 void DashioESP_BLE::checkForMessage() {
