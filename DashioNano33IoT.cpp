@@ -3,7 +3,7 @@
 #include "DashioNano33IoT.h"
 
 // WiFi
-const int WIFI_CONNECT_TIMEOUT_MS = 10000; // 10s
+const int WIFI_CONNECT_TIMEOUT_MS = 5000; // 5s
 
 // MQTT
 const int  MQTT_QOS     = 1; // QoS = 1, as 2 causes subscribe to fail
@@ -15,6 +15,14 @@ const int  MQTT_PORT    = 8883;
 const int BLE_MAX_SEND_MESSAGE_LENGTH = 100;
 
 // ---------------------------------------- WiFi ---------------------------------------
+
+bool DashioNano_WiFi::oneSecond = false;
+
+// Timer Interrupt
+bool DashioNano_WiFi::onTimerCallback(void *argument) {
+    oneSecond = true;
+    return true; // to repeat the timer action - false to stop
+}
 
 bool DashioNano_WiFi::begin(char *ssid, char *password, int maxRetries) {
     wiFiDrv.wifiDriverDeinit(); // Required when switching from BLE to WiFi
@@ -50,13 +58,60 @@ bool DashioNano_WiFi::begin(char *ssid, char *password, int maxRetries) {
     }
 
     // Device IP address
-    IPAddress ip = WiFi.localIP(); 
+    ipAddr = WiFi.localIP();
     Serial.print(F("IP Address: "));
-    Serial.println(ip);
+    Serial.println(ipAddr);
     
+    if (tcpConnection != NULL) {
+        tcpConnection->begin();
+    }
+
+    if (mqttConnection != NULL) {
+        mqttConnection->begin();
+    }
+
+    timer.every(1000, onTimerCallback); // 1000ms
+
     return true;
 }
 
+void DashioNano_WiFi::attachConnection(DashioNano_TCP *_tcpConnection) {
+    tcpConnection = _tcpConnection;
+}
+
+void DashioNano_WiFi::attachConnection(DashioNano_MQTT *_mqttConnection) {
+    mqttConnection = _mqttConnection;
+}
+
+void DashioNano_WiFi::run() {
+    if (tcpConnection != NULL) {
+        tcpConnection->checkForMessage();
+    }
+
+    timer.tick();
+    if (mqttConnection != NULL) {
+        if (oneSecond) {
+            oneSecond = false;
+            mqttConnection->checkConnection();
+        }
+        mqttConnection->checkForMessage();
+    }
+}
+
+void DashioNano_WiFi::end() {
+    if (tcpConnection != NULL) {
+        tcpConnection->end();
+    }
+
+    if (mqttConnection != NULL) {
+        mqttConnection->end();
+    }
+
+    WiFi.disconnect();
+    WiFi.end();
+    wiFiDrv.wifiDriverDeinit();
+    status = WL_DISCONNECTED;
+}
 
 byte * DashioNano_WiFi::macAddress() {
     byte mac[6];
@@ -64,11 +119,10 @@ byte * DashioNano_WiFi::macAddress() {
     return mac;
 }
 
-void DashioNano_WiFi::end() {
-    WiFi.end();
-    WiFi.disconnect();
-    wiFiDrv.wifiDriverDeinit();
-    status = WL_DISCONNECTED;
+String DashioNano_WiFi::ipAddress() {
+    static char ipStr[16];
+    sprintf(ipStr, "%d.%d.%d.%d", ipAddr[0], ipAddr[1], ipAddr[2], ipAddr[3]);
+    return ipStr;
 }
 
 // ---------------------------------------- TCP ----------------------------------------
@@ -134,11 +188,9 @@ void DashioNano_TCP::checkForMessage() {
     }
 }
 
-/*???
 void DashioNano_TCP::end() {
-    wifiServer.end();
+    client.stop();
 }
-*/
 
 /*???
 void DashioNano_TCP::setupmDNSservice() {
@@ -158,14 +210,6 @@ void DashioNano_TCP::updatemDNS() {
 // ---------------------------------------- MQTT ---------------------------------------
 
 MessageData DashioNano_MQTT::messageData(MQTT_CONN);
-bool DashioNano_MQTT::oneSecond = false;
-/*???
-// Timer Interrupt
-bool DashioNano_MQTT::onTimerCallback(void *argument) {
-    oneSecond = true;
-    return true; // to repeat the timer action - false to stop
-}
-*/
 
 DashioNano_MQTT::DashioNano_MQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages) {
     dashioDevice = _dashioDevice;
@@ -173,7 +217,6 @@ DashioNano_MQTT::DashioNano_MQTT(DashioDevice *_dashioDevice, int _bufferSize, b
     sendRebootAlarm  = _sendRebootAlarm;
     printMessages = _printMessages;
     mqttClient = PubSubClient(wifiClient);
-//???    timer.every(1000, onTimerCallback); // 1000ms
 }
 
 
@@ -263,10 +306,12 @@ void DashioNano_MQTT::setCallback(void (*processIncomingMessage)(MessageData *co
     processMQTTmessageCallback = processIncomingMessage;
 }
 
-void DashioNano_MQTT::begin(char *_username, char *_password) {
+void DashioNano_MQTT::setup(char *_username, char *_password) {
     username = _username;
     password = _password;
+}
 
+void DashioNano_MQTT::begin() {
     mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
     mqttClient.setCallback(messageReceivedMQTTCallback);
     mqttClient.setBufferSize(bufferSize);
@@ -275,11 +320,6 @@ void DashioNano_MQTT::begin(char *_username, char *_password) {
 }
 
 void DashioNano_MQTT::checkConnection() {
-/*???
-    timer.tick();
-    if (oneSecond) { //??? May not need this anymore
-        oneSecond = false;
- */
     // Check and connect MQTT as necessary
     if (WiFi.status() == WL_CONNECTED) {
         if (!mqttClient.connected()) {
@@ -295,7 +335,6 @@ void DashioNano_MQTT::checkConnection() {
             mqttConnectCount = 0;
         }
     }
-//???    }
 }
 
 void DashioNano_MQTT::end() {
@@ -390,6 +429,9 @@ void DashioNano_BLE::sendMessage(const String& message) {
     }
 }
 
+void DashioNano_BLE::run() {
+    checkForMessage();
+}
 
 void DashioNano_BLE::checkForMessage() {
     if (BLE.connected()) {

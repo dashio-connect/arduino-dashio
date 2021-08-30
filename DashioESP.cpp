@@ -81,6 +81,14 @@ void DashioESP_WiFi::run() {
                 if (wifiConnectCallback != NULL) {
                     wifiConnectCallback();
                 }
+
+                if (tcpConnection != NULL) {
+                    tcpConnection->begin();
+                }
+                
+                if (mqttConnection != NULL) {
+                    mqttConnection->begin();
+                }
             }
             
             if (mqttConnection != NULL) {
@@ -131,6 +139,11 @@ bool DasgioESP_SoftAP::begin(const String& password) {
 
         Serial.print(F("AP IP address: "));
         Serial.println(WiFi.softAPIP());
+        if (tcpConnection != NULL) {
+            originalTCPport = tcpConnection->tcpPort;
+            tcpConnection->setPort(SOFT_AP_PORT);
+            tcpConnection->begin();
+        }
     }
     return result;
 }
@@ -141,6 +154,7 @@ void DasgioESP_SoftAP::attachConnection(DashioESP_TCP *_tcpConnection) {
 
 void DasgioESP_SoftAP::end() {
     WiFi.softAPdisconnect(false); // false = turn off soft AP
+    tcpConnection->setPort(originalTCPport);
 }
 
 bool DasgioESP_SoftAP::isConnected() {
@@ -174,12 +188,11 @@ void DashioESP_TCP::setCallback(void (*processIncomingMessage)(MessageData *mess
     processTCPmessageCallback = processIncomingMessage;
 }
 
-void DashioESP_TCP::begin() {
-    wifiServer.begin(tcpPort);
+void DashioESP_TCP::setPort(uint16_t _tcpPort) {
+    tcpPort = _tcpPort;
 }
 
-void DashioESP_TCP::begin(uint16_t _tcpPort) {
-    tcpPort = _tcpPort;
+void DashioESP_TCP::begin() {
     wifiServer.begin(tcpPort);
 }
 
@@ -361,10 +374,12 @@ void DashioESP_MQTT::setCallback(void (*processIncomingMessage)(MessageData *mes
     processMQTTmessageCallback = processIncomingMessage;
 }
     
-void DashioESP_MQTT::begin(char *_username, char *_password) {
+void DashioESP_MQTT::setup(char *_username, char *_password) {
     username = _username;
     password = _password;
+}
 
+void DashioESP_MQTT::begin() {
     mqttClient.begin(MQTT_SERVER, MQTT_PORT, wifiClient);
     mqttClient.setOptions(10, true, 10000);  // 10s timeout
     mqttClient.onMessageAdvanced(messageReceivedMQTTCallback);

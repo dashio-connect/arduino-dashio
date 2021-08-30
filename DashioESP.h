@@ -35,16 +35,17 @@ private:
     bool printMessages;
     DashioDevice *dashioDevice;
     MessageData data;
-    uint16_t tcpPort = 5000;
     WiFiClient client;
     WiFiServer wifiServer;
     void (*processTCPmessageCallback)(MessageData *messageData);
 
 public:
+    uint16_t tcpPort = 5000;
+
     DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
+    void setPort(uint16_t _tcpPort);
     void begin();
-    void begin(uint16_t _tcpPort);
     void sendMessage(const String& message);
     void setupmDNSservice();
     void startupServer();
@@ -75,12 +76,13 @@ private:
 
 public:
     DashioESP_MQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
+    void setup(char *_username, char *_password);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
     void sendAlarmMessage(const String& message);
     void checkForMessage();
     void checkConnection();
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
-    void begin(char *_username, char *_password);
+    void begin();
     void end();
 };
 
@@ -139,6 +141,7 @@ public:
 class DasgioESP_SoftAP {
 private:
     DashioESP_TCP *tcpConnection;
+    uint16_t originalTCPport = 5000;
 
 public:
     bool begin(const String& password);

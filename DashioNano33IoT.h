@@ -5,7 +5,7 @@
 
 #include "Arduino.h"
 #include <SPI.h>
-//???#include <timer.h>
+#include <arduino-timer.h>
 
 #include "DashIO.h"
 #include <WiFiNINA.h>
@@ -19,18 +19,6 @@ extern const int MQTT_PORT;
 // Create 128 bit UUIDs with a tool such as https://www.uuidgenerator.net/
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
-
-// ---------------------------------------- WiFi ---------------------------------------
-
-class DashioNano_WiFi {
-private:
-    int status = WL_IDLE_STATUS;
-
-public:
-    bool begin(char *ssid, char *password, int maxRetries = 10000);
-    byte * macAddress();
-    void end();
-};
 
 // ---------------------------------------- TCP ----------------------------------------
 
@@ -49,10 +37,10 @@ public:
     void setCallback(void (*processIncomingMessage)(MessageData *connection));
     void sendMessage(const String& message);
     void begin();
+    void end();
     void checkForMessage();
-//???        void end();
-//???        void setupmDNSservice();
-//???        void updatemDNS();
+//???    void setupmDNSservice();
+//???    void updatemDNS();
 
 };
 
@@ -60,8 +48,6 @@ public:
 
 class DashioNano_MQTT {
 private:
-//???    Timer<> timer;
-    static bool oneSecond;
     bool reboot = true;
     bool printMessages;
     DashioDevice *dashioDevice;
@@ -77,16 +63,16 @@ private:
 
     static void messageReceivedMQTTCallback(char* topic, byte* payload, unsigned int length);
     void hostConnect();
-    static bool onTimerCallback(void *argument);
 
 public:
     DashioNano_MQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
+    void setup(char *_username, char *_password);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
     void sendAlarmMessage(const String& message);
     void checkConnection();
     void checkForMessage();
     void setCallback(void (*processIncomingMessage)(MessageData *connection));
-    void begin(char *_username, char *_password);
+    void begin();
     void end();
 };
 
@@ -110,11 +96,35 @@ public:
     DashioNano_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
     void sendMessage(const String& message);
     void checkForMessage();
+    void run();
     void setCallback(void (*processIncomingMessage)(MessageData *connection));
     void begin();
     bool connected();
     void end();
     String macAddress();
+};
+
+// ---------------------------------------- WiFi ---------------------------------------
+
+class DashioNano_WiFi {
+private:
+    Timer<> timer;
+    static bool oneSecond;
+    int status = WL_IDLE_STATUS;
+    IPAddress ipAddr = {0, 0, 0, 0};
+    DashioNano_TCP *tcpConnection;
+    DashioNano_MQTT *mqttConnection;
+
+    static bool onTimerCallback(void *argument);
+
+public:
+    void attachConnection(DashioNano_TCP *_tcpConnection);
+    void attachConnection(DashioNano_MQTT *_mqttConnection);
+    bool begin(char *ssid, char *password, int maxRetries = 10000);
+    void run();
+    void end();
+    byte * macAddress();
+    String ipAddress();
 };
 
 // -------------------------------------------------------------------------------------
