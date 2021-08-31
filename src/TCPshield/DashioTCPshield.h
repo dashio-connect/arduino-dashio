@@ -21,7 +21,7 @@ class DashioTCPshield {
         void setCallback(void (*processIncomingMessage)(MessageData *messageData));
         void sendMessage(const String& message);
         void begin(byte mac[]);
-        void checkForMessage();
+        void run()
 
 //???        void setupmDNSservice();
 //???        void updatemDNS();

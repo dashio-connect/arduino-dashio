@@ -21,7 +21,7 @@ void DashioBluefruit_BLE::sendMessage(const String& writeStr) {
     }
 }
 
-void DashioBluefruit_BLE::checkForMessage() {
+void DashioBluefruit_BLE::run() {
     while(bluefruit.available()) {
         char data;
         data = (char)bluefruit.read(); // Read individual characters.

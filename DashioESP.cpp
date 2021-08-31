@@ -48,11 +48,11 @@ void DashioWiFi::run() {
     timer.tick();
     
     if (mqttConnection != NULL) {
-        mqttConnection->checkForMessage();
+        mqttConnection->run();
     }
     
     if (tcpConnection != NULL) {
-        tcpConnection->checkForMessage();
+        tcpConnection->run();
     }
 
     if (oneSecond) {
@@ -163,7 +163,7 @@ bool DasgioSoftAP::isConnected() {
 
 void DasgioSoftAP::run() {
     if (tcpConnection != NULL) {
-        tcpConnection->checkForMessage();
+        tcpConnection->run();
     }
 }
 
@@ -227,7 +227,7 @@ void DashioTCP::mDNSend() {
     MDNS.end();
 }
 
-void DashioTCP::checkForMessage() {
+void DashioTCP::run() {
     if (!client) {
         client = wifiServer.available();
         client.setTimeout(2000);
@@ -298,7 +298,7 @@ void DashioMQTT::sendAlarmMessage(const String& message) {
     sendMessage(message, alarm_topic);
 }
 
-void DashioMQTT::checkForMessage() {
+void DashioMQTT::run() {
     if (mqttClient.connected()) {
         mqttClient.loop();
         if (data.messageReceived) {
@@ -501,10 +501,6 @@ void DashioBLE::sendMessage(const String& message) {
 }
     
 void DashioBLE::run() {
-    checkForMessage();
-}
-
-void DashioBLE::checkForMessage() {
      if (data.messageReceived) {
         data.messageReceived = false;
 

@@ -433,194 +433,94 @@ String DashioDevice::getAlarmMessage(Notification alarm) {
     return getAlarmMessage(alarm.identifier, alarm.title, alarm.description);
 }
 
-String DashioDevice::getButtonMessage(const String& controlID, bool on, const String& iconName, const String& text) {
-    String writeStr = String(DELIM);
-    writeStr += deviceID;
-    writeStr += String(DELIM);
-    writeStr += BUTTON_ID;
-    writeStr += String(DELIM);
-    writeStr += controlID;
-    writeStr += String(DELIM);
-    if (on) {
-        writeStr += BUTTON_ON;
-    } else {
-        writeStr += BUTTON_OFF;
-    }
-    if (text != "") {
-        writeStr += String(DELIM);
-        writeStr += iconName;
-        writeStr += String(DELIM);
-        writeStr += text;
-    } else {
-        if (iconName != "") {
-            writeStr += String(DELIM);
-            writeStr += iconName;
-        }
-    }
-    writeStr += String(END_DELIM);
-    return writeStr;
-}
-
-String DashioDevice::getTextBoxMessage(const String& controlID, const String& text) {
+String DashioDevice::getControlBaseMessage(const String& controlType, const String& controlID) {
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
-    message += TEXT_BOX_ID;
+    message += controlType;
     message += String(DELIM);
     message += controlID;
     message += String(DELIM);
+    return message;
+}
+
+String DashioDevice::getButtonMessage(const String& controlID, bool on, const String& iconName, const String& text) {
+    String message = getControlBaseMessage(BUTTON_ID, controlID);
+    if (on) {
+        message += BUTTON_ON;
+    } else {
+        message += BUTTON_OFF;
+    }
+    if (text != "") {
+        message += String(DELIM);
+        message += iconName;
+        message += String(DELIM);
+        message += text;
+    } else {
+        if (iconName != "") {
+            message += String(DELIM);
+            message += iconName;
+        }
+    }
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getTextBoxMessage(const String& controlID, const String& text) {
+    String message = getControlBaseMessage(TEXT_BOX_ID, controlID);
     message += text;
     message += String(END_DELIM);
     return message;
 }
 
 String DashioDevice::getSelectorMessage(const String& controlID, int index) {
-    String message = String(DELIM);
-    message += deviceID;
-    message += String(DELIM);
-    message += SELECTOR_ID;
-    message += String(DELIM);
-    message += controlID;
-    message += String(DELIM);
+    String message = getControlBaseMessage(SELECTOR_ID, controlID);
     message += String(index);
     message += String(END_DELIM);
-  return message;
+    return message;
 }
 
 String DashioDevice::getSelectorMessage(const String& controlID, int index, String* selectionItems, int rows) {
-    String writeStr = String(DELIM);
-    writeStr += deviceID;
-    writeStr += String(DELIM);
-    writeStr += SELECTOR_ID;
-    writeStr += String(DELIM);
-    writeStr += controlID;
-    writeStr += String(DELIM);
-    writeStr += String(index);
+    String message = getControlBaseMessage(SELECTOR_ID, controlID);
+    message += String(index);
     for (int i = 0; i < rows; i++) {
-        writeStr += String(DELIM);
-        writeStr += selectionItems[i];
+        message += String(DELIM);
+        message += selectionItems[i];
     }
-    writeStr += String(END_DELIM);
-    return writeStr;
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashioDevice::getSliderMessage(const String& controlID, int value) {
-    String message = String(DELIM);
-    message += deviceID;
-    message += String(DELIM);
-    message += SLIDER_ID;
-    message += String(DELIM);
-    message += controlID;
-    message += String(DELIM);
+    String message = getControlBaseMessage(SLIDER_ID, controlID);
     message += String(value);
     message += String(END_DELIM);
-  return message;
+    return message;
+}
+
+String DashioDevice::getSliderMessage(const String& controlID, float value) {
+    String message = getControlBaseMessage(SLIDER_ID, controlID);
+    char lineDataBuffer[8];
+    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
+    message += String(floatStr);
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashioDevice::getSingleBarMessage(const String& controlID, int value) {
-    String message = String(DELIM);
-    message += deviceID;
-    message += String(DELIM);
-    message += String(DELIM);
-    message += BAR_ID;
-    message += String(DELIM);
-    message += controlID;
-    message += String(DELIM);
+    String message = getControlBaseMessage(BAR_ID, controlID);
     message += String(value);
     message += String(END_DELIM);
-  return message;
+    return message;
 }
 
-String DashioDevice::getKnobMessage(const String& controlID, int value) {
-    String message = String(DELIM);
-    message += deviceID;
-    message += String(DELIM);
-    message += KNOB_ID;
-    message += String(DELIM);
-    message += controlID;
-    message += String(DELIM);
-    message += String(value);
+String DashioDevice::getSingleBarMessage(const String& controlID, float value) {
+    String message = getControlBaseMessage(BAR_ID, controlID);
+    char lineDataBuffer[8];
+    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
+    message += String(floatStr);
     message += String(END_DELIM);
-  return message;
-}
-
-String DashioDevice::getKnobDialMessage(const String& controlID, int value) {
-    String message = String(DELIM);
-    message += deviceID;
-    message += String(DELIM);
-    message += KNOB_DIAL_ID;
-    message += String(DELIM);
-    message += controlID;
-    message += String(DELIM);
-    message += String(value);
-    message += String(END_DELIM);
-  return message;
-}
-
-String DashioDevice::getDirectionMessage(const String& controlID, int value, const String& text) {
-    String writeStr = String(DELIM);
-    writeStr += deviceID;
-    writeStr += String(DELIM);
-    writeStr += DIRECTION_ID;
-    writeStr += String(DELIM);
-    writeStr += controlID;
-    writeStr + String(DELIM);
-    writeStr + String(value);
-    if (text != "") {
-        writeStr += String(DELIM);
-        writeStr += text;
-    }
-    writeStr += String(END_DELIM);
-    return writeStr;
-}
-
-String DashioDevice::getDialMessage(const String& controlID, int value) {
-    String message = String(DELIM);
-    message += deviceID;
-    message += String(DELIM);
-    message += DIAL_ID;
-    message += String(DELIM);
-    message += controlID;
-    message += String(DELIM);
-    message += String(value);
-    message += String(END_DELIM);
-  return message;
-}
-
-String DashioDevice::getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& message) {
-    String writeStr = String(DELIM);
-    writeStr += deviceID;
-    writeStr += String(DELIM);
-    writeStr += MAP_ID;
-    writeStr += String(DELIM);
-    writeStr += controlID;
-    writeStr += String(DELIM);
-    writeStr += latitude;
-    writeStr += String(DELIM);
-    writeStr += longitude;
-    writeStr += String(DELIM);
-    writeStr += message;
-    writeStr += String(END_DELIM);
-  return writeStr;
-}
-
-String DashioDevice::getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength) {
-    String writeStr = String(DELIM);
-    writeStr += deviceID ;
-    writeStr += String(DELIM);
-    writeStr += EVENT_LOG_ID;
-    writeStr += String(DELIM);
-    writeStr += controlID;
-    writeStr += String(DELIM);
-    writeStr += timeStr;
-    writeStr += String(DELIM);
-    writeStr += color;
-    for (int i = 0; i < dataLength; i++) {
-        writeStr += String(DELIM);
-        writeStr += text[i];
-    }
-    writeStr += String(END_DELIM);
-    return writeStr;
+    return message;
 }
 
 String DashioDevice::getDoubleBarMessage(const String& controlID, int value1, int value2) {
@@ -628,6 +528,109 @@ String DashioDevice::getDoubleBarMessage(const String& controlID, int value1, in
     barValues[0] = value1;
     barValues[1] = value2;
     return getIntArray(BAR_ID, controlID, barValues, 2);
+}
+
+String DashioDevice::getDoubleBarMessage(const String& controlID, float value1, float value2) {
+    float barValues[2];
+    barValues[0] = value1;
+    barValues[1] = value2;
+    return getFloatArray(BAR_ID, controlID, barValues, 2);
+}
+
+String DashioDevice::getKnobMessage(const String& controlID, int value) {
+    String message = getControlBaseMessage(KNOB_ID, controlID);
+    message += String(value);
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getKnobMessage(const String& controlID, float value) {
+    String message = getControlBaseMessage(KNOB_ID, controlID);
+    char lineDataBuffer[8];
+    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
+    message += String(floatStr);
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getKnobDialMessage(const String& controlID, int value) {
+    String message = getControlBaseMessage(KNOB_DIAL_ID, controlID);
+    message += String(value);
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getKnobDialMessage(const String& controlID, float value) {
+    String message = getControlBaseMessage(KNOB_DIAL_ID, controlID);
+    char lineDataBuffer[8];
+    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
+    message += String(floatStr);
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getDialMessage(const String& controlID, int value) {
+    String message = getControlBaseMessage(DIAL_ID, controlID);
+    message += String(value);
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getDialMessage(const String& controlID, float value) {
+    String message = getControlBaseMessage(DIAL_ID, controlID);
+    char lineDataBuffer[8];
+    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
+    message += String(floatStr);
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getDirectionMessage(const String& controlID, int value, const String& text) {
+    String message = getControlBaseMessage(DIRECTION_ID, controlID);
+    message += String(value);
+    if (text != "") {
+        message += String(DELIM);
+        message += text;
+    }
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getDirectionMessage(const String& controlID, float value, const String& text) {
+    String message = getControlBaseMessage(DIRECTION_ID, controlID);
+    char lineDataBuffer[8];
+    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
+    message += String(floatStr);
+    if (text != "") {
+        message += String(DELIM);
+        message += text;
+    }
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& mapMessage) {
+    String message = getControlBaseMessage(MAP_ID, controlID);
+    message += latitude;
+    message += String(DELIM);
+    message += longitude;
+    message += String(DELIM);
+    message += message;
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength) {
+    String message = getControlBaseMessage(EVENT_LOG_ID, controlID);
+    message += timeStr;
+    message += String(DELIM);
+    message += color;
+    for (int i = 0; i < dataLength; i++) {
+        message += String(DELIM);
+        message += text[i];
+    }
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashioDevice::getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle) {
@@ -678,113 +681,89 @@ String DashioDevice::getFullConfigMessage(ControlType controlType, const String&
 }
 
 String DashioDevice::getGraphLineInts(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength) {
-    String writeStr = String(DELIM);
-    writeStr += deviceID;
-    writeStr += String(DELIM);
-    writeStr += GRAPH_ID;
-    writeStr += String(DELIM);
-    writeStr += controlID;
-    writeStr += String(DELIM);
-    writeStr += graphLineID;
-    writeStr += String(DELIM);
-    writeStr += lineName;
-    writeStr += String(DELIM);
-    writeStr += getLineTypeStr(lineType);
-    writeStr += String(DELIM);
-    writeStr += color;
+    String message = getControlBaseMessage(GRAPH_ID, controlID);
+    message += graphLineID;
+    message += String(DELIM);
+    message += lineName;
+    message += String(DELIM);
+    message += getLineTypeStr(lineType);
+    message += String(DELIM);
+    message += color;
     for (int i = 0; i < dataLength; i++) {
-        writeStr += String(DELIM);
-        writeStr += String(lineData[i]);
+        message += String(DELIM);
+        message += String(lineData[i]);
     }
-    writeStr += String(END_DELIM);
-    return writeStr;
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashioDevice::getGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, float lineData[], int dataLength) {
-    String writeStr = String(DELIM);
-    writeStr += deviceID;
-    writeStr += String(DELIM);
-    writeStr += GRAPH_ID;
-    writeStr += String(DELIM);
-    writeStr += controlID;
-    writeStr += String(DELIM);
-    writeStr += graphLineID;
-    writeStr += String(DELIM);
-    writeStr += lineName;
-    writeStr += String(DELIM);
-    writeStr += getLineTypeStr(lineType);
-    writeStr += String(DELIM);
-    writeStr += color;
+    String message = getControlBaseMessage(GRAPH_ID, controlID);
+    message += graphLineID;
+    message += String(DELIM);
+    message += lineName;
+    message += String(DELIM);
+    message += getLineTypeStr(lineType);
+    message += String(DELIM);
+    message += color;
     for (int i = 0; i < dataLength; i++) {
         char lineDataBuffer[8];
         String floatStr = dtostrf(lineData[i], 5, 2, lineDataBuffer);
-        writeStr += String(DELIM);
-        writeStr += floatStr;
+        message += String(DELIM);
+        message += floatStr;
     }
-    writeStr += String(END_DELIM);
-    return writeStr;
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashioDevice::getTimeGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine) {
-    String writeStr = String(DELIM);
-    writeStr += deviceID;
-    writeStr += String(DELIM);
-    writeStr += TIME_GRAPH_ID;
-    writeStr += String(DELIM);
-    writeStr += controlID;
-    writeStr += String(DELIM);
-    writeStr += graphLineID;
-    writeStr += String(DELIM);
-    writeStr += lineName;
-    writeStr += String(DELIM);
-    writeStr += getLineTypeStr(lineType);
-    writeStr += String(DELIM);
-    writeStr += color;
+    String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
+    message += graphLineID;
+    message += String(DELIM);
+    message += lineName;
+    message += String(DELIM);
+    message += getLineTypeStr(lineType);
+    message += String(DELIM);
+    message += color;
     if (breakLine && (dataLength > 0)) {
-        writeStr += String(DELIM);
-        writeStr += times[0];
-        writeStr += ",";
-        writeStr += "B";
+        message += String(DELIM);
+        message += times[0];
+        message += ",";
+        message += "B";
     }
     for (int i = 0; i < dataLength; i++) {
         char lineDataBuffer[8];
         String lineDataStr = dtostrf(lineData[i], 5, 2, lineDataBuffer);
-        writeStr += String(DELIM);
-        writeStr += times[i];
-        writeStr += ",";
-        writeStr += lineDataStr;
+        message += String(DELIM);
+        message += times[i];
+        message += ",";
+        message += lineDataStr;
     }
-    writeStr += String(END_DELIM);
-    return writeStr;
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashioDevice::getTimeGraphLineBools(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
-    String writeStr = String(DELIM);
-    writeStr += deviceID;
-    writeStr += String(DELIM);
-    writeStr += TIME_GRAPH_ID;
-    writeStr += String(DELIM);
-    writeStr += controlID;
-    writeStr += String(DELIM);
-    writeStr += graphLineID;
-    writeStr += String(DELIM);
-    writeStr += lineName;
-    writeStr += String(DELIM);
-    writeStr += getLineTypeStr(lineType);
-    writeStr += String(DELIM);
-    writeStr += color;
+    String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
+    message += graphLineID;
+    message += String(DELIM);
+    message += lineName;
+    message += String(DELIM);
+    message += getLineTypeStr(lineType);
+    message += String(DELIM);
+    message += color;
     for (int i = 0; i < dataLength; i++) {
-        writeStr += String(DELIM);
-        writeStr += times[i];
-        writeStr += ",";
+        message += String(DELIM);
+        message += times[i];
+        message += ",";
         if (lineData[i]) {
-            writeStr += "T";
+            message += "T";
         } else {
-            writeStr += "F";
+            message += "F";
         }
     }
-    writeStr += String(END_DELIM);
-    return writeStr;
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashioDevice::getControlTypeStr(ControlType controltype) {

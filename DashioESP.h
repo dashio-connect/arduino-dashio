@@ -49,7 +49,7 @@ public:
     void sendMessage(const String& message);
     void setupmDNSservice();
     void startupServer();
-    void checkForMessage();
+    void run();
     
     void mDNSend();
 };
@@ -79,7 +79,7 @@ public:
     void setup(char *_username, char *_password);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
     void sendAlarmMessage(const String& message);
-    void checkForMessage();
+    void run();
     void checkConnection();
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void begin();
@@ -105,7 +105,6 @@ public:
     DashioBLE(DashioDevice *_dashioDevice, bool _printMessages = false);
     void sendMessage(const String& message);
     void run();
-    void checkForMessage();
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void begin(bool secureBLE = false);
     String macAddress();

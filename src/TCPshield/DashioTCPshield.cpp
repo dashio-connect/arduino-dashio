@@ -31,7 +31,7 @@ void DashioTCPshield::begin(byte mac[]) {
     Serial.println(Ethernet.localIP());
 }
 
-void DashioTCPshield::checkForMessage() {
+void DashioTCPshield::run() {
   // wait for a new client:
     EthernetClient client = server.available();
     client.setTimeout(2000);

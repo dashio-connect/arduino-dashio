@@ -472,15 +472,24 @@ public:
     String getTextBoxMessage(const String& controlID, const String& text);
     String getSelectorMessage(const String& controlID, int index);
     String getSelectorMessage(const String& controlID, int index, String* selectionItems, int rows);
+
     String getSliderMessage(const String& controlID, int value);
+    String getSliderMessage(const String& controlID, float value);
     String getSingleBarMessage(const String& controlID, int value);
-    String getKnobMessage(const String& controlID, int value);
-    String getKnobDialMessage(const String& controlID, int value);
-    String getDirectionMessage(const String& controlID, int direction, const String& text = "");
-    String getDialMessage(const String& controlID, int value);
-    String getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& message);
-    String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength);
+    String getSingleBarMessage(const String& controlID, float value);
     String getDoubleBarMessage(const String& controlID, int value1, int value2);
+    String getDoubleBarMessage(const String& controlID, float value1, float value2);
+
+    String getKnobMessage(const String& controlID, int value);
+    String getKnobMessage(const String& controlID, float value);
+    String getKnobDialMessage(const String& controlID, int value);
+    String getKnobDialMessage(const String& controlID, float value);
+    String getDialMessage(const String& controlID, int value);
+    String getDialMessage(const String& controlID, float value);
+    String getDirectionMessage(const String& controlID, int direction, const String& text = "");
+    String getDirectionMessage(const String& controlID, float value, const String& text);
+    String getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& mapMessage);
+    String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength);
     String getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle);
     String getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle);
     String getBasicConfigMessage(const String& configData);
@@ -525,6 +534,7 @@ public:
     String getMQTTTopic(const String& userName, MQTTTopicType topic);
     
 private:
+    String getControlBaseMessage(const String& messageType, const String& controlID);
     String getLineTypeStr(LineType lineType);
     String getIntArray(const String& controlType, const String& ID, int idata[], int dataLength);
     String getFloatArray(const String& controlType, const String& ID, float fdata[], int dataLength);

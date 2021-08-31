@@ -85,7 +85,7 @@ void DashioWiFi::attachConnection(DashioMQTT *_mqttConnection) {
 
 void DashioWiFi::run() {
     if (tcpConnection != NULL) {
-        tcpConnection->checkForMessage();
+        tcpConnection->run();
     }
 
     timer.tick();
@@ -94,7 +94,7 @@ void DashioWiFi::run() {
             oneSecond = false;
             mqttConnection->checkConnection();
         }
-        mqttConnection->checkForMessage();
+        mqttConnection->run();
     }
 }
 
@@ -152,7 +152,7 @@ void DashioTCP::begin() {
     wifiServer.begin();
 }
 
-void DashioTCP::checkForMessage() {
+void DashioTCP::run() {
     if (!client) {
         client = wifiServer.available();
         client.setTimeout(2000);
@@ -245,7 +245,7 @@ void DashioMQTT::sendAlarmMessage(const String& message) {
     sendMessage(message, alarm_topic);
 }
 
-void DashioMQTT::checkForMessage() {
+void DashioMQTT::run() {
     if (mqttClient.loop()) {
         if (messageData.messageReceived) {
             messageData.messageReceived = false;
@@ -430,10 +430,6 @@ void DashioBLE::sendMessage(const String& message) {
 }
 
 void DashioBLE::run() {
-    checkForMessage();
-}
-
-void DashioBLE::checkForMessage() {
     if (BLE.connected()) {
         BLE.poll(); // Required for event handlers
         if (messageData.messageReceived) {

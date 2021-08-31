@@ -38,7 +38,7 @@ public:
     void sendMessage(const String& message);
     void begin();
     void end();
-    void checkForMessage();
+    void run();
 //???    void setupmDNSservice();
 //???    void updatemDNS();
 
@@ -70,7 +70,7 @@ public:
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
     void sendAlarmMessage(const String& message);
     void checkConnection();
-    void checkForMessage();
+    void run();
     void setCallback(void (*processIncomingMessage)(MessageData *connection));
     void begin();
     void end();
@@ -95,7 +95,6 @@ public:
 
     DashioBLE(DashioDevice *_dashioDevice, bool _printMessages = false);
     void sendMessage(const String& message);
-    void checkForMessage();
     void run();
     void setCallback(void (*processIncomingMessage)(MessageData *connection));
     void begin();
