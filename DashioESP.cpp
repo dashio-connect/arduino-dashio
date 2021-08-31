@@ -12,27 +12,27 @@ const int   MQTT_PORT    = 8883;
 
 // ---------------------------------------- WiFi ---------------------------------------
 
-bool DashioESP_WiFi::oneSecond = false;
+bool DashioWiFi::oneSecond = false;
 
 // Timer Interrupt
-bool DashioESP_WiFi::onTimerCallback(void *argument) {
+bool DashioWiFi::onTimerCallback(void *argument) {
     oneSecond = true;
     return true; // to repeat the timer action - false to stop
 }
 
-void DashioESP_WiFi::attachConnection(DashioESP_TCP *_tcpConnection) {
+void DashioWiFi::attachConnection(DashioTCP *_tcpConnection) {
     tcpConnection = _tcpConnection;
 }
 
-void DashioESP_WiFi::attachConnection(DashioESP_MQTT *_mqttConnection) {
+void DashioWiFi::attachConnection(DashioMQTT *_mqttConnection) {
     mqttConnection = _mqttConnection;
 }
 
-void DashioESP_WiFi::setOnConnectCallback(void (*connectCallback)(void)) {
+void DashioWiFi::setOnConnectCallback(void (*connectCallback)(void)) {
     wifiConnectCallback = connectCallback;
 }
 
-void DashioESP_WiFi::begin(char *ssid, char *password) {
+void DashioWiFi::begin(char *ssid, char *password) {
     // Below is required to get WiFi to connect reliably on ESP32
     WiFi.disconnect(true);
     delay(1000);
@@ -44,7 +44,7 @@ void DashioESP_WiFi::begin(char *ssid, char *password) {
     timer.every(1000, onTimerCallback); // 1000ms
 }
 
-void DashioESP_WiFi::run() {
+void DashioWiFi::run() {
     timer.tick();
     
     if (mqttConnection != NULL) {
@@ -98,7 +98,7 @@ void DashioESP_WiFi::run() {
     }
 }
 
-void DashioESP_WiFi::end() {
+void DashioWiFi::end() {
     if (tcpConnection != NULL) {
         tcpConnection->mDNSend();
     }
@@ -110,11 +110,11 @@ void DashioESP_WiFi::end() {
     WiFi.disconnect();
 }
 
-String DashioESP_WiFi::macAddress() {
+String DashioWiFi::macAddress() {
     return WiFi.macAddress();
 }
 
-String DashioESP_WiFi::ipAddress() {
+String DashioWiFi::ipAddress() {
     IPAddress ip = WiFi.localIP();
     static char ipStr[16];
     sprintf(ipStr, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
@@ -123,7 +123,7 @@ String DashioESP_WiFi::ipAddress() {
 
 // --------------------------------------- Soft AP -------------------------------------
 
-bool DasgioESP_SoftAP::begin(const String& password) {
+bool DasgioSoftAP::begin(const String& password) {
     IPAddress IP = {192, 168, 68, 100};
     IPAddress NMask = {255, 255, 255, 0};
 
@@ -148,20 +148,20 @@ bool DasgioESP_SoftAP::begin(const String& password) {
     return result;
 }
 
-void DasgioESP_SoftAP::attachConnection(DashioESP_TCP *_tcpConnection) {
+void DasgioSoftAP::attachConnection(DashioTCP *_tcpConnection) {
     tcpConnection = _tcpConnection;
 }
 
-void DasgioESP_SoftAP::end() {
+void DasgioSoftAP::end() {
     WiFi.softAPdisconnect(false); // false = turn off soft AP
     tcpConnection->setPort(originalTCPport);
 }
 
-bool DasgioESP_SoftAP::isConnected() {
+bool DasgioSoftAP::isConnected() {
     return (WiFi.softAPgetStationNum() > 0);
 }
 
-void DasgioESP_SoftAP::run() {
+void DasgioSoftAP::run() {
     if (tcpConnection != NULL) {
         tcpConnection->checkForMessage();
     }
@@ -170,33 +170,33 @@ void DasgioESP_SoftAP::run() {
 // ---------------------------------------- TCP ----------------------------------------
 
 #ifdef ESP32
-DashioESP_TCP::DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : data(TCP_CONN) {
+DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : data(TCP_CONN) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
     wifiServer = WiFiServer(_tcpPort);
 }
 #elif ESP8266
-DashioESP_TCP::DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), data(TCP_CONN) {
+DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), data(TCP_CONN) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
 }
 #endif
 
-void DashioESP_TCP::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
+void DashioTCP::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
     processTCPmessageCallback = processIncomingMessage;
 }
 
-void DashioESP_TCP::setPort(uint16_t _tcpPort) {
+void DashioTCP::setPort(uint16_t _tcpPort) {
     tcpPort = _tcpPort;
 }
 
-void DashioESP_TCP::begin() {
+void DashioTCP::begin() {
     wifiServer.begin(tcpPort);
 }
 
-void DashioESP_TCP::sendMessage(const String& message) {
+void DashioTCP::sendMessage(const String& message) {
     if (client.connected()) {
         client.print(message);
 
@@ -207,7 +207,7 @@ void DashioESP_TCP::sendMessage(const String& message) {
     }
 }
 
-void DashioESP_TCP::setupmDNSservice() {
+void DashioTCP::setupmDNSservice() {
 #ifdef ESP32
     if (!MDNS.begin("esp32")) {
 #elif ESP8266
@@ -220,14 +220,14 @@ void DashioESP_TCP::setupmDNSservice() {
     MDNS.addService("DashIO", "tcp", tcpPort);
 }
     
-void DashioESP_TCP::mDNSend() {
+void DashioTCP::mDNSend() {
 #ifdef ESP8266
     MDNS.close();
 #endif
     MDNS.end();
 }
 
-void DashioESP_TCP::checkForMessage() {
+void DashioTCP::checkForMessage() {
     if (!client) {
         client = wifiServer.available();
         client.setTimeout(2000);
@@ -269,19 +269,19 @@ void DashioESP_TCP::checkForMessage() {
 
 // ---------------------------------------- MQTT ---------------------------------------
 
-DashioESP_MQTT::DashioESP_MQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages) : mqttClient(bufferSize) {
+DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages) : mqttClient(bufferSize) {
     dashioDevice = _dashioDevice;
     sendRebootAlarm  = _sendRebootAlarm;
     printMessages = _printMessages;
 }
 
-MessageData DashioESP_MQTT::data(MQTT_CONN);
+MessageData DashioMQTT::data(MQTT_CONN);
 
-void DashioESP_MQTT::messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length) {
+void DashioMQTT::messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length) {
     data.processMessage(String(payload)); // The message components are stored within the connection where the messageReceived flag is set
 }
 
-void DashioESP_MQTT::sendMessage(const String& message, MQTTTopicType topic) {
+void DashioMQTT::sendMessage(const String& message, MQTTTopicType topic) {
     if (mqttClient.connected()) {
         String publishTopic = dashioDevice->getMQTTTopic(username, topic);
         mqttClient.publish(publishTopic.c_str(), message.c_str(), false, MQTT_QOS);
@@ -294,11 +294,11 @@ void DashioESP_MQTT::sendMessage(const String& message, MQTTTopicType topic) {
     }
 }
 
-void DashioESP_MQTT::sendAlarmMessage(const String& message) {
+void DashioMQTT::sendAlarmMessage(const String& message) {
     sendMessage(message, alarm_topic);
 }
 
-void DashioESP_MQTT::checkForMessage() {
+void DashioMQTT::checkForMessage() {
     if (mqttClient.connected()) {
         mqttClient.loop();
         if (data.messageReceived) {
@@ -325,7 +325,7 @@ void DashioESP_MQTT::checkForMessage() {
     }
 }
 
-void DashioESP_MQTT::hostConnect() { // Non-blocking
+void DashioMQTT::hostConnect() { // Non-blocking
     Serial.print(F("Connecting to MQTT..."));
 #ifdef ESP8266
     wifiClient.setInsecure(); // For MQTT SSL
@@ -356,7 +356,7 @@ void DashioESP_MQTT::hostConnect() { // Non-blocking
     }
 }
 
-void DashioESP_MQTT::setupLWT() {
+void DashioMQTT::setupLWT() {
     // Setup MQTT Last Will and Testament message (Optional). Default keep alive time is 10s
 
     String willTopic = dashioDevice->getMQTTTopic(username, will_topic);
@@ -370,16 +370,16 @@ void DashioESP_MQTT::setupLWT() {
     Serial.println(offlineMessage);
 }
 
-void DashioESP_MQTT::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
+void DashioMQTT::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
     processMQTTmessageCallback = processIncomingMessage;
 }
     
-void DashioESP_MQTT::setup(char *_username, char *_password) {
+void DashioMQTT::setup(char *_username, char *_password) {
     username = _username;
     password = _password;
 }
 
-void DashioESP_MQTT::begin() {
+void DashioMQTT::begin() {
     mqttClient.begin(MQTT_SERVER, MQTT_PORT, wifiClient);
     mqttClient.setOptions(10, true, 10000);  // 10s timeout
     mqttClient.onMessageAdvanced(messageReceivedMQTTCallback);
@@ -387,7 +387,7 @@ void DashioESP_MQTT::begin() {
     setupLWT(); // Once the deviceID is known
 }
 
-void DashioESP_MQTT::checkConnection() {
+void DashioMQTT::checkConnection() {
     // Check and connect MQTT as necessary
     if (WiFi.status() == WL_CONNECTED) {
         if (!mqttClient.connected()) {
@@ -405,7 +405,7 @@ void DashioESP_MQTT::checkConnection() {
     }
 }
     
-void DashioESP_MQTT::end() {
+void DashioMQTT::end() {
     mqttClient.disconnect();
 }
 
@@ -445,30 +445,30 @@ class securityBLECallbacks : public BLESecurityCallbacks {
 class messageReceivedBLECallback: public BLECharacteristicCallbacks {
 
      public:
-         messageReceivedBLECallback(DashioESP_BLE * local_DashioESP_BLE):
-            local_DashioESP_BLE(local_DashioESP_BLE)
+         messageReceivedBLECallback(DashioBLE * local_DashioBLE):
+            local_DashioBLE(local_DashioBLE)
          {}
         
         void onWrite(BLECharacteristic *pCharacteristic) {
             std::string payload = pCharacteristic->getValue();
-            local_DashioESP_BLE->data.processMessage(payload.c_str()); // The message components are stored within the connection where the messageReceived flag is set
+            local_DashioBLE->data.processMessage(payload.c_str()); // The message components are stored within the connection where the messageReceived flag is set
         }
     
     public:
-        DashioESP_BLE * local_DashioESP_BLE = NULL;
+        DashioBLE * local_DashioBLE = NULL;
 };
 
-DashioESP_BLE::DashioESP_BLE(DashioDevice *_dashioDevice, bool _printMessages) : data(BLE_CONN) {
+DashioBLE::DashioBLE(DashioDevice *_dashioDevice, bool _printMessages) : data(BLE_CONN) {
     dashioDevice = _dashioDevice;
     printMessages = _printMessages;
 }
 
-void DashioESP_BLE::bleNotifyValue(const String& message) {
+void DashioBLE::bleNotifyValue(const String& message) {
     pCharacteristic->setValue(message.c_str());
     pCharacteristic->notify();
 }
 
-void DashioESP_BLE::sendMessage(const String& message) {
+void DashioBLE::sendMessage(const String& message) {
     if (pServer->getConnectedCount() > 0) {
         int maxMessageLength = BLEDevice::getMTU() - 3;
         
@@ -500,11 +500,11 @@ void DashioESP_BLE::sendMessage(const String& message) {
     }
 }
     
-void DashioESP_BLE::run() {
+void DashioBLE::run() {
     checkForMessage();
 }
 
-void DashioESP_BLE::checkForMessage() {
+void DashioBLE::checkForMessage() {
      if (data.messageReceived) {
         data.messageReceived = false;
 
@@ -528,11 +528,11 @@ void DashioESP_BLE::checkForMessage() {
     }
 }
 
-void DashioESP_BLE::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
+void DashioBLE::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
     processBLEmessageCallback = processIncomingMessage;
 }
         
-void DashioESP_BLE::begin(bool secureBLE) {
+void DashioBLE::begin(bool secureBLE) {
     esp_bt_controller_enable(ESP_BT_MODE_BLE); // Make sure we're only using BLE
     esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT); // Release memory for Bluetooth Classic as we're not using it
 
@@ -569,7 +569,7 @@ void DashioESP_BLE::begin(bool secureBLE) {
     pAdvertising->start();
 }
     
-String DashioESP_BLE::macAddress() {
+String DashioBLE::macAddress() {
     BLEAddress bdAddr = BLEDevice::getAddress();
     return bdAddr.toString().c_str();
 }

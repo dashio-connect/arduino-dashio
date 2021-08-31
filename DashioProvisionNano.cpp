@@ -1,20 +1,20 @@
 #ifdef ARDUINO_SAMD_NANO_33_IOT
 
-#include "DashIOProvisionNano.h"
+#include "DashioProvisionNano.h"
 
 FlashStorage(flash_store, DeviceData);
 
-DashioProvisionNano::DashioProvisionNano(DashioDevice *_dashioDevice) {
+DashioProvision::DashioProvision(DashioDevice *_dashioDevice) {
     dashioDevice = _dashioDevice;
 }
 
-void DashioProvisionNano::load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged)) {
+void DashioProvision::load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged)) {
     onProvisionCallback = _onProvisionCallback;
     update(defaultDeviceData);
     load();
 }
 
-void DashioProvisionNano::processMessage(MessageData *messageData) {
+void DashioProvision::processMessage(MessageData *messageData) {
     switch (messageData->control) {
     case deviceName:
         if (messageData->idStr != "") {
@@ -54,7 +54,7 @@ void DashioProvisionNano::processMessage(MessageData *messageData) {
     }
 }
 
-void DashioProvisionNano::update(DeviceData *deviceData) {
+void DashioProvision::update(DeviceData *deviceData) {
     dashioDevice->name = String(deviceData->deviceName);
     strcpy(wifiSSID,     deviceData->wifiSSID);
     strcpy(wifiPassword, deviceData->wifiPassword);
@@ -62,7 +62,7 @@ void DashioProvisionNano::update(DeviceData *deviceData) {
     strcpy(dashPassword, deviceData->dashPassword);
 }
 
-void DashioProvisionNano::save() {
+void DashioProvision::save() {
     Serial.println(F("User setup saving to EEPROM"));
     
     DeviceData deviceDataWrite;
@@ -76,7 +76,7 @@ void DashioProvisionNano::save() {
     flash_store.write(deviceDataWrite);
 }
 
-void DashioProvisionNano::load() {
+void DashioProvision::load() {
     DeviceData deviceDataRead;
     deviceDataRead = flash_store.read();
 

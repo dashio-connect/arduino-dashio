@@ -18,7 +18,7 @@ struct DeviceData {
     char saved;
 };
 
-class DashioProvisionESP {
+class DashioProvision {
 public:
     DashioDevice *dashioDevice;
     
@@ -27,7 +27,7 @@ public:
     char dashUserName[32];
     char dashPassword[32];
 
-    DashioProvisionESP(DashioDevice *_dashioDevice);
+    DashioProvision(DashioDevice *_dashioDevice);
     void load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
     void processMessage(MessageData *connection);
 

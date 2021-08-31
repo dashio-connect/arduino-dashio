@@ -30,7 +30,7 @@ extern const int MQTT_PORT;
 
 // ---------------------------------------- TCP ----------------------------------------
 
-class DashioESP_TCP {
+class DashioTCP {
 private:
     bool printMessages;
     DashioDevice *dashioDevice;
@@ -42,7 +42,7 @@ private:
 public:
     uint16_t tcpPort = 5000;
 
-    DashioESP_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
+    DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void setPort(uint16_t _tcpPort);
     void begin();
@@ -56,7 +56,7 @@ public:
 
 // ---------------------------------------- MQTT ---------------------------------------
 
-class DashioESP_MQTT {
+class DashioMQTT {
 private:
     bool reboot = true;
     bool printMessages;
@@ -75,7 +75,7 @@ private:
     void setupLWT();
 
 public:
-    DashioESP_MQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
+    DashioMQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
     void setup(char *_username, char *_password);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
     void sendAlarmMessage(const String& message);
@@ -89,7 +89,7 @@ public:
 // ---------------------------------------- BLE ----------------------------------------
 
 #ifdef ESP32
-class DashioESP_BLE {
+class DashioBLE {
 private:
     bool printMessages;
     DashioDevice *dashioDevice;
@@ -102,7 +102,7 @@ public:
     MessageData data;
     void (*processBLEmessageCallback)(MessageData *messageData);
 
-    DashioESP_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
+    DashioBLE(DashioDevice *_dashioDevice, bool _printMessages = false);
     void sendMessage(const String& message);
     void run();
     void checkForMessage();
@@ -114,20 +114,20 @@ public:
 
 // ---------------------------------------- WiFi ---------------------------------------
 
-class DashioESP_WiFi {
+class DashioWiFi {
 private:
     Timer<> timer;
     static bool oneSecond;
     int wifiConnectCount = 1;
     void (*wifiConnectCallback)(void);
-    DashioESP_TCP *tcpConnection;
-    DashioESP_MQTT *mqttConnection;
+    DashioTCP *tcpConnection;
+    DashioMQTT *mqttConnection;
 
     static bool onTimerCallback(void *argument);
 
 public:
-    void attachConnection(DashioESP_TCP *_tcpConnection);
-    void attachConnection(DashioESP_MQTT *_mqttConnection);
+    void attachConnection(DashioTCP *_tcpConnection);
+    void attachConnection(DashioMQTT *_mqttConnection);
     void setOnConnectCallback(void (*connectCallback)(void));
     void begin(char *ssid, char *password);
     void run();
@@ -138,14 +138,14 @@ public:
 
 // --------------------------------------- Soft AP -------------------------------------
 
-class DasgioESP_SoftAP {
+class DasgioSoftAP {
 private:
-    DashioESP_TCP *tcpConnection;
+    DashioTCP *tcpConnection;
     uint16_t originalTCPport = 5000;
 
 public:
     bool begin(const String& password);
-    void attachConnection(DashioESP_TCP *_tcpConnection);
+    void attachConnection(DashioTCP *_tcpConnection);
     void end();
     bool isConnected();
     void run();

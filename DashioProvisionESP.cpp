@@ -1,18 +1,18 @@
 #if defined ESP32 || defined ESP8266
 
-#include "DashIOProvisionESP.h"
+#include "DashioProvisionESP.h"
 
-DashioProvisionESP::DashioProvisionESP(DashioDevice *_dashioDevice) {
+DashioProvision::DashioProvision(DashioDevice *_dashioDevice) {
     dashioDevice = _dashioDevice;
 }
 
-void DashioProvisionESP::load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged)) {
+void DashioProvision::load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged)) {
     onProvisionCallback = _onProvisionCallback;
     update(defaultDeviceData);
     load();
 }
 
-void DashioProvisionESP::processMessage(MessageData *messageData) {
+void DashioProvision::processMessage(MessageData *messageData) {
     switch (messageData->control) {
     case deviceName:
         if (messageData->idStr != "") {
@@ -52,7 +52,7 @@ void DashioProvisionESP::processMessage(MessageData *messageData) {
     }
 }
 
-void DashioProvisionESP::update(DeviceData *deviceData) {
+void DashioProvision::update(DeviceData *deviceData) {
     dashioDevice->name = String(deviceData->deviceName);
     strcpy(wifiSSID,     deviceData->wifiSSID);
     strcpy(wifiPassword, deviceData->wifiPassword);
@@ -60,7 +60,7 @@ void DashioProvisionESP::update(DeviceData *deviceData) {
     strcpy(dashPassword, deviceData->dashPassword);
 }
 
-void DashioProvisionESP::save() {
+void DashioProvision::save() {
     Serial.println(F("User setup saving to EEPROM"));
     
     DeviceData deviceDataWrite;
@@ -75,7 +75,7 @@ void DashioProvisionESP::save() {
     EEPROM.commit();
 }
 
-void DashioProvisionESP::load() {
+void DashioProvision::load() {
 #ifdef ESP32
     if (!EEPROM.begin(EEPROM_SIZE)) {
         Serial.println(F("Failed to init EEPROM"));

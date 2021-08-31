@@ -22,7 +22,7 @@ extern const int MQTT_PORT;
 
 // ---------------------------------------- TCP ----------------------------------------
 
-class DashioNano_TCP {
+class DashioTCP {
 private:
     bool printMessages;
     DashioDevice *dashioDevice;
@@ -33,7 +33,7 @@ private:
     void (*processTCPmessageCallback)(MessageData *connection);
 
 public:
-    DashioNano_TCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
+    DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
     void setCallback(void (*processIncomingMessage)(MessageData *connection));
     void sendMessage(const String& message);
     void begin();
@@ -46,7 +46,7 @@ public:
 
 // ---------------------------------------- MQTT ---------------------------------------
 
-class DashioNano_MQTT {
+class DashioMQTT {
 private:
     bool reboot = true;
     bool printMessages;
@@ -65,7 +65,7 @@ private:
     void hostConnect();
 
 public:
-    DashioNano_MQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
+    DashioMQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
     void setup(char *_username, char *_password);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
     void sendAlarmMessage(const String& message);
@@ -78,7 +78,7 @@ public:
 
 // ---------------------------------------- BLE ----------------------------------------
 
-class DashioNano_BLE {
+class DashioBLE {
 private:
     bool printMessages;
     DashioDevice *dashioDevice;
@@ -93,7 +93,7 @@ private:
 public:
     void (*processBLEmessageCallback)(MessageData *connection);
 
-    DashioNano_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
+    DashioBLE(DashioDevice *_dashioDevice, bool _printMessages = false);
     void sendMessage(const String& message);
     void checkForMessage();
     void run();
@@ -106,20 +106,20 @@ public:
 
 // ---------------------------------------- WiFi ---------------------------------------
 
-class DashioNano_WiFi {
+class DashioWiFi {
 private:
     Timer<> timer;
     static bool oneSecond;
     int status = WL_IDLE_STATUS;
     IPAddress ipAddr = {0, 0, 0, 0};
-    DashioNano_TCP *tcpConnection;
-    DashioNano_MQTT *mqttConnection;
+    DashioTCP *tcpConnection;
+    DashioMQTT *mqttConnection;
 
     static bool onTimerCallback(void *argument);
 
 public:
-    void attachConnection(DashioNano_TCP *_tcpConnection);
-    void attachConnection(DashioNano_MQTT *_mqttConnection);
+    void attachConnection(DashioTCP *_tcpConnection);
+    void attachConnection(DashioMQTT *_mqttConnection);
     bool begin(char *ssid, char *password, int maxRetries = 10000);
     void run();
     void end();
