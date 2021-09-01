@@ -83,19 +83,26 @@ void DashioWiFi::attachConnection(DashioMQTT *_mqttConnection) {
     mqttConnection = _mqttConnection;
 }
 
-void DashioWiFi::run() {
-    if (tcpConnection != NULL) {
-        tcpConnection->run();
-    }
-
+bool DashioWiFi::run() {
     timer.tick();
-    if (mqttConnection != NULL) {
-        if (oneSecond) {
-            oneSecond = false;
-            mqttConnection->checkConnection();
+    
+    if (WiFi.status() == WL_CONNECTED) {
+        if (tcpConnection != NULL) {
+            tcpConnection->run();
         }
-        mqttConnection->run();
+
+        if (mqttConnection != NULL) {
+            if (oneSecond) {
+                oneSecond = false;
+                mqttConnection->checkConnection();
+            }
+            mqttConnection->run();
+        }
+    } else {
+        return false;
     }
+    
+    return true;
 }
 
 void DashioWiFi::end() {
@@ -273,13 +280,11 @@ void DashioMQTT::run() {
 
 void DashioMQTT::hostConnect() { // Non-blocking
     String willTopic = dashioDevice->getMQTTTopic(username, will_topic);
-    Serial.print(F("LWT topic: "));  
-    Serial.println(willTopic);
 
     Serial.print(F("Connecting to MQTT..."));
     String offlineMessage = dashioDevice->getOfflineMessage();
     if (mqttClient.connect(dashioDevice->deviceID.c_str(), username, password, willTopic.c_str(), MQTT_QOS, false, offlineMessage.c_str())) {
-        Serial.print(F("connected"));
+        Serial.println(F("connected"));
 
         // Subscribe to private MQTT connection
         String subscriberTopic = dashioDevice->getMQTTSubscribeTopic(username);
@@ -321,18 +326,14 @@ void DashioMQTT::begin() {
 
 void DashioMQTT::checkConnection() {
     // Check and connect MQTT as necessary
-    if (WiFi.status() == WL_CONNECTED) {
-        if (!mqttClient.connected()) {
-            if (mqttConnectCount == 0) {
-                hostConnect();
-            }
-            if (mqttConnectCount >= MQTT_RETRY_S) {
-                mqttConnectCount = 0;
-            } else {
-                mqttConnectCount++;
-            }
-        } else {
+    if (!mqttClient.connected()) {
+        if (mqttConnectCount == 0) {
+            hostConnect();
+        }
+        if (mqttConnectCount >= MQTT_RETRY_S) {
             mqttConnectCount = 0;
+        } else {
+            mqttConnectCount++;
         }
     }
 }

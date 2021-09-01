@@ -120,7 +120,7 @@ public:
     void attachConnection(DashioTCP *_tcpConnection);
     void attachConnection(DashioMQTT *_mqttConnection);
     bool begin(char *ssid, char *password, int maxRetries = 10000);
-    void run();
+    bool run();
     void end();
     byte * macAddress();
     String ipAddress();
