@@ -28,7 +28,7 @@
 
 #include "DashJSON.h"
 
-#ifdef ARDUINO_SAMD_NANO_33_IOT
+#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_ARDUINO_NANO33BLE
     #include <avr/dtostrf.h>
 #endif
 
