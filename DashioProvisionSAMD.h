@@ -1,7 +1,8 @@
-#ifdef ARDUINO_SAMD_NANO_33_IOT
+#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010
+//#ifdef ARDUINO_ARCH_SAMD
 
-#ifndef DashioProvisionNano_h
-#define DashioProvisionNano_h
+#ifndef DashioProvisionSAMD_h
+#define DashioProvisionSAMD_h
 
 #include "Arduino.h"
 #include "DashIO.h"

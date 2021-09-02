@@ -1,7 +1,8 @@
-#ifdef ARDUINO_SAMD_NANO_33_IOT
+#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010
+//#ifdef ARDUINO_ARCH_SAMD
 
-#ifndef Dashionano33IoT_h
-#define Dashionano33IoT_h
+#ifndef DashioSAMD_NINA_h
+#define DashioSAMD_NINA_h
 
 #include "Arduino.h"
 #include <SPI.h>

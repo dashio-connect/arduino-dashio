@@ -1,6 +1,7 @@
-#ifdef ARDUINO_SAMD_NANO_33_IOT
+#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010
+//#ifdef ARDUINO_ARCH_SAMD
 
-#include "DashioNano33IoT.h"
+#include "DashioSAMD_NINA.h"
 
 // WiFi
 const int WIFI_CONNECT_TIMEOUT_MS = 5000; // 5s

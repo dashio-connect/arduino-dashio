@@ -1,6 +1,7 @@
-#ifdef ARDUINO_SAMD_NANO_33_IOT
+#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010
+//#ifdef ARDUINO_ARCH_SAMD
 
-#include "DashioProvisionNano.h"
+#include "DashioProvisionSAMD.h"
 
 FlashStorage(flash_store, DeviceData);
 
@@ -63,7 +64,7 @@ void DashioProvision::update(DeviceData *deviceData) {
 }
 
 void DashioProvision::save() {
-    Serial.println(F("User setup saving to EEPROM"));
+    Serial.println(F("User setup saving to Flash"));
     
     DeviceData deviceDataWrite;
     dashioDevice->name.toCharArray(deviceDataWrite.deviceName, dashioDevice->name.length() + 1);

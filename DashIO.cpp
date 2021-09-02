@@ -29,7 +29,7 @@
 #include "DashIO.h"
 #include "DashJSON.h"
 
-#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_ARDUINO_NANO33BLE
+#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_ARDUINO_NANO33BLE || defined ARDUINO_SAMD_MKRWIFI1010
     #include <avr/dtostrf.h>
 #endif
 
