@@ -7,18 +7,18 @@
 #include "DashIO.h"
 
 class DashioBluno {
-    private:
-        DashioDevice *dashioDevice;
-        DashioConnection dashioConnection;
-        void (*processBLEmessageCallback)(DashioConnection *connection);
+private:
+    DashioDevice *dashioDevice;
+    MessageData messageData;
+    void (*processBLEmessageCallback)(MessageData *messageData);
 
-        void bleNotifyValue(const String& message);
+    void bleNotifyValue(const String& message);
 
-    public:    
-        DashioBluno(DashioDevice *_dashioDevice);
-        void sendMessage(const String& message);
-        void checkForMessage();
-        void setCallback(void (*processIncomingMessage)(DashioConnection *connection));
+public:
+    DashioBluno(DashioDevice *_dashioDevice);
+    void sendMessage(const String& message);
+    void checkForMessage();
+    void setCallback(void (*processIncomingMessage)(MessageData *messagrData));
     void begin(bool useMacForDeviceID = true);
 };
 

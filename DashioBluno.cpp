@@ -2,7 +2,7 @@
 
 #include "DashioBluno.h"
 
-DashioBluno::DashioBluno(DashioDevice *_dashioDevice) : dashioConnection(BLE_CONN) {
+DashioBluno::DashioBluno(DashioDevice *_dashioDevice) : messageData(BLE_CONN) {
     dashioDevice = _dashioDevice;
 }
 
@@ -15,8 +15,8 @@ void DashioBluno::checkForMessage() {
         char data;
         data = (char)Serial.read();
 
-        if (dashioConnection.processChar(data)) {
-            switch (dashioConnection.control) {
+        if (messageData.processChar(data)) {
+            switch (messageData.control) {
             case who:
                 sendMessage(dashioDevice->getWhoMessage());
                 break;
@@ -24,14 +24,14 @@ void DashioBluno::checkForMessage() {
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
             default:
-                processBLEmessageCallback(&dashioConnection);
+                processBLEmessageCallback(&messageData);
                 break;
             }
         }
     }
 }
 
-void DashioBluno::setCallback(void (*processIncomingMessage)(DashioConnection *connection)) {
+void DashioBluno::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
     processBLEmessageCallback = processIncomingMessage;
 }
 
