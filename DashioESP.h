@@ -44,11 +44,11 @@ public:
     void setPort(uint16_t _tcpPort);
     void begin();
     void sendMessage(const String& message);
-    void setupmDNSservice();
+    void setupmDNSservice(const String& id);
     void startupServer();
     void run();
     
-    void mDNSend();
+    void end();
 };
 
 // ---------------------------------------- MQTT ---------------------------------------

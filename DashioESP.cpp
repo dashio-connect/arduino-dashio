@@ -72,16 +72,13 @@ void DashioWiFi::run() {
                 Serial.print("Connected with IP: ");
                 Serial.println(WiFi.localIP());
 
-                if (tcpConnection != NULL) {
-                    tcpConnection->setupmDNSservice();
-                }
-
                 if (wifiConnectCallback != NULL) {
                     wifiConnectCallback();
                 }
 
                 if (tcpConnection != NULL) {
                     tcpConnection->begin();
+                    tcpConnection->setupmDNSservice(WiFi.macAddress());
                 }
                 
                 if (mqttConnection != NULL) {
@@ -98,7 +95,7 @@ void DashioWiFi::run() {
 
 void DashioWiFi::end() {
     if (tcpConnection != NULL) {
-        tcpConnection->mDNSend();
+        tcpConnection->end();
     }
     
     if (mqttConnection != NULL) {
@@ -205,12 +202,8 @@ void DashioTCP::sendMessage(const String& message) {
     }
 }
 
-void DashioTCP::setupmDNSservice() {
-#ifdef ESP32
-    if (!MDNS.begin("esp32")) {
-#elif ESP8266
-    if (!MDNS.begin("esp8266")) {
-#endif
+void DashioTCP::setupmDNSservice(const String& id) {
+    if (!MDNS.begin(id)) {
        Serial.println(F("Error starting mDNS"));
        return;
     }
@@ -218,7 +211,7 @@ void DashioTCP::setupmDNSservice() {
     MDNS.addService("DashIO", "tcp", tcpPort);
 }
     
-void DashioTCP::mDNSend() {
+void DashioTCP::end() {
 #ifdef ESP8266
     MDNS.close();
 #endif
