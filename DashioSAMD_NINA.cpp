@@ -1,4 +1,4 @@
-#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010
+#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010 || defined ARDUINO_SAMD_MKRVIDOR4000
 //#ifdef ARDUINO_ARCH_SAMD
 
 #include "DashioSAMD_NINA.h"
@@ -344,6 +344,7 @@ void DashioMQTT::end() {
 }
 
 // ---------------------------------------- BLE ----------------------------------------
+#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010
 
 DashioBLE::DashioBLE(DashioDevice *_dashioDevice, bool _printMessages) : bleService(SERVICE_UUID),
                                                                                    bleCharacteristic(CHARACTERISTIC_UUID, BLERead | BLEWriteWithoutResponse | BLENotify, BLE_MAX_SEND_MESSAGE_LENGTH, false) {
@@ -470,6 +471,7 @@ String DashioBLE::macAddress() {
     return BLE.address();
 }
 
+#endif
 // -------------------------------------------------------------------------------------
 
 #endif

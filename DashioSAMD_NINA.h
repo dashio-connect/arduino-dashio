@@ -1,4 +1,4 @@
-#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010
+#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010 || defined ARDUINO_SAMD_MKRVIDOR4000
 //#ifdef ARDUINO_ARCH_SAMD
 
 #ifndef DashioSAMD_NINA_h
@@ -12,7 +12,6 @@
 #include <WiFiNINA.h> // WiFi
 //???#include <WiFiNINA_Generic.h> // WiFi
 #include <PubSubClient.h>     // MQTT
-#include <ArduinoBLE.h>       // BLE
 
 /*???
 #define WIFI_NETWORK_WIFININA   true
@@ -20,10 +19,16 @@
 #warning WIFI_NETWORK_TYPE == NETWORK_WIFI_ESP
 */
 
+#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010
+
+#include <ArduinoBLE.h>       // BLE
+
 // Bluetooth Light (BLE)
 // Create 128 bit UUIDs with a tool such as https://www.uuidgenerator.net/
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+
+#endif
 
 // ---------------------------------------- TCP ----------------------------------------
 
@@ -83,7 +88,31 @@ public:
     void end();
 };
 
+// ---------------------------------------- WiFi ---------------------------------------
+
+class DashioWiFi {
+private:
+    Timer<> timer;
+    static bool oneSecond;
+    int status = WL_IDLE_STATUS;
+    IPAddress ipAddr = {0, 0, 0, 0};
+    DashioTCP *tcpConnection;
+    DashioMQTT *mqttConnection;
+
+    static bool onTimerCallback(void *argument);
+
+public:
+    void attachConnection(DashioTCP *_tcpConnection);
+    void attachConnection(DashioMQTT *_mqttConnection);
+    bool begin(char *ssid, char *password, int maxRetries = 10000);
+    bool run();
+    void end();
+    byte * macAddress();
+    String ipAddress();
+};
+
 // ---------------------------------------- BLE ----------------------------------------
+#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010
 
 class DashioBLE {
 private:
@@ -110,29 +139,7 @@ public:
     String macAddress();
 };
 
-// ---------------------------------------- WiFi ---------------------------------------
-
-class DashioWiFi {
-private:
-    Timer<> timer;
-    static bool oneSecond;
-    int status = WL_IDLE_STATUS;
-    IPAddress ipAddr = {0, 0, 0, 0};
-    DashioTCP *tcpConnection;
-    DashioMQTT *mqttConnection;
-
-    static bool onTimerCallback(void *argument);
-
-public:
-    void attachConnection(DashioTCP *_tcpConnection);
-    void attachConnection(DashioMQTT *_mqttConnection);
-    bool begin(char *ssid, char *password, int maxRetries = 10000);
-    bool run();
-    void end();
-    byte * macAddress();
-    String ipAddress();
-};
-
+#endif
 // -------------------------------------------------------------------------------------
 #endif
 #endif
