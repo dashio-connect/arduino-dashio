@@ -435,6 +435,10 @@ public:
     String idStr = ((char *)0);
     String payloadStr = ((char *)0);
     String payloadStr2 = ((char *)0);
+/*
+    String payloadStr3 = ((char *)0);
+    String payloadStr4 = ((char *)0);
+*/
 
     MessageData(ConnectionType connType);
     void processMessage(const String& message);

@@ -317,7 +317,7 @@ void DashioMQTT::setup(char *_username, char *_password) {
 }
 
 void DashioMQTT::begin() {
-    mqttClient.setServer(DASH_SERVER, DASH_PORT);
+    mqttClient.setServer(mqttHost, mqttPort);
     mqttClient.setCallback(messageReceivedMQTTCallback);
     mqttClient.setBufferSize(bufferSize);
     mqttClient.setSocketTimeout(10);

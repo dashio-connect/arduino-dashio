@@ -77,6 +77,9 @@ private:
     void hostConnect();
 
 public:
+    char *mqttHost = DASH_SERVER;
+    uint16_t mqttPort = DASH_PORT;
+
     DashioMQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
     void setup(char *_username, char *_password);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);

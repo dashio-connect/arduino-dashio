@@ -106,7 +106,7 @@ MessageData::MessageData(ConnectionType connType) {
     deviceID.reserve(MAX_STRING_LEN);
     idStr.reserve(MAX_STRING_LEN);
     payloadStr.reserve(MAX_STRING_LEN);
-    payloadStr2.reserve(MAX_STRING_LEN);
+//???    payloadStr2.reserve(MAX_STRING_LEN);
     
     connectionType = connType;
 };
@@ -143,6 +143,11 @@ bool MessageData::processChar(char chr) {
                   
             idStr = "";
             payloadStr = "";
+            payloadStr2 = "";
+/*
+            payloadStr3 = "";
+            payloadStr4 = "";
+*/
             break;
         case 1:
             if (readStr == WHO_ID) {
@@ -191,10 +196,18 @@ bool MessageData::processChar(char chr) {
             break;
         case 3:
             payloadStr = readStr;
-        break;
-            case 4:
+            break;
+        case 4:
             payloadStr2 = readStr;
             break;
+/*
+        case 5:
+            payloadStr3 = readStr;
+            break;
+        case 6:
+            payloadStr4 = readStr;
+            break;
+*/
         default:
                 segmentCount = 0;
         }
@@ -243,6 +256,12 @@ String MessageData::getReceivedMessageForPrint(const String& controlStr) {
     message += payloadStr;
     message += String(DELIM);
     message += payloadStr2;
+/*
+    message += String(DELIM);
+    message += payloadStr3;
+    message += String(DELIM);
+    message += payloadStr4;
+*/
     message += String(END_DELIM);
 
     return message;

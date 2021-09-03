@@ -371,7 +371,7 @@ void DashioMQTT::setup(char *_username, char *_password) {
 }
 
 void DashioMQTT::begin() {
-    mqttClient.begin(DASH_SERVER, DASH_PORT, wifiClient);
+    mqttClient.begin(mqttHost, mqttPort, wifiClient);
     mqttClient.setOptions(10, true, 10000);  // 10s timeout
     mqttClient.onMessageAdvanced(messageReceivedMQTTCallback);
   
