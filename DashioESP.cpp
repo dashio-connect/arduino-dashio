@@ -7,8 +7,6 @@
 // MQTT
 const int   MQTT_QOS     = 2;
 const int   MQTT_RETRY_S = 10; // Retry after 10 seconds
-const char *MQTT_SERVER  = "dash.dashio.io";
-const int   MQTT_PORT    = 8883;
 
 // ---------------------------------------- WiFi ---------------------------------------
 
@@ -380,7 +378,7 @@ void DashioMQTT::setup(char *_username, char *_password) {
 }
 
 void DashioMQTT::begin() {
-    mqttClient.begin(MQTT_SERVER, MQTT_PORT, wifiClient);
+    mqttClient.begin(DASH_SERVER, DASH_PORT, wifiClient);
     mqttClient.setOptions(10, true, 10000);  // 10s timeout
     mqttClient.onMessageAdvanced(messageReceivedMQTTCallback);
   
@@ -406,6 +404,7 @@ void DashioMQTT::checkConnection() {
 }
     
 void DashioMQTT::end() {
+    sendMessage(dashioDevice->getOfflineMessage());
     mqttClient.disconnect();
 }
 

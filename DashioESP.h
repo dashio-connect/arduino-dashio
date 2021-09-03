@@ -18,9 +18,6 @@
 
 #include "DashIO.h"
 
-extern const char *MQTT_SERVER;
-extern const int MQTT_PORT;
-
 #define SOFT_AP_PORT 55892
 
 // Bluetooth Light (BLE)

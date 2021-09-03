@@ -3,7 +3,7 @@
 
 #include "DashioSAMD_NINA.h"
 
-#include <MDNS_Generic.h>
+//???#include <MDNS_Generic.h>
 
 // WiFi
 const int WIFI_CONNECT_TIMEOUT_MS = 5000; // 5s
@@ -226,7 +226,6 @@ DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendR
     printMessages = _printMessages;
     mqttClient = PubSubClient(wifiClient);
 }
-
 
 void DashioMQTT::messageReceivedMQTTCallback(char* topic, byte* payload, unsigned int length) {
     String message;
