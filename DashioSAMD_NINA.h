@@ -9,12 +9,16 @@
 #include <arduino-timer.h>
 
 #include "DashIO.h"
-#include <WiFiNINA.h>
-#include <PubSubClient.h>
-#include <ArduinoBLE.h>
+#include <WiFiNINA.h> // WiFi
+//???#include <WiFiNINA_Generic.h> // WiFi
+#include <PubSubClient.h>     // MQTT
+#include <ArduinoBLE.h>       // BLE
 
-extern const char *MQTT_SERVER;
-extern const int MQTT_PORT;
+/*???
+#define WIFI_NETWORK_WIFININA   true
+#include <WiFiUdp_Generic.h> // mDNS for TCP
+#warning WIFI_NETWORK_TYPE == NETWORK_WIFI_ESP
+*/
 
 // Bluetooth Light (BLE)
 // Create 128 bit UUIDs with a tool such as https://www.uuidgenerator.net/
@@ -31,6 +35,11 @@ private:
     uint16_t tcpPort = 5000;
     WiFiClient client;
     WiFiServer wifiServer;
+/*???
+    WiFiUDP udp;
+    MDNS mdns;
+*/
+
     void (*processTCPmessageCallback)(MessageData *connection);
 
 public:
@@ -40,9 +49,6 @@ public:
     void begin();
     void end();
     void run();
-//???    void setupmDNSservice();
-//???    void updatemDNS();
-
 };
 
 // ---------------------------------------- MQTT ---------------------------------------

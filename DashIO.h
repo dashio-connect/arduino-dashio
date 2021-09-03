@@ -31,6 +31,9 @@
 
 #include "Arduino.h"
 
+#define DASH_SERVER "dash.dashio.io"
+#define DASH_PORT   8883
+
 enum ConnectionType {
     TCP_CONN,
     BLE_CONN,

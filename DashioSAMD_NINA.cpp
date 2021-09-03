@@ -3,17 +3,23 @@
 
 #include "DashioSAMD_NINA.h"
 
+#include <MDNS_Generic.h>
+
 // WiFi
 const int WIFI_CONNECT_TIMEOUT_MS = 5000; // 5s
 
 // MQTT
 const int  MQTT_QOS     = 1; // QoS = 1, as 2 causes subscribe to fail
 const int  MQTT_RETRY_S = 10; // Retry after 10 seconds
-const char *MQTT_SERVER = "dash.dashio.io";
-const int  MQTT_PORT    = 8883;
 
 // BLE
 const int BLE_MAX_SEND_MESSAGE_LENGTH = 100;
+
+/*???
+// mDNS
+WiFiUDP udp;
+MDNS mdns(udp);
+*/
 
 // ---------------------------------------- WiFi ---------------------------------------
 
@@ -135,6 +141,7 @@ String DashioWiFi::ipAddress() {
 
 // ---------------------------------------- TCP ----------------------------------------
 
+//???DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), mdns(udp), messageData(TCP_CONN) {
 DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), messageData(TCP_CONN) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
@@ -158,9 +165,17 @@ void DashioTCP::sendMessage(const String& message) {
 
 void DashioTCP::begin() {
     wifiServer.begin();
+
+/*???
+    Serial.println("Starting mDNS");//???
+    mdns.begin(WiFi.localIP(), "arduino");
+    mdns.addServiceRecord("_tcp._DashIO", tcpPort, MDNSServiceTCP);
+*/
 }
 
 void DashioTCP::run() {
+//???    mdns.run();
+
     if (!client) {
         client = wifiServer.available();
         client.setTimeout(2000);
@@ -199,21 +214,6 @@ void DashioTCP::run() {
 void DashioTCP::end() {
     client.stop();
 }
-
-/*???
-void DashioTCP::setupmDNSservice() {
-    if (!client.begin("nano33iot")) {
-       Serial.println(F("Error starting mDNS"));
-       return;
-    }
-    Serial.println(F("mDNS started"));
-    client.addService("DashIO", "tcp", tcpPort);
-}
-
-void DashioTCP::updatemDNS() {
-    MDNS.update();
-}
-*/
 
 // ---------------------------------------- MQTT ---------------------------------------
 
@@ -318,7 +318,7 @@ void DashioMQTT::setup(char *_username, char *_password) {
 }
 
 void DashioMQTT::begin() {
-    mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
+    mqttClient.setServer(DASH_SERVER, DASH_PORT);
     mqttClient.setCallback(messageReceivedMQTTCallback);
     mqttClient.setBufferSize(bufferSize);
     mqttClient.setSocketTimeout(10);
