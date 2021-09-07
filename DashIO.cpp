@@ -29,10 +29,6 @@
 #include "DashIO.h"
 #include "DashJSON.h"
 
-#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_ARDUINO_NANO33BLE || defined ARDUINO_SAMD_MKRWIFI1010 || defined ARDUINO_SAMD_MKRVIDOR4000
-    #include <avr/dtostrf.h>
-#endif
-
 // Control type IDs
 #define CONNECT_ID "CONNECT"
 #define WHO_ID "WHO"
@@ -64,7 +60,6 @@
 #define TCP_SETUP_ID "TCP"
 #define DASHIO_SETUP_ID "DASHIO"
 #define MQTT_SETUP_ID "MQTT"
-#define POPUP_MESSAGE_ID "MSSG"
 
 // Connection type IDs
 #define MQTT_CONNECTION_ID "MQTT"
@@ -98,15 +93,32 @@
 #define MAX_STRING_LEN 64
 #define MAX_DEVICE_NAME_LEN 32
 #define MAX_DEVICE_TYPE_LEN 32
+#define SMALLEST_FLOAT_VALUE 0.1e-10
 
 const char END_DELIM = '\n';
 const char DELIM = '\t';
+
+String formatFloat(float value) {
+    char lineDataBuffer[16];
+#ifdef ARDUINO_AVR_ARCH
+    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
+    return floatStr;
+#else
+    if (abs(value) < SMALLEST_FLOAT_VALUE) {
+        return "0";
+    } else if ((abs(value) < 1.0) || (abs(value) >= 100000)){
+        sprintf(lineDataBuffer, "%5.2e", value);
+    } else {
+        sprintf(lineDataBuffer, "%5.2f", value);
+    }
+    return lineDataBuffer;
+#endif
+}
 
 MessageData::MessageData(ConnectionType connType) {
     deviceID.reserve(MAX_STRING_LEN);
     idStr.reserve(MAX_STRING_LEN);
     payloadStr.reserve(MAX_STRING_LEN);
-//???    payloadStr2.reserve(MAX_STRING_LEN);
     
     connectionType = connType;
 };
@@ -370,24 +382,6 @@ String DashioDevice::getConnectMessage() {
     return  message;
 }
 
-String DashioDevice::getPopupMessage(const String& header, const String& body, const String& caption) {
-    String message = String(DELIM);
-    message += deviceID;
-    message += String(DELIM);
-    message += POPUP_MESSAGE_ID;
-    message += String(DELIM);
-    message += header;
-    if (body != "") {
-        message += (String(DELIM) + body);
-        if (caption != "") {
-            message += String(DELIM);
-            message += caption;
-        }
-    }
-    message += String(END_DELIM);
-    return message;
-}
-
 String DashioDevice::getDeviceNameMessage() {
     String message = String(DELIM);
     message += deviceID;
@@ -519,9 +513,7 @@ String DashioDevice::getSliderMessage(const String& controlID, int value) {
 
 String DashioDevice::getSliderMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(SLIDER_ID, controlID);
-    char lineDataBuffer[8];
-    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
-    message += String(floatStr);
+    message += String(formatFloat(value));
     message += String(END_DELIM);
     return message;
 }
@@ -535,9 +527,7 @@ String DashioDevice::getSingleBarMessage(const String& controlID, int value) {
 
 String DashioDevice::getSingleBarMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(BAR_ID, controlID);
-    char lineDataBuffer[8];
-    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
-    message += String(floatStr);
+    message += String(formatFloat(value));
     message += String(END_DELIM);
     return message;
 }
@@ -565,9 +555,7 @@ String DashioDevice::getKnobMessage(const String& controlID, int value) {
 
 String DashioDevice::getKnobMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(KNOB_ID, controlID);
-    char lineDataBuffer[8];
-    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
-    message += String(floatStr);
+    message += String(formatFloat(value));
     message += String(END_DELIM);
     return message;
 }
@@ -581,9 +569,7 @@ String DashioDevice::getKnobDialMessage(const String& controlID, int value) {
 
 String DashioDevice::getKnobDialMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(KNOB_DIAL_ID, controlID);
-    char lineDataBuffer[8];
-    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
-    message += String(floatStr);
+    message += String(formatFloat(value));
     message += String(END_DELIM);
     return message;
 }
@@ -597,9 +583,7 @@ String DashioDevice::getDialMessage(const String& controlID, int value) {
 
 String DashioDevice::getDialMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(DIAL_ID, controlID);
-    char lineDataBuffer[8];
-    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
-    message += String(floatStr);
+    message += String(formatFloat(value));
     message += String(END_DELIM);
     return message;
 }
@@ -617,9 +601,7 @@ String DashioDevice::getDirectionMessage(const String& controlID, int value, con
 
 String DashioDevice::getDirectionMessage(const String& controlID, float value, const String& text) {
     String message = getControlBaseMessage(DIRECTION_ID, controlID);
-    char lineDataBuffer[8];
-    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
-    message += String(floatStr);
+    message += String(formatFloat(value));
     if (text != "") {
         message += String(DELIM);
         message += text;
@@ -726,10 +708,8 @@ String DashioDevice::getGraphLineFloats(const String& controlID, const String& g
     message += String(DELIM);
     message += color;
     for (int i = 0; i < dataLength; i++) {
-        char lineDataBuffer[8];
-        String floatStr = dtostrf(lineData[i], 5, 2, lineDataBuffer);
         message += String(DELIM);
-        message += floatStr;
+        message += formatFloat(lineData[i]);
     }
     message += String(END_DELIM);
     return message;
@@ -751,12 +731,10 @@ String DashioDevice::getTimeGraphLineFloats(const String& controlID, const Strin
         message += "B";
     }
     for (int i = 0; i < dataLength; i++) {
-        char lineDataBuffer[8];
-        String lineDataStr = dtostrf(lineData[i], 5, 2, lineDataBuffer);
         message += String(DELIM);
         message += times[i];
         message += ",";
-        message += lineDataStr;
+        message += formatFloat(lineData[i]);
     }
     message += String(END_DELIM);
     return message;
@@ -814,7 +792,6 @@ String DashioDevice::getControlTypeStr(ControlType controltype) {
         case tcpSetup: return TCP_SETUP_ID;
         case dashioSetup: return DASHIO_SETUP_ID;
         case mqttSetup: return MQTT_SETUP_ID;
-        case popupMessage: return POPUP_MESSAGE_ID;
 
         case mqttConn: return MQTT_CONNECTION_ID;
         case bleConn: return BLE_CONNECTION_ID;
@@ -893,10 +870,8 @@ String DashioDevice::getFloatArray(const String& controlType, const String& ID, 
     writeStr + String(DELIM);
     writeStr + ID;
     for (int i = 0; i < dataLength; i++) {
-        char fbuffer[8];
-        String floatStr = dtostrf(fdata[i], 5, 2, fbuffer);
         writeStr += String(DELIM);
-        writeStr +=  floatStr;
+        writeStr += formatFloat(fdata[i]);
     }
     writeStr += String(END_DELIM);
     return writeStr;

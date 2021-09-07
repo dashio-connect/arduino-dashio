@@ -71,7 +71,6 @@ enum ControlType {
     tcpSetup,
     dashioSetup,
     mqttSetup,
-    popupMessage,
     unknown
 };
 
@@ -465,7 +464,6 @@ public:
 
     String getWhoMessage();
     String getConnectMessage();
-    String getPopupMessage(const String& header, const String& body = "", const String& caption = "");
 
     String getDeviceNameMessage();
     String getWifiUpdateAckMessage();

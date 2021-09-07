@@ -9,8 +9,8 @@
 const int WIFI_CONNECT_TIMEOUT_MS = 5000; // 5s
 
 // MQTT
-const uint8_t MQTT_QOS     = 2;
-const int     MQTT_RETRY_S = 10; // Retry after 10 seconds
+const int  MQTT_QOS     = 1; // QoS = 1, as 2 causes subscribe to fail
+const int  MQTT_RETRY_S = 10; // Retry after 10 seconds
 
 // BLE
 const int BLE_MAX_SEND_MESSAGE_LENGTH = 100;
@@ -71,6 +71,10 @@ bool DashioWiFi::begin(char *ssid, char *password, int maxRetries) {
     
     if (tcpConnection != NULL) {
         tcpConnection->begin();
+    }
+
+    if (mqttConnection != NULL) {
+        mqttConnection->begin();
     }
 
     timer.every(1000, onTimerCallback); // 1000ms
@@ -214,34 +218,31 @@ void DashioTCP::end() {
 // ---------------------------------------- MQTT ---------------------------------------
 
 MessageData DashioMQTT::messageData(MQTT_CONN);
-WiFiSSLClient DashioMQTT::wifiClient;
-MqttClient DashioMQTT::mqttClient(wifiClient);
 
-DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool _printMessages) {
+DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages) {
     dashioDevice = _dashioDevice;
+    bufferSize = _bufferSize;
     sendRebootAlarm  = _sendRebootAlarm;
     printMessages = _printMessages;
+    mqttClient = PubSubClient(wifiClient);
 }
 
-void DashioMQTT::messageReceivedMQTTCallback(int messageSize) {
+void DashioMQTT::messageReceivedMQTTCallback(char* topic, byte* payload, unsigned int length) {
     String message;
-    for (int i = 0; i < messageSize; i++) {
-        message += (char)mqttClient.read();
+    for (int i = 0; i < length; i++) {
+        message += (char)payload[i];
     }
     messageData.processMessage(message); // The message components are stored within the connection where the messageReceived flag is set
 }
 
-
 void DashioMQTT::sendMessage(const String& message, MQTTTopicType topic) {
     if (mqttClient.connected()) {
         String publishTopic = dashioDevice->getMQTTTopic(username, topic);
-        mqttClient.beginMessage(publishTopic, message.length(), false, MQTT_QOS, false); // reatined = false, duplicate = false
-        mqttClient.print(message);
-        mqttClient.endMessage();
+        mqttClient.publish(publishTopic.c_str(), message.c_str());
 
         if (printMessages) {
             Serial.print(F("---- MQTT Sent ---- Topic: "));
-            Serial.println(topic);
+            Serial.println(publishTopic);
             Serial.println(message);
         }
     }
@@ -252,8 +253,7 @@ void DashioMQTT::sendAlarmMessage(const String& message) {
 }
 
 void DashioMQTT::run() {
-    mqttClient.poll();
-    if (mqttClient.connected()) {
+    if (mqttClient.loop()) {
         if (messageData.messageReceived) {
             messageData.messageReceived = false;
 
@@ -279,31 +279,17 @@ void DashioMQTT::run() {
 }
 
 void DashioMQTT::hostConnect() { // Non-blocking
-    // Setup MQTT Last Will and Testament message (Optional).
     String willTopic = dashioDevice->getMQTTTopic(username, will_topic);
-    Serial.print(F("LWT topic: "));
-    Serial.println(willTopic);
-
-    String offlineMessage = dashioDevice->getOfflineMessage();
-    mqttClient.beginWill(willTopic, offlineMessage.length(), true, MQTT_QOS);
-    mqttClient.print(offlineMessage);
-    mqttClient.endWill();
-    Serial.print(F("LWT message: "));
-    Serial.println(offlineMessage);
-    
-    mqttClient.setKeepAliveInterval(10000);
-    mqttClient.setConnectionTimeout(10000);
-    mqttClient.onMessage(messageReceivedMQTTCallback);
 
     Serial.print(F("Connecting to MQTT..."));
-    mqttClient.setUsernamePassword(username, password);
-    if (mqttClient.connect(mqttHost, mqttPort)) {
+    String offlineMessage = dashioDevice->getOfflineMessage();
+    if (mqttClient.connect(dashioDevice->deviceID.c_str(), username, password, willTopic.c_str(), MQTT_QOS, false, offlineMessage.c_str())) {
         Serial.println(F("connected"));
 
         // Subscribe to private MQTT connection
         String subscriberTopic = dashioDevice->getMQTTSubscribeTopic(username);
-        mqttClient.subscribe(subscriberTopic, MQTT_QOS);
-    
+        mqttClient.subscribe(subscriberTopic.c_str(), MQTT_QOS);
+
         // Send MQTT ONLINE and WHO messages to connection (Optional)
         // WHO is only required here if using the Dash server and it must be send to the ANNOUNCE topic
         sendMessage(dashioDevice->getOnlineMessage());
@@ -317,7 +303,7 @@ void DashioMQTT::hostConnect() { // Non-blocking
         }
     } else {
         Serial.print(F("Failed - Try again in 10 seconds: "));
-        Serial.println(mqttClient.connectError());
+        Serial.println(mqttClient.state());
     }
 }
 
@@ -328,6 +314,14 @@ void DashioMQTT::setCallback(void (*processIncomingMessage)(MessageData *connect
 void DashioMQTT::setup(char *_username, char *_password) {
     username = _username;
     password = _password;
+}
+
+void DashioMQTT::begin() {
+    mqttClient.setServer(mqttHost, mqttPort);
+    mqttClient.setCallback(messageReceivedMQTTCallback);
+    mqttClient.setBufferSize(bufferSize);
+    mqttClient.setSocketTimeout(10);
+    mqttClient.setKeepAlive(10);
 }
 
 void DashioMQTT::checkConnection() {
@@ -346,7 +340,7 @@ void DashioMQTT::checkConnection() {
 
 void DashioMQTT::end() {
     sendMessage(dashioDevice->getOfflineMessage());
-//???    mqttClient.disconnect();
+    mqttClient.disconnect();
 }
 
 // ---------------------------------------- BLE ----------------------------------------

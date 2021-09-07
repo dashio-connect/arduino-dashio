@@ -356,7 +356,6 @@ void DashioMQTT::setupLWT() {
 
     String offlineMessage = dashioDevice->getOfflineMessage();
     mqttClient.setWill(willTopic.c_str(), offlineMessage.c_str(), false, MQTT_QOS);
-
     Serial.print(F("LWT message: "));
     Serial.println(offlineMessage);
 }

@@ -9,10 +9,10 @@
 #include <arduino-timer.h>
 
 #include "DashIO.h"
-#include <WiFiNINA.h>
-//???#include <WiFiNINA_Generic.h>
-//???#include <PubSubClient.h>     // MQTT
-#include <ArduinoMqttClient.h>
+#include <WiFiNINA.h> // WiFi
+//???#include <WiFiNINA_Generic.h> // WiFi
+#include <PubSubClient.h>     // MQTT
+
 /*???
 #define WIFI_NETWORK_WIFININA   true
 #include <WiFiUdp_Generic.h> // mDNS for TCP
@@ -64,28 +64,30 @@ private:
     bool printMessages;
     DashioDevice *dashioDevice;
     static MessageData messageData;
-    static WiFiSSLClient wifiClient;
-    static MqttClient mqttClient;
+    WiFiSSLClient wifiClient;
+    PubSubClient mqttClient;
     int mqttConnectCount = 0;
+    int bufferSize = 1024;
     bool sendRebootAlarm;
     char *username;
     char *password;
     void (*processMQTTmessageCallback)(MessageData *connection);
 
-    static void messageReceivedMQTTCallback(int messageSize);
+    static void messageReceivedMQTTCallback(char* topic, byte* payload, unsigned int length);
     void hostConnect();
 
 public:
     char *mqttHost = DASH_SERVER;
     uint16_t mqttPort = DASH_PORT;
 
-    DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool _printMessages = false);
+    DashioMQTT(DashioDevice *_dashioDevice, int _bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
     void setup(char *_username, char *_password);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
     void sendAlarmMessage(const String& message);
     void checkConnection();
     void run();
     void setCallback(void (*processIncomingMessage)(MessageData *connection));
+    void begin();
     void end();
 };
 
