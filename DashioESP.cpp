@@ -203,7 +203,9 @@ void DashioTCP::sendMessage(const String& message) {
 }
 
 void DashioTCP::setupmDNSservice(const String& id) {
-    if (!MDNS.begin(id)) {
+    char charBuf[id.length()];
+    id.toCharArray(charBuf, id.length() + 1);
+    if (!MDNS.begin(charBuf)) {
        Serial.println(F("Error starting mDNS"));
        return;
     }
