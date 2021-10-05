@@ -137,7 +137,7 @@ public:
 
 // --------------------------------------- Soft AP -------------------------------------
 
-class DasgioSoftAP {
+class DashioSoftAP {
 private:
     DashioTCP *tcpConnection;
     uint16_t originalTCPport = 5000;

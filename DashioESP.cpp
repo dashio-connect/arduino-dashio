@@ -118,7 +118,7 @@ String DashioWiFi::ipAddress() {
 
 // --------------------------------------- Soft AP -------------------------------------
 
-bool DasgioSoftAP::begin(const String& password) {
+bool DashioSoftAP::begin(const String& password) {
     IPAddress IP = {192, 168, 68, 100};
     IPAddress NMask = {255, 255, 255, 0};
 
@@ -143,20 +143,20 @@ bool DasgioSoftAP::begin(const String& password) {
     return result;
 }
 
-void DasgioSoftAP::attachConnection(DashioTCP *_tcpConnection) {
+void DashioSoftAP::attachConnection(DashioTCP *_tcpConnection) {
     tcpConnection = _tcpConnection;
 }
 
-void DasgioSoftAP::end() {
+void DashioSoftAP::end() {
     WiFi.softAPdisconnect(false); // false = turn off soft AP
     tcpConnection->setPort(originalTCPport);
 }
 
-bool DasgioSoftAP::isConnected() {
+bool DashioSoftAP::isConnected() {
     return (WiFi.softAPgetStationNum() > 0);
 }
 
-void DasgioSoftAP::run() {
+void DashioSoftAP::run() {
     if (tcpConnection != NULL) {
         tcpConnection->run();
     }
