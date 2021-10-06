@@ -99,19 +99,19 @@ const char END_DELIM = '\n';
 const char DELIM = '\t';
 
 String formatFloat(float value) {
-    char lineDataBuffer[16];
-#ifdef ARDUINO_AVR_ARCH
-    String floatStr = dtostrf(value, 5, 2, lineDataBuffer);
-    return floatStr;
+    char buffer[16];
+#ifdef ARDUINO_ARCH_AVR
+    dtostrf(value, 5, 2, buffer);
+    return buffer;
 #else
     if (abs(value) < SMALLEST_FLOAT_VALUE) {
         return "0";
     } else if ((abs(value) < 1.0) || (abs(value) >= 100000)){
-        sprintf(lineDataBuffer, "%5.2e", value);
+        sprintf(buffer, "%5.2e", value);
     } else {
-        sprintf(lineDataBuffer, "%5.2f", value);
+        sprintf(buffer, "%5.2f", value);
     }
-    return lineDataBuffer;
+    return buffer;
 #endif
 }
 
@@ -588,23 +588,23 @@ String DashioDevice::getDialMessage(const String& controlID, float value) {
     return message;
 }
 
-String DashioDevice::getDirectionMessage(const String& controlID, int value, const String& text) {
+String DashioDevice::getDirectionMessage(const String& controlID, int value, float speed) {
     String message = getControlBaseMessage(DIRECTION_ID, controlID);
     message += String(value);
-    if (text != "") {
+    if (speed >= 0) {
         message += String(DELIM);
-        message += text;
+        message += String(formatFloat(speed));
     }
     message += String(END_DELIM);
     return message;
 }
 
-String DashioDevice::getDirectionMessage(const String& controlID, float value, const String& text) {
+String DashioDevice::getDirectionMessage(const String& controlID, float value, float speed) {
     String message = getControlBaseMessage(DIRECTION_ID, controlID);
     message += String(formatFloat(value));
-    if (text != "") {
+    if (speed >= 0) {
         message += String(DELIM);
-        message += text;
+        message += String(formatFloat(speed));
     }
     message += String(END_DELIM);
     return message;

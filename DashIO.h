@@ -491,8 +491,8 @@ public:
     String getKnobDialMessage(const String& controlID, float value);
     String getDialMessage(const String& controlID, int value);
     String getDialMessage(const String& controlID, float value);
-    String getDirectionMessage(const String& controlID, int direction, const String& text = "");
-    String getDirectionMessage(const String& controlID, float value, const String& text);
+    String getDirectionMessage(const String& controlID, int direction, float speed = -1);
+    String getDirectionMessage(const String& controlID, float value, float speed = -1);
     String getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& mapMessage);
     String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength);
     String getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle);
