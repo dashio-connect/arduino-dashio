@@ -288,6 +288,9 @@ DashioDevice::DashioDevice(const String& _deviceType) {
 }
 
 void DashioDevice::setup(const String& deviceIdentifier) {
+    if (name == "") {
+        name = F("DashIO Device");
+    }
     deviceID.reserve(MAX_STRING_LEN);
     deviceID = deviceIdentifier;
 }
