@@ -30,10 +30,28 @@ DashioProvision::DashioProvision(DashioDevice *_dashioDevice) {
     dashioDevice = _dashioDevice;
 }
 
+void DashioProvision::setup(int size) {
+#ifdef ESP32
+    if (!EEPROM.begin(PROVISIONING_EEPROM_SIZE + size)) {
+        Serial.println(F("Failed to init EEPROM"));
+    } else {
+        eepromReady = true;
+    }
+#elif ESP8266
+    EEPROM.begin(PROVISIONING_EEPROM_SIZE + size);
+    eepromReady = true;
+#endif
+}
+
 void DashioProvision::load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged)) {
     onProvisionCallback = _onProvisionCallback;
     update(defaultDeviceData);
-    load();
+    if (!eepromReady) {
+        setup();
+    }
+    if (eepromReady) {
+        load();
+    }
 }
 
 void DashioProvision::processMessage(MessageData *messageData) {
@@ -101,21 +119,23 @@ void DashioProvision::save() {
 
 void DashioProvision::load() {
 #ifdef ESP32
-    if (!EEPROM.begin(EEPROM_SIZE)) {
+/*???
+    if (!EEPROM.begin(PROVISIONING_EEPROM_SIZE)) {
         Serial.println(F("Failed to init EEPROM"));
     } else {
-        DeviceData deviceDataRead;
-        EEPROM.get(0, deviceDataRead);
-        if (deviceDataRead.saved != 'Y') {
-            save();
-            Serial.println(F("User setup DEFAULTS used!"));
-        } else {
-            update(&deviceDataRead);
-            Serial.println(F("User setup read from EEPROM"));
-        }
+*/
+    DeviceData deviceDataRead;
+    EEPROM.get(0, deviceDataRead);
+    if (deviceDataRead.saved != 'Y') {
+        save();
+        Serial.println(F("User setup DEFAULTS used!"));
+    } else {
+        update(&deviceDataRead);
+        Serial.println(F("User setup read from EEPROM"));
     }
+//???    }
 #elif ESP8266
-    EEPROM.begin(EEPROM_SIZE);
+//???    EEPROM.begin(PROVISIONING_EEPROM_SIZE);
     DeviceData deviceDataRead;
     EEPROM.get(0, deviceDataRead);
     if (deviceDataRead.saved != 'Y') {
