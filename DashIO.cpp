@@ -118,6 +118,14 @@ String formatFloat(float value) {
 #endif
 }
 
+String formatInt(int value) {
+    if (value == INVALID_INT_VALUE) {
+        return "nan";
+    } else {
+        return String(value);
+    }
+}
+
 MessageData::MessageData(ConnectionType connType) {
     deviceID.reserve(MAX_STRING_LEN);
     idStr.reserve(MAX_STRING_LEN);
@@ -512,7 +520,7 @@ String DashioDevice::getSelectorMessage(const String& controlID, int index, Stri
 
 String DashioDevice::getSliderMessage(const String& controlID, int value) {
     String message = getControlBaseMessage(SLIDER_ID, controlID);
-    message += String(value);
+    message += formatInt(value);
     message += String(END_DELIM);
     return message;
 }
@@ -526,7 +534,7 @@ String DashioDevice::getSliderMessage(const String& controlID, float value) {
 
 String DashioDevice::getSingleBarMessage(const String& controlID, int value) {
     String message = getControlBaseMessage(BAR_ID, controlID);
-    message += String(value);
+    message += formatInt(value);
     message += String(END_DELIM);
     return message;
 }
@@ -554,7 +562,7 @@ String DashioDevice::getDoubleBarMessage(const String& controlID, float value1, 
 
 String DashioDevice::getKnobMessage(const String& controlID, int value) {
     String message = getControlBaseMessage(KNOB_ID, controlID);
-    message += String(value);
+    message += formatInt(value);
     message += String(END_DELIM);
     return message;
 }
@@ -568,7 +576,7 @@ String DashioDevice::getKnobMessage(const String& controlID, float value) {
 
 String DashioDevice::getKnobDialMessage(const String& controlID, int value) {
     String message = getControlBaseMessage(KNOB_DIAL_ID, controlID);
-    message += String(value);
+    message += formatInt(value);
     message += String(END_DELIM);
     return message;
 }
@@ -582,7 +590,7 @@ String DashioDevice::getKnobDialMessage(const String& controlID, float value) {
 
 String DashioDevice::getDialMessage(const String& controlID, int value) {
     String message = getControlBaseMessage(DIAL_ID, controlID);
-    message += String(value);
+    message += formatInt(value);
     message += String(END_DELIM);
     return message;
 }
@@ -596,7 +604,7 @@ String DashioDevice::getDialMessage(const String& controlID, float value) {
 
 String DashioDevice::getDirectionMessage(const String& controlID, int value, float speed) {
     String message = getControlBaseMessage(DIRECTION_ID, controlID);
-    message += String(value);
+    message += formatInt(value);
     if (speed >= 0) {
         message += String(DELIM);
         message += formatFloat(speed);
@@ -698,7 +706,7 @@ String DashioDevice::getGraphLineInts(const String& controlID, const String& gra
     message += color;
     for (int i = 0; i < dataLength; i++) {
         message += String(DELIM);
-        message += String(lineData[i]);
+        message += formatInt(lineData[i]);
     }
     message += String(END_DELIM);
     return message;
@@ -862,7 +870,7 @@ String DashioDevice::getIntArray(const String& controlType, const String& ID, in
     writeStr + ID;
     for (int i = 0; i < dataLength; i++) {
         writeStr += String(DELIM);
-        writeStr += String(idata[i]);
+        writeStr += formatInt(idata[i]);
     }
     writeStr += String(END_DELIM);
     return writeStr;
