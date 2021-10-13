@@ -34,6 +34,9 @@
 #define DASH_SERVER "dash.dashio.io"
 #define DASH_PORT   8883
 
+#define SMALLEST_FLOAT_VALUE 0.1e-10
+#define INVALID_FLOAT_VALUE 0xFFFFFFFF
+
 enum ConnectionType {
     TCP_CONN,
     BLE_CONN,

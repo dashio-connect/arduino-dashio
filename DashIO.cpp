@@ -93,20 +93,23 @@
 #define MAX_STRING_LEN 64
 #define MAX_DEVICE_NAME_LEN 32
 #define MAX_DEVICE_TYPE_LEN 32
-#define SMALLEST_FLOAT_VALUE 0.1e-10
 
 const char END_DELIM = '\n';
 const char DELIM = '\t';
 
 String formatFloat(float value) {
+    if (value == INVALID_FLOAT_VALUE) {
+        return "nan";
+    } else if (abs(value) < SMALLEST_FLOAT_VALUE) {
+        return "0";
+    }
+    
     char buffer[16];
 #ifdef ARDUINO_ARCH_AVR
     dtostrf(value, 5, 2, buffer);
     return buffer;
 #else
-    if (abs(value) < SMALLEST_FLOAT_VALUE) {
-        return "0";
-    } else if ((abs(value) < 1.0) || (abs(value) >= 100000)){
+    if ((abs(value) < 1.0) || (abs(value) >= 100000)){
         sprintf(buffer, "%5.2e", value);
     } else {
         sprintf(buffer, "%5.2f", value);
@@ -516,7 +519,7 @@ String DashioDevice::getSliderMessage(const String& controlID, int value) {
 
 String DashioDevice::getSliderMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(SLIDER_ID, controlID);
-    message += String(formatFloat(value));
+    message += formatFloat(value);
     message += String(END_DELIM);
     return message;
 }
@@ -530,7 +533,7 @@ String DashioDevice::getSingleBarMessage(const String& controlID, int value) {
 
 String DashioDevice::getSingleBarMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(BAR_ID, controlID);
-    message += String(formatFloat(value));
+    message += formatFloat(value);
     message += String(END_DELIM);
     return message;
 }
@@ -558,7 +561,7 @@ String DashioDevice::getKnobMessage(const String& controlID, int value) {
 
 String DashioDevice::getKnobMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(KNOB_ID, controlID);
-    message += String(formatFloat(value));
+    message += formatFloat(value);
     message += String(END_DELIM);
     return message;
 }
@@ -572,7 +575,7 @@ String DashioDevice::getKnobDialMessage(const String& controlID, int value) {
 
 String DashioDevice::getKnobDialMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(KNOB_DIAL_ID, controlID);
-    message += String(formatFloat(value));
+    message += formatFloat(value);
     message += String(END_DELIM);
     return message;
 }
@@ -586,7 +589,7 @@ String DashioDevice::getDialMessage(const String& controlID, int value) {
 
 String DashioDevice::getDialMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(DIAL_ID, controlID);
-    message += String(formatFloat(value));
+    message += formatFloat(value);
     message += String(END_DELIM);
     return message;
 }
@@ -596,7 +599,7 @@ String DashioDevice::getDirectionMessage(const String& controlID, int value, flo
     message += String(value);
     if (speed >= 0) {
         message += String(DELIM);
-        message += String(formatFloat(speed));
+        message += formatFloat(speed);
     }
     message += String(END_DELIM);
     return message;
@@ -604,10 +607,10 @@ String DashioDevice::getDirectionMessage(const String& controlID, int value, flo
 
 String DashioDevice::getDirectionMessage(const String& controlID, float value, float speed) {
     String message = getControlBaseMessage(DIRECTION_ID, controlID);
-    message += String(formatFloat(value));
+    message += formatFloat(value);
     if (speed >= 0) {
         message += String(DELIM);
-        message += String(formatFloat(speed));
+        message += formatFloat(speed);
     }
     message += String(END_DELIM);
     return message;

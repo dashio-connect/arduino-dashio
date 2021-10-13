@@ -28,10 +28,6 @@
 
 #include "DashJSON.h"
 
-#if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_ARDUINO_NANO33BLE || defined ARDUINO_SAMD_MKRWIFI1010 || defined ARDUINO_SAMD_MKRVIDOR4000
-    #include <avr/dtostrf.h>
-#endif
-
 void DashJSON::start() {
     jsonStr = "{";
 }
@@ -46,11 +42,16 @@ void DashJSON::addKeyString(const String& key, const String& text, bool last) {
 }
 
 void DashJSON::addKeyFloat(const String& key, float number, bool last) {
-    char numberBuffer[8];
     jsonStr += "\"";
     jsonStr += key;
     jsonStr += "\":";
-    jsonStr += dtostrf(number, 5, 2, numberBuffer);
+    char numberBuffer[9];
+#ifdef ARDUINO_ARCH_AVR
+    dtostrf(number, 5, 3, numberBuffer);
+#else
+    sprintf(numberBuffer, "%5.3f", number);
+#endif
+    jsonStr += numberBuffer;
     nextChar(last);
 }
 
