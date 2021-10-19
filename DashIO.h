@@ -198,7 +198,7 @@ struct BLEConnCfg {
 
 struct TCPConnCfg {
     String ipAddress;             // current IP address of the connection
-    int port;                     // TCP port
+    int port = 5650;                     // TCP port
     
     TCPConnCfg(String _ipAddress, int _port) {
         ipAddress = _ipAddress;
@@ -217,7 +217,7 @@ struct MQTTConnCfg {
 };
 
 struct DeviceCfg {
-    int    numDeviceViews;
+    int    numDeviceViews = 0;
     String deviceSetup;
     
     DeviceCfg(int _numDeviceViews, String _deviceSetup = "") {
@@ -242,7 +242,7 @@ struct DeviceViewCfg {
     String controlID;             // Unique identifier of the Device View.
     String title;                 // Device View Name
     String iconName;              // Name of the icon from the icons in IoT Dashboard. Displayed on the menu.
-    String color;                 // Device View background color. Color name from colors in IoT Dashboard e.g. "blue" or index
+    String color = "black";       // Device View background color. Color name from colors in IoT Dashboard e.g. "blue" or index
     bool   shareColumn = true;    // When true, allows device views to share a column if their height is small enough.
     int    numColumns = 1;        // Number of columns wide the deviceView is (1 to 3).
      
@@ -251,12 +251,12 @@ struct DeviceViewCfg {
     bool   ctrlBorderOn = true;   // Default Hide or show border on all controls
     String ctrlBorderColor = "white"; // Default color of the border and title box text. Color name from colors in IoT Dashboard e.g. "blue" or index
     String ctrlColor = "white";   // Default color of misc parts of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
-    String ctrlBkgndColor;        // Default color of the background of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
+    String ctrlBkgndColor = "blue"; // Default color of the background of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
     int    ctrlBkgndTransparency = 0; // Default transparency of the background of all controls (0 to 100).
 
     // Control Title Box Default Values
     int    ctrlTitleFontSize = 18; // Font size for the title (8 to 30)
-    String ctrlTitleBoxColor;     // Default color of the title box of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
+    String ctrlTitleBoxColor = "blue"; // Default color of the title box of all controls. Color name from colors in IoT Dashboard e.g. "blue" or index
     int    ctrlTitleBoxTransparency = 0; // Default transparency of the title box of all controls (0 to 100).
     
     DeviceViewCfg(String _controlID, String _title, String _iconName, String _color) {
