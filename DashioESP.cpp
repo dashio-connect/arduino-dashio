@@ -29,8 +29,11 @@
 #define WIFI_TIMEOUT_S 300 // Restart after 5 minutes
 
 // MQTT
-const int   MQTT_QOS     = 2;
-const int   MQTT_RETRY_S = 10; // Retry after 10 seconds
+const int MQTT_QOS     = 2;
+const int MQTT_RETRY_S = 10; // Retry after 10 seconds
+
+// BLE
+const int BLE_MAX_SEND_MESSAGE_LENGTH = 185; // 185 for iPhone 6, but can be up to 517
 
 // ---------------------------------------- WiFi ---------------------------------------
 
@@ -552,7 +555,7 @@ void DashioBLE::begin(bool secureBLE) {
     String localName = F("DashIO_");
     localName += dashioDevice->type;
     BLEDevice::init(localName.c_str());
-    BLEDevice::setMTU(512);
+    BLEDevice::setMTU(BLE_MAX_SEND_MESSAGE_LENGTH);
     
     // Setup BLE security (optional)
     if (secureBLE) {
