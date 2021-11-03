@@ -1244,7 +1244,7 @@ String DashioDevice::getConfigMessage(ColorCfg colorData) {
     json.addKeyString(F("titlePosition"), getTitlePositionStr(colorData.titlePosition));
 
     json.addKeyBool(F("sendOnlyOnRelease"), colorData.sendOnlyOnRelease);
-    json.addKeyString(F("style"), getColorStyleStr(colorData.pickerStyle), true);
+    json.addKeyString(F("pickerStyle"), getColorStyleStr(colorData.pickerStyle), true);
     return getFullConfigMessage(colorPicker, json.jsonStr);
 }
 
