@@ -71,6 +71,8 @@ enum ControlType {
     graph,
     timeGraph,
     mapper,
+    colorPicker,
+    audioVisual,
     deviceName,
     wifiSetup,
     tcpSetup,
@@ -169,6 +171,11 @@ enum BarStyle {
 enum XAxisLabelsStyle {
     labelsOnLines,
     labelsBetweenLines
+};
+
+enum ColorPickerStyle {
+    wheel,
+    spectrum
 };
 
 struct Rect {
@@ -429,6 +436,19 @@ struct MapCfg : CommonControl {
            : CommonControl(_controlID, _parentID, _title, _graphicsRect) {}
 };
 
+struct ColorCfg : CommonControl {
+    ColorPickerStyle pickerStyle = wheel;
+    bool sendOnlyOnRelease = true; // Send message only when the the knob is released
+
+    ColorCfg(String _controlID, String _parentID, String _title, Rect _graphicsRect = Rect())
+             : CommonControl(_controlID, _parentID, _title, _graphicsRect) {}
+};
+
+struct AudioVisualCfg : CommonControl {
+    AudioVisualCfg(String _controlID, String _parentID, String _title, Rect _graphicsRect = Rect())
+             : CommonControl(_controlID, _parentID, _title, _graphicsRect) {}
+};
+
 class MessageData {
 public:
     ConnectionType connectionType;
@@ -504,6 +524,8 @@ public:
     String getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle);
     String getBasicConfigMessage(const String& configData);
     String getFullConfigMessage(ControlType controlType, const String& configData);
+    String getColorMessage(const String& controlID, const String& text = "");
+    String getAudioVisualMessage(const String& controlID, const String& url = "");
 
     String getGraphLineInts(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength);
     String getGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, float lineData[], int dataLength);
@@ -534,6 +556,8 @@ public:
     String getConfigMessage(GraphCfg graphData);
     String getConfigMessage(TimeGraphCfg timeGraphData);
     String getConfigMessage(MapCfg mapData);
+    String getConfigMessage(ColorCfg colorData);
+    String getConfigMessage(AudioVisualCfg avData);
 
     String getOnlineMessage();
     String getOfflineMessage();
@@ -560,6 +584,7 @@ private:
     String getTextAlignStr(TextAlign align);
     String getBarStyleStr(BarStyle barStyle);
     String getXAxisLabelsStyleStr(XAxisLabelsStyle xls);
+    String getColorStyleStr(ColorPickerStyle pickerStyle);
 };
 
 #endif

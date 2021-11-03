@@ -53,6 +53,8 @@
 #define DIRECTION_ID "DIR"
 #define DIAL_ID "DIAL"
 #define MAP_ID "MAP"
+#define COLOR_ID "CLR"
+#define AV_ID "AVD"
 #define BASIC_CONFIG_ID "BAS"
 
 #define DEVICE_NAME_ID "NAME"
@@ -167,10 +169,6 @@ bool MessageData::processChar(char chr) {
             idStr = "";
             payloadStr = "";
             payloadStr2 = "";
-/*
-            payloadStr3 = "";
-            payloadStr4 = "";
-*/
             break;
         case 1:
             if (readStr == WHO_ID) {
@@ -223,14 +221,6 @@ bool MessageData::processChar(char chr) {
         case 4:
             payloadStr2 = readStr;
             break;
-/*
-        case 5:
-            payloadStr3 = readStr;
-            break;
-        case 6:
-            payloadStr4 = readStr;
-            break;
-*/
         default:
                 segmentCount = 0;
         }
@@ -279,12 +269,6 @@ String MessageData::getReceivedMessageForPrint(const String& controlStr) {
     message += payloadStr;
     message += String(DELIM);
     message += payloadStr2;
-/*
-    message += String(DELIM);
-    message += payloadStr3;
-    message += String(DELIM);
-    message += payloadStr4;
-*/
     message += String(END_DELIM);
 
     return message;
@@ -635,6 +619,20 @@ String DashioDevice::getMapMessage(const String& controlID, const String& latitu
     return message;
 }
 
+String DashioDevice::getColorMessage(const String& controlID, const String& color) {
+    String message = getControlBaseMessage(COLOR_ID, controlID);
+    message += color;
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getAudioVisualMessage(const String& controlID, const String& url) {
+    String message = getControlBaseMessage(AV_ID, controlID);
+    message += url;
+    message += String(END_DELIM);
+    return message;
+}
+
 String DashioDevice::getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength) {
     String message = getControlBaseMessage(EVENT_LOG_ID, controlID);
     message += timeStr;
@@ -800,6 +798,8 @@ String DashioDevice::getControlTypeStr(ControlType controltype) {
         case graph: return GRAPH_ID;
         case timeGraph: return TIME_GRAPH_ID;
         case mapper: return MAP_ID;
+        case colorPicker: return COLOR_ID;
+        case audioVisual: return AV_ID;
               
         case deviceName: return DEVICE_NAME_ID;
         case wifiSetup: return WIFI_SETUP_ID;
@@ -1231,6 +1231,37 @@ String DashioDevice::getConfigMessage(MapCfg mapData) {
     return getFullConfigMessage(mapper, json.jsonStr);
 }
 
+String DashioDevice::getConfigMessage(ColorCfg colorData) {
+    DashJSON json;
+    json.start();
+    json.addKeyString(F("controlID"), colorData.controlID);
+    json.addKeyString(F("parentID"), colorData.parentID);
+    json.addKeyFloat(F("xPositionRatio"), colorData.graphicsRect.xPositionRatio);
+    json.addKeyFloat(F("yPositionRatio"), colorData.graphicsRect.yPositionRatio);
+    json.addKeyFloat(F("widthRatio"), colorData.graphicsRect.widthRatio);
+    json.addKeyFloat(F("heightRatio"), colorData.graphicsRect.heightRatio);
+    json.addKeyString(F("title"), colorData.title);
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(colorData.titlePosition));
+
+    json.addKeyBool(F("sendOnlyOnRelease"), colorData.sendOnlyOnRelease);
+    json.addKeyString(F("style"), getColorStyleStr(colorData.pickerStyle), true);
+    return getFullConfigMessage(colorPicker, json.jsonStr);
+}
+
+String DashioDevice::getConfigMessage(AudioVisualCfg avData) {
+    DashJSON json;
+    json.start();
+    json.addKeyString(F("controlID"), avData.controlID);
+    json.addKeyString(F("parentID"), avData.parentID);
+    json.addKeyFloat(F("xPositionRatio"), avData.graphicsRect.xPositionRatio);
+    json.addKeyFloat(F("yPositionRatio"), avData.graphicsRect.yPositionRatio);
+    json.addKeyFloat(F("widthRatio"), avData.graphicsRect.widthRatio);
+    json.addKeyFloat(F("heightRatio"), avData.graphicsRect.heightRatio);
+    json.addKeyString(F("title"), avData.title);
+    json.addKeyString(F("titlePosition"), getTitlePositionStr(avData.titlePosition), true);
+    return getFullConfigMessage(audioVisual, json.jsonStr);
+}
+
 
 String DashioDevice::getTitlePositionStr(TitlePosition tbp) {
     switch (tbp) {
@@ -1362,6 +1393,15 @@ String DashioDevice::getXAxisLabelsStyleStr(XAxisLabelsStyle xls) {
             return "ON";
         default:
             return "BETWEEN";
+    }
+}
+
+String DashioDevice::getColorStyleStr(ColorPickerStyle pickerStyle) {
+    switch (pickerStyle) {
+        case spectrum:
+            return "SPEC";
+        default:
+            return "WHEEL";
     }
 }
 
