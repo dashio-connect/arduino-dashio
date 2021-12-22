@@ -727,6 +727,10 @@ String DashioDevice::getGraphLineFloats(const String& controlID, const String& g
     return message;
 }
 
+String DashioDevice::getTimeGraphLine(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color) {
+    return getTimeGraphLineFloats(controlID, graphLineID, lineName, lineType, color, {}, {}, 0, false);
+}
+
 String DashioDevice::getTimeGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
     message += graphLineID;
@@ -748,6 +752,26 @@ String DashioDevice::getTimeGraphLineFloats(const String& controlID, const Strin
         message += ",";
         message += formatFloat(lineData[i]);
     }
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getTimeGraphPoint(const String& controlID, const String& graphLineID, float value) {
+    String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
+    message += graphLineID;
+    message += String(DELIM);
+    message += formatFloat(value);
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getTimeGraphPoint(const String& controlID, const String& graphLineID, String time, float value) {
+    String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
+    message += graphLineID;
+    message += String(DELIM);
+    message += time;
+    message += ",";
+    message += formatFloat(value);
     message += String(END_DELIM);
     return message;
 }
