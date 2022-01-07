@@ -41,6 +41,14 @@ void DashJSON::addKeyString(const String& key, const String& text, bool last) {
     nextChar(last);
 }
 
+void DashJSON::addKeyStringAsNumber(const String& key, const String& text, bool last) {
+    jsonStr += "\"";
+    jsonStr += key;
+    jsonStr += "\":";
+    jsonStr += text;
+    nextChar(last);
+}
+
 void DashJSON::addKeyFloat(const String& key, float number, bool last) {
     jsonStr += "\"";
     jsonStr += key;

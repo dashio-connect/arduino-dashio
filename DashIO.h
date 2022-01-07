@@ -191,6 +191,17 @@ struct Notification {
     String description;           // Displayed in the notification body.
 };
 
+struct Waypoint {
+    String time;                  // yyyy-MM-dd’T’HH:mm:ssZ (refer to ISO 8601)
+    String latitude;              // Latitude in decimal degrees
+    String longitude;             // Longitude in decimal degrees
+    String avgeSpeed;             // Average speed since the last message in meters/second
+    String peakSpeed;             // Maximum speed since the last message in meters/second
+    String course;                // Course direction in decimal degrees. A negative value indicates an unknown heading
+    String altitude;              // Altitude in meters
+    String distance;              // Accumulated distance since the last message in meters
+};
+
 struct BLEConnCfg {
     String serviceUUID;           // BLE Service UUID
     String readUUID;              // BLE read characteristic UUID
@@ -518,7 +529,8 @@ public:
     String getDialMessage(const String& controlID, float value);
     String getDirectionMessage(const String& controlID, int direction, float speed = -1);
     String getDirectionMessage(const String& controlID, float value, float speed = -1);
-    String getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& mapMessage);
+    String getMapWaypointMessage(const String& controlID, const String& trackID, const String& latitude, const String& longitude);
+    String getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[] = {}, int dataLength = 0);
     String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength);
     String getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle);
     String getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle);
@@ -575,6 +587,8 @@ private:
     String getLineTypeStr(LineType lineType);
     String getIntArray(const String& controlType, const String& ID, int idata[], int dataLength);
     String getFloatArray(const String& controlType, const String& ID, float fdata[], int dataLength);
+
+    String getWaypointJSON(Waypoint waypoint);
 
     String getTitlePositionStr(TitlePosition tbp);
     String getLabelStyle(LabelStyle labelStyle);

@@ -40,6 +40,7 @@ public:
     void addKeyFloat(const String& key, float number, bool last = false);
     void addKeyInt(const String& key, int number, bool last = false);
     void addKeyBool(const String& key, bool boolean, bool last = false);
+    void addKeyStringAsNumber(const String& key, const String& text, bool last = false);
 
 private:
     void nextChar(bool last);

@@ -608,13 +608,30 @@ String DashioDevice::getDirectionMessage(const String& controlID, float value, f
     return message;
 }
 
-String DashioDevice::getMapMessage(const String& controlID, const String& latitude, const String& longitude, const String& mapMessage) {
+String DashioDevice::getMapWaypointMessage(const String& controlID, const String& trackID, const String& latitude, const String& longitude) {
     String message = getControlBaseMessage(MAP_ID, controlID);
+    message += trackID;
+    message += String(DELIM);
     message += latitude;
-    message += String(DELIM);
+    message += ",";
     message += longitude;
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[], int dataLength) {
+    String message = getControlBaseMessage(MAP_ID, controlID);
+    message += trackID;
     message += String(DELIM);
-    message += message;
+    message += text;
+    message += String(DELIM);
+    message += colour;
+    
+    for (int i = 0; i < dataLength; i++) {
+        message += String(DELIM);
+        message += getWaypointJSON(waypoints[i]);
+    }
+    
     message += String(END_DELIM);
     return message;
 }
@@ -1286,6 +1303,31 @@ String DashioDevice::getConfigMessage(AudioVisualCfg avData) {
     return getFullConfigMessage(audioVisual, json.jsonStr);
 }
 
+String DashioDevice::getWaypointJSON(Waypoint waypoint) {
+    DashJSON json;
+    json.start();
+    if (waypoint.time.length() > 0) {
+        json.addKeyString(F("time"), waypoint.time);
+    }
+    if (waypoint.avgeSpeed.length() > 0) {
+        json.addKeyStringAsNumber(F("avgeSpeed"), waypoint.avgeSpeed);
+    }
+    if (waypoint.peakSpeed.length() > 0) {
+        json.addKeyStringAsNumber(F("peakSpeed"), waypoint.peakSpeed);
+    }
+    if (waypoint.course.length() > 0) {
+        json.addKeyStringAsNumber(F("course"), waypoint.course);
+    }
+    if (waypoint.altitude.length() > 0) {
+        json.addKeyStringAsNumber(F("altitude"), waypoint.altitude);
+    }
+    if (waypoint.distance.length() > 0) {
+        json.addKeyStringAsNumber(F("distance"), waypoint.distance);
+    }
+    json.addKeyStringAsNumber(F("latitude"), waypoint.latitude);
+    json.addKeyStringAsNumber(F("longitude"), waypoint.longitude, true);
+    return json.jsonStr;
+}
 
 String DashioDevice::getTitlePositionStr(TitlePosition tbp) {
     switch (tbp) {
