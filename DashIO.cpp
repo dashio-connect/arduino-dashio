@@ -1310,22 +1310,22 @@ String DashioDevice::getWaypointJSON(Waypoint waypoint) {
         json.addKeyString(F("time"), waypoint.time);
     }
     if (waypoint.avgeSpeed.length() > 0) {
-        json.addKeyStringAsNumber(F("avgeSpeed"), waypoint.avgeSpeed);
+        json.addKeyString(F("avgeSpeed"), waypoint.avgeSpeed);
     }
     if (waypoint.peakSpeed.length() > 0) {
-        json.addKeyStringAsNumber(F("peakSpeed"), waypoint.peakSpeed);
+        json.addKeyString(F("peakSpeed"), waypoint.peakSpeed);
     }
     if (waypoint.course.length() > 0) {
-        json.addKeyStringAsNumber(F("course"), waypoint.course);
+        json.addKeyString(F("course"), waypoint.course);
     }
     if (waypoint.altitude.length() > 0) {
-        json.addKeyStringAsNumber(F("altitude"), waypoint.altitude);
+        json.addKeyString(F("altitude"), waypoint.altitude);
     }
     if (waypoint.distance.length() > 0) {
-        json.addKeyStringAsNumber(F("distance"), waypoint.distance);
+        json.addKeyString(F("distance"), waypoint.distance);
     }
-    json.addKeyStringAsNumber(F("latitude"), waypoint.latitude);
-    json.addKeyStringAsNumber(F("longitude"), waypoint.longitude, true);
+    json.addKeyString(F("latitude"), waypoint.latitude);
+    json.addKeyString(F("longitude"), waypoint.longitude, true);
     return json.jsonStr;
 }
 
