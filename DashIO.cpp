@@ -663,6 +663,19 @@ String DashioDevice::getEventLogMessage(const String& controlID, const String& t
     return message;
 }
 
+String DashioDevice::getEventLogMessage(const String& controlID, Event events[], int numEvents) {
+    String message = getControlBaseMessage(EVENT_LOG_ID, controlID);
+    
+    for (int i = 0; i < numEvents; i++) {
+        message += getEventJSON(events[i]);
+        if (i < numEvents - 1) { // because getControlBaseMessage ends in a DELIM
+            message += String(DELIM);
+        }
+    }
+    message += String(END_DELIM);
+    return message;
+}
+
 String DashioDevice::getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle) {
     String message = String(DELIM);
     message += getControlTypeStr(controlType);
@@ -1326,6 +1339,15 @@ String DashioDevice::getWaypointJSON(Waypoint waypoint) {
     }
     json.addKeyString(F("latitude"), waypoint.latitude);
     json.addKeyString(F("longitude"), waypoint.longitude, true);
+    return json.jsonStr;
+}
+
+String DashioDevice::getEventJSON(Event event) {
+    DashJSON json;
+    json.start();
+    json.addKeyString(F("time"), event.time);
+    json.addKeyString(F("color"), event.color);
+    json.addKeyStringArray(F("lines"), event.lines, event.numLines, true);
     return json.jsonStr;
 }
 

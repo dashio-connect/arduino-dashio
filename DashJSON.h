@@ -41,6 +41,7 @@ public:
     void addKeyInt(const String& key, int number, bool last = false);
     void addKeyBool(const String& key, bool boolean, bool last = false);
     void addKeyStringAsNumber(const String& key, const String& text, bool last = false);
+    void addKeyStringArray(const String& key, String items[], int numItems, bool last = false);
 
 private:
     void nextChar(bool last);

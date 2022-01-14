@@ -202,6 +202,13 @@ struct Waypoint {
     String distance;              // Accumulated distance since the last message in meters
 };
 
+struct Event {
+    String time;                  // yyyy-MM-dd’T’HH:mm:ssZ (refer to ISO 8601)
+    String color;                 // Color name from colors in IoT Dashboard e.g. "blue" or index
+    String *lines;                // Lines of text
+    int numLines;                 // Number of lines of text
+};
+
 struct BLEConnCfg {
     String serviceUUID;           // BLE Service UUID
     String readUUID;              // BLE read characteristic UUID
@@ -532,6 +539,7 @@ public:
     String getMapWaypointMessage(const String& controlID, const String& trackID, const String& latitude, const String& longitude);
     String getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[] = {}, int dataLength = 0);
     String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength);
+    String getEventLogMessage(const String& controlID, Event events[], int numEvents);
     String getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle);
     String getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle);
     String getBasicConfigMessage(const String& configData);
@@ -589,6 +597,7 @@ private:
     String getFloatArray(const String& controlType, const String& ID, float fdata[], int dataLength);
 
     String getWaypointJSON(Waypoint waypoint);
+    String getEventJSON(Event event);
 
     String getTitlePositionStr(TitlePosition tbp);
     String getLabelStyle(LabelStyle labelStyle);

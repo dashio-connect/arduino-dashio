@@ -49,6 +49,22 @@ void DashJSON::addKeyStringAsNumber(const String& key, const String& text, bool 
     nextChar(last);
 }
 
+void DashJSON::addKeyStringArray(const String& key, String items[], int numItems, bool last) {
+    jsonStr += "\"";
+    jsonStr += key;
+    jsonStr += "\":[";
+    for (int i = 0; i < numItems; i++) {
+        jsonStr += "\"";
+        jsonStr += items[i];
+        jsonStr += "\"";
+        if (i < numItems - 1) {
+            jsonStr += ",";
+        }
+    }
+    jsonStr += "]";
+    nextChar(last);
+}
+
 void DashJSON::addKeyFloat(const String& key, float number, bool last) {
     jsonStr += "\"";
     jsonStr += key;
