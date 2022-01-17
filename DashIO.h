@@ -32,8 +32,9 @@
 #include "Arduino.h"
 #include <limits.h>
 
-#define DASH_SERVER "dash.dashio.io"
-#define DASH_PORT   8883
+//???#define DASH_SERVER "dash.dashio.io"
+extern char DASH_SERVER[];
+#define DASH_PORT 8883
 
 #define SMALLEST_FLOAT_VALUE 0.1e-10
 #define INVALID_FLOAT_VALUE 0xFFFFFFFF

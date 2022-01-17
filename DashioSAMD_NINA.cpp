@@ -148,7 +148,7 @@ void DashioWiFi::end() {
 }
 
 byte * DashioWiFi::macAddress() {
-    byte mac[6];
+    static byte mac[6];
     WiFi.macAddress(mac);
     return mac;
 }

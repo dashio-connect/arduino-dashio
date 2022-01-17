@@ -1,16 +1,15 @@
 #include "DashioSAMD_NINA.h"
 #include "DashioProvisionSAMD.h"
 
-#include <timer.h>
+#include <arduino-timer.h>
 
-//#define NO_TCP
-#define NO_MQTT
+#define NO_TCP
+//#define NO_MQTT
 
 #define DEVICE_TYPE "SAMD_NINA_Type"
 #define DEVICE_NAME "SAMD_NINA_DashIO"
 
 #define TCP_PORT 5650
-#define MQTT_BUFFER_SIZE 2048
 
 // WiFi
 #define WIFI_SSID      "yourWiFiSSID"
@@ -33,7 +32,7 @@ DashioWiFi wifi;
     DashioTCP  tcp_con(&dashioDevice, TCP_PORT, true);
 #endif
 #ifndef NO_MQTT
-    DashioMQTT mqtt_con(&dashioDevice, MQTT_BUFFER_SIZE, true, true);
+    DashioMQTT mqtt_con(&dashioDevice, true, true);
 #endif
 
 // variables for button

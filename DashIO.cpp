@@ -96,6 +96,8 @@
 #define MAX_DEVICE_NAME_LEN 32
 #define MAX_DEVICE_TYPE_LEN 32
 
+char DASH_SERVER[] = "dash.dashio.io";
+
 const char END_DELIM = '\n';
 const char DELIM = '\t';
 
