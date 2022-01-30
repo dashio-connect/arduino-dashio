@@ -37,7 +37,6 @@ DashioWiFi wifi;
 
 // variables for button
 const int buttonPin = 2;
-int oldButtonState = LOW;
 
 // Create Control IDs
 const char *DV01_ID = "PG01";
@@ -298,20 +297,16 @@ void loop() {
             bleTimer += 1;
         }
     } else {
-        if (!wifi.run()) { // WiFi has dropped off
+        int buttonState = digitalRead(buttonPin); // read the button pin    
+        if (buttonState) {
+            if (!ble_con.connected()) {
+                startBLE();
+            }
+        }
+
+        if (!bleActive && !wifi.run()) { // WiFi has dropped off
             Serial.println("WiFi disconnected");
             startWiFi();
-        }
-        
-        int buttonState = digitalRead(buttonPin); // read the button pin
-        if (oldButtonState != buttonState) {
-            oldButtonState = buttonState;
-    
-            if (buttonState) {
-                if (!ble_con.connected()) {
-                    startBLE();
-                }
-            }
         }
     }
 }
