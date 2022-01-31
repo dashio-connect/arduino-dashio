@@ -47,8 +47,8 @@ void processConfig() {
     bluno.sendMessage(dashioDevice.getBasicConfigMessage(configData));
 }
 
-void processButton(DashioConnection *connection) {
-    if (connection->idStr == TEXT_BOX_ID) {
+void processButton(MessageData *messageData) {
+    if (messageData->idStr == TEXT_BOX_ID) {
         count = 0;
         bluno.sendMessage(dashioDevice.getSliderMessage(SINGLE_SLIDER_ID, 10));
         bluno.sendMessage(dashioDevice.getDoubleBarMessage(SINGLE_SLIDER_ID, 90, 10));
@@ -56,7 +56,7 @@ void processButton(DashioConnection *connection) {
         bluno.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L1", "bob", line, "red", data, 5));
     }
 
-    if (connection->idStr == TOGGLE_BUTTON_ID) {
+    if (messageData->idStr == TOGGLE_BUTTON_ID) {
         toggle = !toggle;
         if (toggle) {
             int data[7] = {50, 255, 505, 758, 903, 400, 0};
@@ -68,29 +68,29 @@ void processButton(DashioConnection *connection) {
             bluno.sendMessage(dashioDevice.getGraphLineFloats(SIMPLE_GRAPH_ID, "L1", "fish", peakBar, "18", data, 7));
         }
 
-        bluno.sendMessage(dashioDevice.getButtonMessage(connection->idStr, toggle));
+        bluno.sendMessage(dashioDevice.getButtonMessage(messageData->idStr, toggle));
         bluno.sendMessage(dashioDevice.getSliderMessage(SINGLE_SLIDER_ID, 75));
         int data[2] = {25, 75};
         bluno.sendMessage(dashioDevice.getDoubleBarMessage(SINGLE_SLIDER_ID, data[0], data[1]));
     }
 }
 
-void processKnob(DashioConnection *connection) {
-    if (connection->idStr == KNOB_ID) {
+void processKnob(MessageData *messageData) {
+    if (messageData->idStr == KNOB_ID) {
         int data;
-        data = 100 - connection->payloadStr.toInt();
-        bluno.sendMessage(dashioDevice.getKnobDialMessage(connection->idStr, data));
+        data = 100 - messageData->payloadStr.toInt();
+        bluno.sendMessage(dashioDevice.getKnobDialMessage(messageData->idStr, data));
     }
 }
 
-void processText(DashioConnection *connection) {
-    if (connection->idStr = TEXT_BOX_ID) {
-        bluno.sendMessage(dashioDevice.getTextBoxMessage(connection->idStr, connection->payloadStr));
+void processText(MessageData *messageData) {
+    if (messageData->idStr = TEXT_BOX_ID) {
+        bluno.sendMessage(dashioDevice.getTextBoxMessage(messageData->idStr, messageData->payloadStr));
     }
 }
 
-void processMessage(DashioConnection *connection) {
-    switch (connection->control) {
+void processMessage(MessageData *messageData) {
+    switch (messageData->control) {
     case status:
         processStatus();
         break;
@@ -98,13 +98,13 @@ void processMessage(DashioConnection *connection) {
         processConfig();
         break;
     case button:
-        processButton(connection);
+        processButton(messageData);
         break;
     case knob:
-        processKnob(connection);
+        processKnob(messageData);
         break;
     case textBox:
-        processText(connection);
+        processText(messageData);
         break;
     }
 }
