@@ -5,7 +5,7 @@
 //#include <Adafruit_BluefruitLE_UART.h>
 #include <SPI.h>
 #include <DHT.h>
-#include <timer.h>
+#include <arduino-timer.h>
 #include "bluefruitConfig.h"
 #include "DashioBluefruitSPI.h"
 
@@ -20,7 +20,7 @@
 #define DEVICE_NAME "TempHumidBLE"
 
 // Create device
-const DashioDevice dashioDevice(DEVICE_TYPE);
+DashioDevice dashioDevice(DEVICE_TYPE);
 
 // Create connection through Bluefruit
 DashioBluefruit_BLE  ble_con(&dashioDevice, true);
@@ -35,7 +35,7 @@ bool fahrenheit = off; // Used for the button control
 auto timer = timer_create_default();
 DHT dht(DHTPIN, DHTTYPE);
 
-bool onTimerCallback() {
+static bool onTimerCallback(void *argument) {
 // onTimerCallback is not an interrupt, so it is safe to read data and send messages from within.
 // Reading temperature or humidity takes about 250 milliseconds!
 // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
@@ -85,17 +85,19 @@ void processConfig() {
 void onIncomingMessageCallback(MessageData *messageData) {
     switch (messageData->control) {
         case status:
-        processStatus();
-        break;
+            processStatus();
+            break;
         case config:
-        processConfig();
-        break;
+            processConfig();
+            break;
         case button:
-        if (messageData->idStr == BUTTON_CONTROL_ID) {
-            fahrenheit = !fahrenheit;
-            ble_con.sendMessage(dashioDevice.getButtonMessage(BUTTON_CONTROL_ID, fahrenheit, "", getTemperatureSymbol()));
-        }
-        break;
+            if (messageData->idStr == BUTTON_CONTROL_ID) {
+                fahrenheit = !fahrenheit;
+                ble_con.sendMessage(dashioDevice.getButtonMessage(BUTTON_CONTROL_ID, fahrenheit, "", getTemperatureSymbol()));
+            }
+            break;
+        default:
+            break;
     }
 }
 
