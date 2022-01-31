@@ -14,12 +14,12 @@
 #define MQTT_BUFFER_SIZE 2048
 
 // WiFi
-#define WIFI_SSID      "yourWiFiSSID"
-#define WIFI_PASSWORD  "yourWiFiPassword"
+#define WIFI_SSID "yourWiFiSSID"
+#define WIFI_PASSWORD "yourWiFiPassword"
 
 // MQTT
-#define MQTT_USER      "yourMQTTuserName"
-#define MQTT_PASSWORD  "yourMQTTpassword"
+#define MQTT_USER "yourMQTTuserName"
+#define MQTT_PASSWORD "yourMQTTpassword"
 
 DashioDevice    dashioDevice(DEVICE_TYPE);
 DashioProvision dashioProvision(&dashioDevice);
@@ -466,7 +466,7 @@ void loop() {
             count = 0;
         }
         if (count % 5 == 0) {
-            messageToSend = dashioDevice.getMapMessage(MAP_ID, "-43.603488", "172.649536", String(count));
+            messageToSend = dashioDevice.getMapWaypointMessage(MAP_ID, "-43.603488", "172.649536", String(count));
         }
     }
 }

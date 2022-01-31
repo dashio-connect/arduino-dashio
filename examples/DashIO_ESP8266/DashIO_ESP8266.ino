@@ -3,7 +3,7 @@
 
 #include <WiFiUdp.h>
 #include <TimeLib.h>
-#include <timer.h>
+#include <Arduino-timer.h>
 
 //#define NO_TCP
 //#define NO_MQTT
@@ -273,7 +273,7 @@ void processSecondConfigBlock(ConnectionType connectionType) {
     TCPConnCfg tcpCnctnConfig(ip2CharArray(WiFi.localIP()), TCP_PORT);
     message += dashioDevice.getConfigMessage(tcpCnctnConfig);
     
-    MQTTConnCfg mqttCnctnConfig(dashioDevice.name, DASH_SERVER);
+    MQTTConnCfg mqttCnctnConfig(dashioProvision.dashUserName, DASH_SERVER);
     message += dashioDevice.getConfigMessage(mqttCnctnConfig);
     
     AlarmCfg alarmCfg("AID1", "A useful description", "PlopPlipPlip");
@@ -445,7 +445,7 @@ void loop() {
             count = 0;
         }
         if (count % 5 == 0) {
-            messageToSend = dashioDevice.getMapMessage(MAP_ID, "-43.559880", "172.655620", String(count));
+            messageToSend = dashioDevice.getMapWaypointMessage(MAP_ID, "-43.559880", "172.655620", String(count));
         }
     }
 }
