@@ -466,7 +466,7 @@ void loop() {
             count = 0;
         }
         if (count % 5 == 0) {
-            messageToSend = dashioDevice.getMapWaypointMessage(MAP_ID, "-43.603488", "172.649536", String(count));
+            messageToSend = dashioDevice.getMapWaypointMessage(MAP_ID, "TX1", "-43.603488", "172.649536");
         }
     }
 }
