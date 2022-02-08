@@ -538,13 +538,9 @@ public:
     String getDirectionMessage(const String& controlID, int direction, float speed = -1);
     String getDirectionMessage(const String& controlID, float value, float speed = -1);
     String getMapWaypointMessage(const String& controlID, const String& trackID, const String& latitude, const String& longitude);
-    String getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[] = {}, int dataLength = 0);
-    String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength);
+    String getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[] = {}, int numWaypoints = 0);
+    String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int numTextRows);
     String getEventLogMessage(const String& controlID, Event events[], int numEvents);
-    String getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle);
-    String getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle);
-    String getBasicConfigMessage(const String& configData);
-    String getFullConfigMessage(ControlType controlType, const String& configData);
     String getColorMessage(const String& controlID, const String& text = "");
     String getAudioVisualMessage(const String& controlID, const String& url = "");
 
@@ -557,6 +553,11 @@ public:
     String getTimeGraphLine(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color);
 
 //  Config messages
+    String getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle);
+    String getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle);
+    String getBasicConfigMessage(const String& configData);
+    String getFullConfigMessage(ControlType controlType, const String& configData);
+
     String getConfigMessage(DeviceCfg deviceConfigData);
     String getConfigMessage(DeviceViewCfg deviceViewData);
 

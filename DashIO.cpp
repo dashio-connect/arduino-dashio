@@ -621,7 +621,7 @@ String DashioDevice::getMapWaypointMessage(const String& controlID, const String
     return message;
 }
 
-String DashioDevice::getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[], int dataLength) {
+String DashioDevice::getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[], int numWaypoints) {
     String message = getControlBaseMessage(MAP_ID, controlID);
     message += trackID;
     message += String(DELIM);
@@ -629,7 +629,7 @@ String DashioDevice::getMapTrackMessage(const String& controlID, const String& t
     message += String(DELIM);
     message += colour;
     
-    for (int i = 0; i < dataLength; i++) {
+    for (int i = 0; i < numWaypoints; i++) {
         message += String(DELIM);
         message += getWaypointJSON(waypoints[i]);
     }
@@ -652,12 +652,12 @@ String DashioDevice::getAudioVisualMessage(const String& controlID, const String
     return message;
 }
 
-String DashioDevice::getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int dataLength) {
+String DashioDevice::getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int numTextRows) {
     String message = getControlBaseMessage(EVENT_LOG_ID, controlID);
     message += timeStr;
     message += String(DELIM);
     message += color;
-    for (int i = 0; i < dataLength; i++) {
+    for (int i = 0; i < numTextRows; i++) {
         message += String(DELIM);
         message += text[i];
     }
