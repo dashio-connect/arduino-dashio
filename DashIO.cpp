@@ -80,6 +80,7 @@
 #define BAR_GRAPH_ID "BAR"
 #define SEGMENTED_BAR_ID "SEGBAR"
 #define PEAK_BAR_ID "PEAKBAR"
+#define BOOL_ID "BOOL"
 
 // MQTT topic tips
 #define DATA_TOPIC_TIP     "data"
@@ -493,10 +494,10 @@ String DashioDevice::getSelectorMessage(const String& controlID, int index) {
     return message;
 }
 
-String DashioDevice::getSelectorMessage(const String& controlID, int index, String* selectionItems, int rows) {
+String DashioDevice::getSelectorMessage(const String& controlID, int index, String* selectionItems, int numItems) {
     String message = getControlBaseMessage(SELECTOR_ID, controlID);
     message += String(index);
-    for (int i = 0; i < rows; i++) {
+    for (int i = 0; i < numItems; i++) {
         message += String(DELIM);
         message += selectionItems[i];
     }
@@ -588,9 +589,9 @@ String DashioDevice::getDialMessage(const String& controlID, float value) {
     return message;
 }
 
-String DashioDevice::getDirectionMessage(const String& controlID, int value, float speed) {
+String DashioDevice::getDirectionMessage(const String& controlID, int direction, float speed) {
     String message = getControlBaseMessage(DIRECTION_ID, controlID);
-    message += formatInt(value);
+    message += formatInt(direction);
     if (speed >= 0) {
         message += String(DELIM);
         message += formatFloat(speed);
@@ -599,9 +600,9 @@ String DashioDevice::getDirectionMessage(const String& controlID, int value, flo
     return message;
 }
 
-String DashioDevice::getDirectionMessage(const String& controlID, float value, float speed) {
+String DashioDevice::getDirectionMessage(const String& controlID, float direction, float speed) {
     String message = getControlBaseMessage(DIRECTION_ID, controlID);
-    message += formatFloat(value);
+    message += formatFloat(direction);
     if (speed >= 0) {
         message += String(DELIM);
         message += formatFloat(speed);
@@ -912,6 +913,8 @@ String DashioDevice::getLineTypeStr(LineType lineType) {
             return SEGMENTED_BAR_ID;
         case peakBar:
             return PEAK_BAR_ID;
+        case bln:
+            return BOOL_ID;
         default:
             return LINE_ID;
     }

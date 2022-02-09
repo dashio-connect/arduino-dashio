@@ -86,7 +86,8 @@ enum LineType {
     line,
     bar,
     segBar,
-    peakBar
+    peakBar,
+    bln
 };
 
 enum ButtonMultiState {
@@ -520,7 +521,7 @@ public:
     String getButtonMessage(const String& controlID, bool on, const String& iconName = "", const String& text = "");
     String getTextBoxMessage(const String& controlID, const String& text);
     String getSelectorMessage(const String& controlID, int index);
-    String getSelectorMessage(const String& controlID, int index, String* selectionItems, int rows);
+    String getSelectorMessage(const String& controlID, int index, String* selectionItems, int numItems);
 
     String getSliderMessage(const String& controlID, int value);
     String getSliderMessage(const String& controlID, float value);
@@ -536,12 +537,12 @@ public:
     String getDialMessage(const String& controlID, int value);
     String getDialMessage(const String& controlID, float value);
     String getDirectionMessage(const String& controlID, int direction, float speed = -1);
-    String getDirectionMessage(const String& controlID, float value, float speed = -1);
+    String getDirectionMessage(const String& controlID, float direction, float speed = -1);
     String getMapWaypointMessage(const String& controlID, const String& trackID, const String& latitude, const String& longitude);
     String getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[] = {}, int numWaypoints = 0);
     String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int numTextRows);
     String getEventLogMessage(const String& controlID, Event events[], int numEvents);
-    String getColorMessage(const String& controlID, const String& text = "");
+    String getColorMessage(const String& controlID, const String& color);
     String getAudioVisualMessage(const String& controlID, const String& url = "");
 
     String getGraphLineInts(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength);
