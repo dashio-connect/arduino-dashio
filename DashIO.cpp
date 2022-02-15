@@ -159,86 +159,86 @@ bool MessageData::processChar(char chr) {
     bool messageEnd = false;
     if ((chr == DELIM) || (chr == END_DELIM)) {
         if ((readStr.length() > 0) || (segmentCount == 1)) { // segmentCount == 1 allows for empty second field ??? maybe should be 2 for empty third field now that we've added deviceID at the front
-        switch (segmentCount) {
-        case 0:
-            if (readStr == WHO_ID) {
-                deviceID = "---";
-                control = who;
-            } else {
-                deviceID = readStr;
-                control = unknown;
+            switch (segmentCount) {
+            case 0:
+                if (readStr == WHO_ID) {
+                    deviceID = "---";
+                    control = who;
+                } else {
+                    deviceID = readStr;
+                    control = unknown;
+                }
+                      
+                idStr = "";
+                payloadStr = "";
+                payloadStr2 = "";
+                break;
+            case 1:
+                if (readStr == WHO_ID) {
+                    control = who;
+                } else if (readStr == CONNECT_ID) {
+                    control = connect;
+                } else if (readStr == STATUS_ID) {
+                    control = status;
+                } else if (readStr == CONFIG_ID) {
+                    control = config;
+                } else if (readStr == BUTTON_ID) {
+                    control = button;
+                } else if (readStr == SLIDER_ID) {
+                    control = slider;
+                } else if (readStr == KNOB_ID) {
+                    control = knob;
+                } else if (readStr == TEXT_BOX_ID) {
+                    control = textBox;
+                } else if (readStr == TIME_GRAPH_ID) {
+                    control = timeGraph;
+                } else if (readStr == MENU_ID) {
+                    control = menu;
+                } else if (readStr == BUTTON_GROUP_ID) {
+                    control = buttonGroup;
+                } else if (readStr == EVENT_LOG_ID) {
+                    control = eventLog;
+                } else if (readStr == SELECTOR_ID) {
+                    control = selector;
+                } else if (readStr == DEVICE_NAME_ID) {
+                    control = deviceName;
+                } else if (readStr == WIFI_SETUP_ID) {
+                    control = wifiSetup;
+                } else if (readStr == TCP_SETUP_ID) {
+                    control = tcpSetup;
+                } else if (readStr == DASHIO_SETUP_ID) {
+                    control = dashioSetup;
+                } else if (readStr == MQTT_SETUP_ID) {
+                    control = mqttSetup;
+                } else {
+                    control = unknown;
+                    segmentCount == -1;
+                }
+                break;
+            case 2:
+                idStr = readStr;
+                break;
+            case 3:
+                payloadStr = readStr;
+                break;
+            case 4:
+                payloadStr2 = readStr;
+                break;
+            default:
+                    segmentCount = 0;
             }
-                  
-            idStr = "";
-            payloadStr = "";
-            payloadStr2 = "";
-            break;
-        case 1:
-            if (readStr == WHO_ID) {
-                control = who;
-            } else if (readStr == CONNECT_ID) {
-                control = connect;
-            } else if (readStr == STATUS_ID) {
-                control = status;
-            } else if (readStr == CONFIG_ID) {
-                control = config;
-            } else if (readStr == BUTTON_ID) {
-                control = button;
-            } else if (readStr == SLIDER_ID) {
-                control = slider;
-            } else if (readStr == KNOB_ID) {
-                control = knob;
-            } else if (readStr == TEXT_BOX_ID) {
-                control = textBox;
-            } else if (readStr == TIME_GRAPH_ID) {
-                control = timeGraph;
-            } else if (readStr == MENU_ID) {
-                control = menu;
-            } else if (readStr == BUTTON_GROUP_ID) {
-                control = buttonGroup;
-            } else if (readStr == EVENT_LOG_ID) {
-                control = eventLog;
-            } else if (readStr == SELECTOR_ID) {
-                control = selector;
-            } else if (readStr == DEVICE_NAME_ID) {
-                control = deviceName;
-            } else if (readStr == WIFI_SETUP_ID) {
-                control = wifiSetup;
-            } else if (readStr == TCP_SETUP_ID) {
-                control = tcpSetup;
-            } else if (readStr == DASHIO_SETUP_ID) {
-                control = dashioSetup;
-            } else if (readStr == MQTT_SETUP_ID) {
-                control = mqttSetup;
-            } else {
-                control = unknown;
-                segmentCount == -1;
-            }
-            break;
-        case 2:
-            idStr = readStr;
-            break;
-        case 3:
-            payloadStr = readStr;
-            break;
-        case 4:
-            payloadStr2 = readStr;
-            break;
-        default:
-                segmentCount = 0;
-        }
 
-        if (segmentCount >= 0) {
-        segmentCount++;
-        if (chr == END_DELIM) { // End of message, so process message
-          messageEnd = true;
-            segmentCount = -1; // Wait for next start of message
+            if (segmentCount >= 0) {
+                segmentCount++;
+                if (chr == END_DELIM) { // End of message, so process message
+                  messageEnd = true;
+                    segmentCount = -1; // Wait for next start of message
+                }
+            }
+        } else {
+            segmentCount = 0; // Must have no data before DELIM or a DELIM + DELIM, so must be start of message
         }
-        }
-    } else {
-        segmentCount = 0; // Must have no data before DELIM or a DELIM + DELIM, so must be start of message
-    }
-    readStr = "";
+        readStr = "";
     } else {
         readStr += chr;
     }
