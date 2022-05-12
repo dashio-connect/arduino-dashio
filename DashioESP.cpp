@@ -347,9 +347,9 @@ void DashioMQTT::run() {
 
 void DashioMQTT::hostConnect() { // Non-blocking
     Serial.print(F("Connecting to MQTT..."));
-#ifdef ESP8266
-    wifiClient.setInsecure(); // For MQTT SSL
-#endif
+    if (wifiSetInsecure) {
+        wifiClient.setInsecure();
+    }
 
     if (mqttClient.connect(dashioDevice->deviceID.c_str(), username, password, false)) { // skip = false is the default. Used in order to establish and verify TLS connections manually before giving control to the MQTT client
         Serial.print(F("connected "));
@@ -371,8 +371,8 @@ void DashioMQTT::hostConnect() { // Non-blocking
             }
         }
     } else {
-        Serial.print(F("Failed - Try again in 10 seconds: "));
-        Serial.println(String(mqttClient.lastError()) + " ... " + mqttClient.returnCode());
+        Serial.print(F("Failed - Try again in 10 seconds. E = "));
+        Serial.println(String(mqttClient.lastError()) + "  R = " + mqttClient.returnCode());
     }
 }
 

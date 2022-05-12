@@ -98,6 +98,7 @@ private:
 public:
     char *mqttHost = DASH_SERVER;
     uint16_t mqttPort = DASH_PORT;
+    bool wifiSetInsecure = true;
 
     DashioMQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
     void setup(char *_username, char *_password);
