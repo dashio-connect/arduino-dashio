@@ -500,6 +500,7 @@ public:
     String deviceID = ((char *)0);
     String type = ((char *)0);
     String name = ((char *)0);
+    String dashboardID = "BRDCST";
 
     DashioDevice(const String& _deviceType);
     void setup(const String& deviceIdentifier);

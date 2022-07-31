@@ -216,6 +216,9 @@ void DashioTCP::run() {
                         sendMessage(dashioDevice->getConnectMessage());
                         break;
                     default:
+                        if (messageData.control == config) {
+                            dashioDevice->dashboardID = messageData.idStr;
+                        }
                         if (processTCPmessageCallback != NULL) {
                             processTCPmessageCallback(&messageData);
                         }
@@ -293,6 +296,9 @@ void DashioMQTT::run() {
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
             default:
+                if (messageData.control == config) {
+                    dashioDevice->dashboardID = messageData.idStr;
+                }
                 if (processMQTTmessageCallback != NULL) {
                     processMQTTmessageCallback(&messageData);
                 }
@@ -479,6 +485,9 @@ void DashioBLE::run() {
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
             default:
+                if (messageData.control == config) {
+                    dashioDevice->dashboardID = messageData.idStr;
+                }
                 if (processBLEmessageCallback != NULL) {
                     processBLEmessageCallback(&messageData);
                 }

@@ -48,6 +48,9 @@ void DashioBluno::checkForMessage() {
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
             default:
+                if (messageData.control == config) {
+                    dashioDevice->dashboardID = messageData.idStr;
+                }
                 processBLEmessageCallback(&messageData);
                 break;
             }

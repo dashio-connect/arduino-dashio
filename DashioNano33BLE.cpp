@@ -131,6 +131,9 @@ void DashioBLE::run() {
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
             default:
+                if (messageData.control == config) {
+                    dashioDevice->dashboardID = messageData.idStr;
+                }
                 if (processBLEmessageCallback != NULL) {
                     processBLEmessageCallback(&messageData);
                 }

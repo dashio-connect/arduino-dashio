@@ -394,6 +394,7 @@ void onProvisionCallback(ConnectionType connectionType, const String& message, b
     sendMessage(connectionType, message);
 
     if (commsChanged) {
+        delay(2); // Make sure last message is sent before restarting comms
         wifi.begin(dashioProvision.wifiSSID, dashioProvision.wifiPassword);
 #ifndef NO_MQTT
         mqtt_con.setup(dashioProvision.dashUserName, dashioProvision.dashPassword);

@@ -55,7 +55,7 @@ hw_timer_t * timer = NULL; // Hardware timer
 OneWire oneWire(13); // Temperature sensor connected to pin 13
 DallasTemperature tempSensor(&oneWire);
 
-String messageToSend = "";
+String messageToSend((char *)0);
 String alarmMessageToSend = "";
 int graphSecondsCounter = 0;
 float temperatureC;
@@ -268,7 +268,7 @@ void setTemperatureEverySecond(float temperature) {
 
         tempSum += temperatureC;
         graphSecondsCounter++;
-        if (graphSecondsCounter == GRAPH_UPDATE_SECONDS) {
+        if (graphSecondsCounter >= GRAPH_UPDATE_SECONDS) {
             float tempFiltered = tempSum / GRAPH_UPDATE_SECONDS;
             messageToSend += dashioDevice.getTimeGraphPoint(GRAPH_ID, "L1", tempFiltered);
 
@@ -330,6 +330,8 @@ void generalSetup() {
 }
 
 void setup() {
+    messageToSend.reserve(1024);
+
     timer = timerBegin(0, 80, true); // Use 1st timer of 4. 1 tick takes 1/(80MHZ/80) = 1us so we set divider 80 and count up
     timerAttachInterrupt(timer, &onTimer, true); //Attach onTimer function to our timer
     timerAlarmWrite(timer, 1000000, true); // 1 tick is 1us => 1s.

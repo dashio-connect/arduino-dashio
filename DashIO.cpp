@@ -707,6 +707,8 @@ String DashioDevice::getBasicConfigMessage(const String& configData) {
     message += String(DELIM);
     message += CONFIG_ID;
     message += String(DELIM);
+    message += dashboardID; // Dashboard_ID
+    message += String(DELIM);
     message += BASIC_CONFIG_ID;
     message += configData;
     message += String(END_DELIM);
@@ -718,6 +720,8 @@ String DashioDevice::getFullConfigMessage(ControlType controlType, const String&
     message += deviceID;
     message += String(DELIM);
     message += CONFIG_ID;
+    message += String(DELIM);
+    message += dashboardID; // Dashboard_ID
     message += String(DELIM);
     message += getControlTypeStr(controlType);
     message += String(DELIM);
