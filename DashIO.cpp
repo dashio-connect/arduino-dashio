@@ -624,6 +624,8 @@ String DashioDevice::getMapWaypointMessage(const String& controlID, const String
 
 String DashioDevice::getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[], int numWaypoints) {
     String message = getControlBaseMessage(MAP_ID, controlID);
+    message += dashboardID;
+    message += String(DELIM);
     message += trackID;
     message += String(DELIM);
     message += text;
@@ -668,7 +670,9 @@ String DashioDevice::getEventLogMessage(const String& controlID, const String& t
 
 String DashioDevice::getEventLogMessage(const String& controlID, Event events[], int numEvents) {
     String message = getControlBaseMessage(EVENT_LOG_ID, controlID);
-    
+    message += dashboardID;
+    message += String(DELIM);
+
     for (int i = 0; i < numEvents; i++) {
         message += getEventJSON(events[i]);
         if (i < numEvents - 1) { // because getControlBaseMessage ends in a DELIM
@@ -707,7 +711,7 @@ String DashioDevice::getBasicConfigMessage(const String& configData) {
     message += String(DELIM);
     message += CONFIG_ID;
     message += String(DELIM);
-    message += dashboardID; // Dashboard_ID
+    message += dashboardID;
     message += String(DELIM);
     message += BASIC_CONFIG_ID;
     message += configData;
@@ -721,7 +725,7 @@ String DashioDevice::getFullConfigMessage(ControlType controlType, const String&
     message += String(DELIM);
     message += CONFIG_ID;
     message += String(DELIM);
-    message += dashboardID; // Dashboard_ID
+    message += dashboardID;
     message += String(DELIM);
     message += getControlTypeStr(controlType);
     message += String(DELIM);
@@ -765,11 +769,24 @@ String DashioDevice::getGraphLineFloats(const String& controlID, const String& g
 }
 
 String DashioDevice::getTimeGraphLine(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color) {
-    return getTimeGraphLineFloats(controlID, graphLineID, lineName, lineType, color, {}, {}, 0, false);
+    String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
+    message += String("BRDCST");
+    message += String(DELIM);
+    message += graphLineID;
+    message += String(DELIM);
+    message += lineName;
+    message += String(DELIM);
+    message += getLineTypeStr(lineType);
+    message += String(DELIM);
+    message += color;
+    message += String(END_DELIM);
+    return message;
 }
 
 String DashioDevice::getTimeGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
+    message += dashboardID;
+    message += String(DELIM);
     message += graphLineID;
     message += String(DELIM);
     message += lineName;
@@ -804,6 +821,8 @@ String DashioDevice::getTimeGraphPoint(const String& controlID, const String& gr
 
 String DashioDevice::getTimeGraphPoint(const String& controlID, const String& graphLineID, String time, float value) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
+    message += dashboardID;
+    message += String(DELIM);
     message += graphLineID;
     message += String(DELIM);
     message += time;

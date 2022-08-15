@@ -32,7 +32,6 @@
 #include "Arduino.h"
 #include <limits.h>
 
-//???#define DASH_SERVER "dash.dashio.io"
 extern char DASH_SERVER[];
 #define DASH_PORT 8883
 
