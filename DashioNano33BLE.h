@@ -47,6 +47,7 @@ private:
     static void onBLEConnected(BLEDevice central);
     static void onBLEDisconnected(BLEDevice central);
     static void onReadValueUpdate(BLEDevice central, BLECharacteristic characteristic);
+    void processConfig();
 
 public:
     void (*processBLEmessageCallback)(MessageData *connection);

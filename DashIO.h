@@ -500,8 +500,9 @@ public:
     String type = ((char *)0);
     String name = ((char *)0);
     String dashboardID = "BRDCST";
-
-    DashioDevice(const String& _deviceType);
+    const char *configC64Str = NULL;
+    
+    DashioDevice(const String& _deviceType, const char *_configC64Str = NULL);
     void setup(const String& deviceIdentifier);
     void setup(const String& deviceIdentifier, const String& _deviceName);
     void setup(uint8_t m_address[6]);
@@ -558,6 +559,8 @@ public:
     String getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle);
     String getBasicConfigMessage(const String& configData);
     String getFullConfigMessage(ControlType controlType, const String& configData);
+    String getC64ConfigBaseMessage();
+    String getC64ConfigMessage();
 
     String getConfigMessage(DeviceCfg deviceConfigData);
     String getConfigMessage(DeviceViewCfg deviceViewData);

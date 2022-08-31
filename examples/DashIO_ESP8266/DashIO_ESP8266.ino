@@ -22,7 +22,27 @@
 #define MQTT_USER      "yourMQTTuserName"
 #define MQTT_PASSWORD  "yourMQTTpassword"
 
-DashioDevice dashioDevice(DEVICE_TYPE);
+const PROGMEM char *configStr = 
+"zVjpjuo2FH4V5PsXTUkgw/KPXaNhEzBU1e38MMSANcHOdZw70NG8U5+hT9ZjJ4GQpeR2QZUQIif2Of6+s5oPdCDM91Dr6wc6zbhH"
+"JeVsjuEbtSoP9UajjN6pLfdnUa2MJJUOidaiFlpOZ6iM6IazCT4QEMywjcJl8LQgUlK280DkYkGYfOqBtLeqGCCBTVJwR4vGWiLJ"
+"UQa7fBcej6lDVawy2hO628uzyDCNz9cycvCaOHlYLMO6xmLkIfHkSR98OJ++zGJARkp9CoWZQDHqjEJkDhfw3P7m4ywcKRDVZk2B"
+"UPg7/EgCHHHN3WVHa47ZhyefUQlr0R+/d2Nn7XKfSSJQ0koeZmW17dCdknT7k2V/DsItFwesnDGZTvrwnCIVziLIhnpaEzy9re3l"
+"yVX226MRSoROJgcbh3vkeW1P2YIwG7Wk8Ili4YDdHEcWdGJExPhUGmP3duzNtOi2lyCM1PnWvpScDQX3886ZlTzmDydPe6PW3c6d"
+"zjCePJ0h/N4Jaq8oeQ9Izcqkem4mBfACZHy77YaxPCd2wu5LEJLB+j7Da4fYkUHOon0zX7gAJxm6maEJr6bs15+m2y3KYysjJkLg"
+"hWIuRvaEM4I+yzdADv8LkC/uHfCBkQS6oSCEpfGZt/F9adrNrbkpDLDH39kdIGozCZBfDLNasx7TMKsFYJpmo2FZhWGOyFbeAaY2"
+"UyRSawUgDmrtar1bGOJcie+AMbCTANlx8OYtDdMqAHO9qRl2vTDMheT3yEltJgXSJyhVWQskZcROujukC/sFaf87LC4ONWhlOXBV"
+"U0u3FusKcoc4DlJ9ZSewuw8bZvtIvTEFs0ZFcaYe9YTlLcL5azpJUPLUU33teN4I2wIt+Ihaj0pLejQ7nheAmau0/a6HuYtdhZ8c"
+"XCKw9AXJZSfBa61hZQbHKa53TI8wAZfgrdKrX038QwcLoOIxPENckJhwUvQqKt8YXwdMRvPqZDoft0cJzp6D3uXBdDVlzmnK5sQh"
+"2CNRKB1CarK4E8ReYRWZrXqMuWcwnOahWqnmMebt+Tv4SzshMJoxndcfA0iXGjWoVAYV2G5T7Ay44/B3T5sOdShxtPgXol6nIrOW"
+"d3046OjRc+Y3KbucMbIJjvyB9tyTL/MRaLWxt39QX5Q/wF4YtT0iwojeCEx3kMX6GIEbYqOweblEzJ76T5NVwim94Irw49z3wFoO"
+"95om6pw5iRp90RzXHnA5VdeGFK/MP6yJiGk53xHSzi3gA8u63FsGKO4PdWvyVRZ8VVehjXvtG5cLKEGWTmTqtm1bEE/pMJrmg/HY"
+"eICPUWkqt2AHi0Ooxibf6YaoUTi8U0nhwHkH4JAF/Q1orVYUDnAB4PYPLAICoAOBp7PwyoHhBA6aOm87ZifruJJzYRMxPWu7yKLF"
+"P++pjFanZOFzD4u3ErjyhC5BMKDCk6WeRlXSE37sJEuBmafDaXPShUi9WaqdcKmMrExh0Y6UwvkhtiB/94Uto5E9f/07tJp3oTVq"
+"m+fWT+AY9v+GUzW2nwMXUmALtQbCH5jrxWO59qkQHMgw6qqvqtA7kC9cFLo9V/LKw4WXQBtKzlBxry1G82KXZ4XJcyj4Kmxc+ndi"
+"trnW3Psb3Su3er6sUrXzH/Ss634Vlds1FmGzWmh00XaQ/3W3yuQPdkXT0KI/vKqUNhUk/HNAO56omW7Ed7n/f9WsZG1u3nI/qENZ"
+"s2XcR/1RtvOz/qczDVMdHfs25Svq+UHrfP38Ew==";
+
+DashioDevice dashioDevice(DEVICE_TYPE, configStr);
 DashioProvision dashioProvision(&dashioDevice);
 
 // DashIO comms connections
@@ -156,145 +176,6 @@ void processStatus(ConnectionType connectionType) {
   sendMessage(connectionType, message);
 }
 
-void processFirstConfigBlock(ConnectionType connectionType) {
-    String message((char *)0);
-    message.reserve(2048);
-
-    message += dashioDevice.getConfigMessage(DeviceCfg(2, "name, wifi, dashio")); // Two Device Views
-    EventLogCfg anEventLog(LOG_ID, DV01_ID, "Log", {0.05, 0.545, 0.9, 0.212});
-    
-    message += dashioDevice.getConfigMessage(anEventLog);
-
-    MapCfg aMap(MAP_ID, DV01_ID, "My Map", {0.0, 0.0, 1.0, 0.515});
-    message += dashioDevice.getConfigMessage(aMap);
-
-    ButtonCfg aButton(BUTTON02_ID, DV01_ID, "Event", {0.5, 0.788, 0.2, 0.121});
-    aButton.iconName = "bell";
-    aButton.offColor = "blue";
-    aButton.onColor = "black";
-    message += dashioDevice.getConfigMessage(aButton);
-
-    MenuCfg aMenu(MENU_ID, DV01_ID, "Settings", {0.05, 0.788, 0.4, 0.121});
-    aMenu.iconName = "pad";
-    aMenu.text = "Setup";
-    message += dashioDevice.getConfigMessage(aMenu);
-
-    SelectorCfg menuSelector(MENU_SELECTOR_ID, MENU_ID, "Selector");
-    message += dashioDevice.getConfigMessage(menuSelector);
-
-    ButtonCfg menuButton(MENU_BUTTON_ID,  MENU_ID, "On/Off");
-    menuButton.offColor = "red";
-    menuButton.onColor = "purple";
-    message += dashioDevice.getConfigMessage(menuButton);
-    
-    sendMessage(connectionType, message);
-
-    TextBoxCfg menuTextBox(MENU_TEXTBOX_ID, MENU_ID, "Counter");
-    menuTextBox.units = "°C";
-    message = dashioDevice.getConfigMessage(menuTextBox);
-
-    SliderCfg menuSlider(MENU_SLIDER_ID, MENU_ID, "UV");
-    menuSlider.knobColor = "green";
-    menuSlider.barColor = "yellow";
-    message += dashioDevice.getConfigMessage(menuSlider);
-
-    ButtonGroupCfg aGroup(BGROUP_ID, DV01_ID, "Actions", {0.75, 0.788, 0.2, 0.121});
-    aGroup.iconName = "pad";
-    aGroup.text = "BG";
-    message += dashioDevice.getConfigMessage(aGroup);
-
-    ButtonCfg groupButton1(BGROUP_B01_ID, BGROUP_ID, "Up");
-    groupButton1.iconName = "up";
-    groupButton1.offColor = "red";
-    groupButton1.onColor = "purple";
-    message += dashioDevice.getConfigMessage(groupButton1);
-
-    ButtonCfg groupButton2(BGROUP_B02_ID, BGROUP_ID, "Down");
-    groupButton2.iconName = "down";
-    groupButton2.offColor = "Green";
-    groupButton2.onColor = "#9d9f2c";
-    message += dashioDevice.getConfigMessage(groupButton2);
-
-    sendMessage(connectionType, message);
-}
-
-void processSecondConfigBlock(ConnectionType connectionType) {
-    String message((char *)0);
-    message.reserve(2048);
-    
-    ButtonCfg groupButton3(BGROUP_B03_ID, BGROUP_ID, "Left");
-    groupButton3.iconName = "left";
-    groupButton3.offColor = "#123456";
-    groupButton3.onColor = "#228855";
-    message = dashioDevice.getConfigMessage(groupButton3);
-
-    ButtonCfg groupButton4(BGROUP_B04_ID, BGROUP_ID, "Right");
-    groupButton4.iconName = "right";
-    groupButton4.offColor = "red";
-    groupButton4.onColor = "#F4A37C";
-    message += dashioDevice.getConfigMessage(groupButton4);
-
-    ButtonCfg groupButton5(BGROUP_B05_ID, BGROUP_ID, "Stop");
-    groupButton5.iconName = "stop";
-    groupButton5.offColor = "Black";
-    groupButton5.onColor = "#bc41d7";
-    message += dashioDevice.getConfigMessage(groupButton5);
-    
-    GraphCfg aGraph(GRAPH_ID, DV02_ID, "Level", {0.0, 0.0, 1.0, 0.485});
-    aGraph.xAxisLabel = "Temperature";
-    aGraph.xAxisMin = 0;
-    aGraph.xAxisMax = 1000;
-    aGraph.xAxisNumBars = 6;
-    aGraph.yAxisLabel = "Mixing Rate";
-    aGraph.yAxisMin = 100;
-    aGraph.yAxisMax = 600;
-    aGraph.yAxisNumBars = 6;
-    message += dashioDevice.getConfigMessage(aGraph);
-    
-    LabelCfg aLabel(LABEL_ID, DV02_ID, "Label", {0.0, 0.515, 1.0, 0.394});
-    aLabel.color = 22;
-    message += dashioDevice.getConfigMessage(aLabel);
-
-    sendMessage(connectionType, message);
-    
-    KnobCfg aKnob(KNOB_ID, DV02_ID, "Knob", {0.05, 0.576, 0.4, 0.303});
-    aKnob.knobColor = "#FF00F0";
-    aKnob.dialColor = "yellow";
-    message = dashioDevice.getConfigMessage(aKnob);
-    
-    DialCfg aDial(DIAL_ID, DV02_ID, "Dial", {0.55, 0.576, 0.4, 0.303});
-    aDial.dialFillColor = "green";
-    aDial.pointerColor = "yellow";
-    aDial.style = dialPieInverted;
-    aDial.units = "F";
-    aDial.precision = 2;
-    message += dashioDevice.getConfigMessage(aDial);
-    
-    TCPConnCfg tcpCnctnConfig(ip2CharArray(WiFi.localIP()), TCP_PORT);
-    message += dashioDevice.getConfigMessage(tcpCnctnConfig);
-    
-    MQTTConnCfg mqttCnctnConfig(dashioProvision.dashUserName, DASH_SERVER);
-    message += dashioDevice.getConfigMessage(mqttCnctnConfig);
-    
-    AlarmCfg alarmCfg("AID1", "A useful description", "PlopPlipPlip");
-    message += dashioDevice.getConfigMessage(alarmCfg);
-    
-    sendMessage(connectionType, message);
-
-    // Device Views
-    DeviceViewCfg deviceViewOne(DV01_ID, "First Device View", "down", "dark gray");
-    deviceViewOne.ctrlBkgndColor = "blue";
-    deviceViewOne.ctrlTitleBoxColor = 5;
-    message = dashioDevice.getConfigMessage(deviceViewOne);
-    
-    DeviceViewCfg deviceViewTwo(DV02_ID, "Second Device View", "up", "0");
-    deviceViewTwo.ctrlBkgndColor = "blue";
-    deviceViewTwo.ctrlTitleBoxColor = 5;
-    message += dashioDevice.getConfigMessage(deviceViewTwo);
-
-    sendMessage(connectionType, message);
-}
-
 void processButton(MessageData *messageData) {
     if (messageData->idStr == MENU_BUTTON_ID) {
         menuButtonValue = !menuButtonValue;
@@ -335,10 +216,6 @@ void processIncomingMessage(MessageData *messageData) {
     switch (messageData->control) {
     case status:
       processStatus(messageData->connectionType);
-      break;
-    case config:
-      processFirstConfigBlock(messageData->connectionType);
-      processSecondConfigBlock(messageData->connectionType);
       break;
     case button:
       processButton(messageData);

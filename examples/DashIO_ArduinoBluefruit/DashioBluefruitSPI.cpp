@@ -1,9 +1,7 @@
 #include "DashioBluefruitSPI.h"
 
 DashioBluefruit_BLE::DashioBluefruit_BLE(DashioDevice *_dashioDevice, bool _printMessages) : messageData(BLE_CONN),
-                                                                                             bluefruit(BLUEFRUIT_SPI_SCK, BLUEFRUIT_SPI_MISO,
-                                                                                                       BLUEFRUIT_SPI_MOSI, BLUEFRUIT_SPI_CS,
-                                                                                                       BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST) {
+            bluefruit(BLUEFRUIT_SPI_SCK, BLUEFRUIT_SPI_MISO, BLUEFRUIT_SPI_MOSI, BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST) {
     dashioDevice = _dashioDevice;
     printMessages = _printMessages;
 }
@@ -19,6 +17,30 @@ void DashioBluefruit_BLE::sendMessage(const String& writeStr) {
             Serial.println();
         }
     }
+}
+
+void DashioBluefruit_BLE::processConfig() {
+    sendMessage(dashioDevice->getC64ConfigBaseMessage());
+    
+    int c64Length = strlen_P(dashioDevice->configC64Str);
+    int length = 0;
+    String message = "";
+    for (int k = 0; k < c64Length; k++) {
+        char myChar = pgm_read_byte_near(dashioDevice->configC64Str + k);
+
+        message += myChar;
+        length++;
+        if (length == 100) {
+            sendMessage(message);
+            message = "";
+            length = 0;
+        }
+    }
+    if (message.length() > 0) {
+        sendMessage(message);
+    }
+
+    sendMessage(String('\n'));
 }
 
 void DashioBluefruit_BLE::checkForMessage() {
@@ -37,6 +59,9 @@ void DashioBluefruit_BLE::checkForMessage() {
                 break;
             case connect:
                 sendMessage(dashioDevice->getConnectMessage());
+                break;
+            case config:
+                processConfig();
                 break;
             default:
                 if (processBLEmessageCallback != NULL) {

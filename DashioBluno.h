@@ -35,6 +35,7 @@ private:
     DashioDevice *dashioDevice;
     MessageData messageData;
     void (*processBLEmessageCallback)(MessageData *messageData);
+    void processConfig();
 
     void bleNotifyValue(const String& message);
 

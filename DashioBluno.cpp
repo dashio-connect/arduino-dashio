@@ -34,6 +34,31 @@ void DashioBluno::sendMessage(const String& writeStr) {
     Serial.print(writeStr);
 }
 
+void DashioBluno::processConfig() {
+    sendMessage(dashioDevice->getC64ConfigBaseMessage());
+    
+    int c64Length = strlen_P(dashioDevice->configC64Str);
+    int length = 0;
+    String message = "";
+    for (int k = 0; k < c64Length; k++) {
+        char myChar = pgm_read_byte_near(dashioDevice->configC64Str + k);
+
+        message += myChar;
+        length++;
+        if (length == 100) {
+            sendMessage(message);
+            delay(100);
+            message = "";
+            length = 0;
+        }
+    }
+    if (message.length() > 0) {
+        sendMessage(message);
+    }
+
+    sendMessage(String('\n'));
+}
+
 void DashioBluno::checkForMessage() {
     while(Serial.available()) {
         char data;
@@ -47,11 +72,23 @@ void DashioBluno::checkForMessage() {
             case connect:
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
-            default:
-                if (messageData.control == config) {
-                    dashioDevice->dashboardID = messageData.idStr;
+            case config:
+                processConfig();
+/*???
+                dashioDevice->dashboardID = messageData.idStr;
+                if (dashioDevice->configC64Str != NULL) {
+                    sendMessage(dashioDevice->getC64ConfigMessage());
+                } else {
+                    if (processBLEmessageCallback != NULL) {
+                        processBLEmessageCallback(&messageData);
+                    }
                 }
-                processBLEmessageCallback(&messageData);
+*/
+                break;
+            default:
+                if (processBLEmessageCallback != NULL) {
+                    processBLEmessageCallback(&messageData);
+                }
                 break;
             }
         }

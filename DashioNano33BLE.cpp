@@ -29,7 +29,8 @@
 const int BLE_MAX_SEND_MESSAGE_LENGTH = 100;
 
 DashioBLE::DashioBLE(DashioDevice *_dashioDevice, bool _printMessages) : bleService(SERVICE_UUID),
-                                                                                   bleCharacteristic(CHARACTERISTIC_UUID, BLERead | BLEWriteWithoutResponse | BLENotify, BLE_MAX_SEND_MESSAGE_LENGTH, false) {
+                                                                         bleCharacteristic(CHARACTERISTIC_UUID, BLERead | BLENotify | BLEWriteWithoutResponse, BLE_MAX_SEND_MESSAGE_LENGTH, false) {
+
     dashioDevice = _dashioDevice;
     printMessages = _printMessages;
 
@@ -113,6 +114,32 @@ void DashioBLE::sendMessage(const String& message) {
     }
 }
 
+void DashioBLE::processConfig() {
+    sendMessage(dashioDevice->getC64ConfigBaseMessage());
+    
+    int c64Length = strlen_P(dashioDevice->configC64Str);
+    int length = 0;
+    String message = "";
+    for (int k = 0; k < c64Length; k++) {
+        char myChar = pgm_read_byte_near(dashioDevice->configC64Str + k);
+        
+        message += myChar;
+        length++;
+        if (length == 100) {
+            sendMessage(message);
+            delay(200); // or BLE peripheral can't handle it
+            message = "";
+            length = 0;
+        }
+    }
+    if (message.length() > 0) {
+        sendMessage(message);
+        delay(200); // or BLE peripheral can't handle it
+    }
+
+    sendMessage(String('\n'));
+}
+
 void DashioBLE::run() {
     if (BLE.connected()) {
         BLE.poll(); // Required for event handlers
@@ -130,10 +157,20 @@ void DashioBLE::run() {
             case connect:
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
-            default:
-                if (messageData.control == config) {
-                    dashioDevice->dashboardID = messageData.idStr;
+            case config:
+                processConfig();
+/*???
+                dashioDevice->dashboardID = messageData.idStr;
+                if (dashioDevice->configC64Str != NULL) {
+                    sendMessage(dashioDevice->getC64ConfigMessage());
+                } else {
+                    if (processBLEmessageCallback != NULL) {
+                        processBLEmessageCallback(&messageData);
+                    }
                 }
+*/
+                break;
+            default:
                 if (processBLEmessageCallback != NULL) {
                     processBLEmessageCallback(&messageData);
                 }

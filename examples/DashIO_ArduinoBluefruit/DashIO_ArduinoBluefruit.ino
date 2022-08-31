@@ -19,8 +19,19 @@
 #define DEVICE_TYPE "TempHumidBLEType"
 #define DEVICE_NAME "TempHumidBLE"
 
+const char configC64Str[] PROGMEM =
+"zVTbctowEP2Vjp5xyj2GN9uYJNMCmcSkD20fhL2AJrLEyHICZfinfkO/rCvbIqa5tNPpQ+HFe6yzqz17vHuSgsgzMvz8tUE4XQCv"
+"njVstS+3YMI9iaXQSvKrERmSKJxcN1ukQTZUgdAF5g+CZq8feo7b88+drtvvO57bdh3X9b3Q7Zx3e+4IGblgGhMSfNRMczDZIN2A"
+"ojpXgOga2Gqtb6hmkgybZ62e+VeHr2XGEBem3CyKZhNS3tLjbGXAIJxG4Q2CS6lSqhGZzqYhxjvLtHnx6gpilhXJMLpfJNFuA0+M"
+"R5bo9fEW3QbZPk8Rc5nBh0UyE7cgEjLUKodD41Sqy/nkavTvtLrMU5YwvXtJqP9RpLP+KzKhv1K6qZy2yLWW4kLJ/BQpnSeXy0By"
+"qbDuhQIQWLiu8NifR4XAJScUdMGhKtMgUljuhCopxV8N4i1PYpYf34Mv78fkDf1fkNaMxEyjZJ4q2X5JSZSXYd9TmhYTkAKIUXGl"
+"6GZtVeMQSCEgLuvviQKazOdFq/2w28Rfx/F7XscZdwYdJ2x6AyfsNcN2dxQE3sCMNAP1wGI4JbV+Q3pUTP9Cab9JOaCZhFxU104Y"
+"tTsnxmHlqgoopyq1y4ilcFFrNQFzTex2yVamU5GnowK6Y/CIZ1oHe6YCzArTik/odozmuWXfUMVWGweRrdEPaJI8FdY0mKwETKJT"
+"t/2hY0wp/34lEuu+KX3YvfN5DvalVAmo2bHkE2YZn9YoanXaYjdo7FIkE/mcxve15VCvGykqssLp8a5cVvgmMgdxpT/7JOovX2fW"
+"hOufmLG+wY0nM+DoQWnnmHGGfR2HrUp/2iHnCZN3LMuPHoAH/Dw/ylURHn4C";
+
 // Create device
-DashioDevice dashioDevice(DEVICE_TYPE);
+DashioDevice dashioDevice(DEVICE_TYPE, configC64Str);
 
 // Create connection through Bluefruit
 DashioBluefruit_BLE  ble_con(&dashioDevice, true);
@@ -74,21 +85,10 @@ void processStatus() {
     ble_con.sendMessage(dashioDevice.getButtonMessage(BUTTON_CONTROL_ID, fahrenheit, "", getTemperatureSymbol()));
 }
 
-void processConfig() {
-    // Not enough space for text full config, so just do a basic config
-    String configData = dashioDevice.getBasicConfigData(textBox, TEMPERATURE_CONTROL_ID, F("Temperature"));
-    configData += dashioDevice.getBasicConfigData(textBox, HUMIDITY_CONTROL_ID, F("Humidity"));
-    configData += dashioDevice.getBasicConfigData(button, BUTTON_CONTROL_ID, F("°C/F"));
-    ble_con.sendMessage(dashioDevice.getBasicConfigMessage(configData));
-}
-
 void onIncomingMessageCallback(MessageData *messageData) {
     switch (messageData->control) {
         case status:
             processStatus();
-            break;
-        case config:
-            processConfig();
             break;
         case button:
             if (messageData->idStr == BUTTON_CONTROL_ID) {
@@ -106,7 +106,7 @@ void setup(void) {
 
     dashioDevice.name = DEVICE_NAME;
     ble_con.setCallback(&onIncomingMessageCallback);
-    ble_con.begin(true);
+    ble_con.begin(true, true);
 
     timer.every(1000, onTimerCallback); // 1000ms
     dht.begin();

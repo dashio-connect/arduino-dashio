@@ -22,7 +22,22 @@
 // BLE
 #define MIN_BLE_TIME_S 10
   
-DashioDevice dashioDevice(DEVICE_TYPE);
+const PROGMEM char *configC64Str = 
+"lVXdbuI4FH6VyteACJDwc1cog6phoALa0Wi1F05yklhNbMZ2Btiq77TPME82x04CBOiqKyEUn5zfL9/5/EYy4Lkio7/+bpCU+pCW"
+"zxr2eiz2YI5vJBBcS5E+PpAReXzYjEmDbKkErq3ladZ20JJzptGd4KNmOgV8nIica5BoSYDFiV5RzQQZtVtOxym9noRiaOTovVk+"
+"kaLyfcpiY5lMF5vpCo2RkBnVaFksF1M8H6qwY8Zep4dNSQiYstnaDfLqh5vD1vRxP59j0I6FOjkG9N0G2V+l6aA1SIWCr3645Gvg"
+"IRlpmcM7YpLRbYmOn2st+EyKvG4p0BJRNBGpkFh4nOaAlev4GfgK/ymnfgpliQYR/BRHg9ebKF8BeUJ77JCPQP0AL4N18cXq2HRu"
+"QNMgDMdY0MyUWkEkQSXEwBJLuk2KyQ/3e6a+MazrtDFgb45zy6q1Ptgel4srOGak9LSBGFZkoXsyGpgs1xjsjw5Ypn0CYA6/ICXn"
+"dQ0AkG1BUp1L+BCeC1C7Xu8WZG7fK5urcn9je8bjO/Qwue2rRZ6NqUQ43LKPo8Gro+zcwNjAiYSYCM4hKDp8IxJo+Pxs5/fBd3uD"
+"LjS7HjjNnjcYNP1+5DaBtvtdz/E7Hh1gIwrkLxZAGdSLaBR02k7TiXy32XOH0BxEQdAM3GAYdLvO0On5hgGSafg/dd5xw7jwywXI"
+"fmpd7zsRSj+v5pgupCppmT8mWjgnSgV2WDIpkJTFJlfIaCU+AW5BLislCrb1vFshkbSu5xpKbu/DEJlodMcZdlqON2jhz/E8k5Km"
+"VGZVGpbB7BZT25d83MzIOQfdmxS8ZMywd6JhnXE1wvz+d/L5Hb1klPdZCTM0CsFQAJGLEF5EjefZgzW9MNhhMue98ikNRua1THHm"
+"LwjHmv2Do3SxB5Xg8KhLecYrncJchUFZGp/DV8JjMo1fYx5eCqGxCxmCXB6znWyV8/eE6cr7ylaeH3nIYnF219iPe/dEYzivv5GU"
+"K/v5goPRk+LVxsTg9VYlX6JXDHcrlOK6Qz3cPQ8/oeR4NW18EDtuhVFBiqwVFZFVynDGAuni+UL+6zRc20XmeAulhyVfYS6qoHLN"
+"SvG7RU0J4Qs1cI/6Z9r4/PJfrL0io0rEDtfDbkBR8gY9zfpXEM4kADcXG5VfRJqKnVrbGckowr0G+6Ly/QHG4ZO3DsZVl8d6alYz"
+"s1trOc5kIQslwij/XM9FXB5pHjLxwlReCsv7Hw==";
+
+DashioDevice dashioDevice(DEVICE_TYPE, configC64Str);
 DashioProvision dashioProvision(&dashioDevice);
 
 // DashIO comms connections

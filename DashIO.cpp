@@ -34,6 +34,7 @@
 #define WHO_ID "WHO"
 #define STATUS_ID "STATUS"
 #define CONFIG_ID "CFG"
+#define CONFIG_C64 "C64"
 
 #define DEVICE_ID "DVCE"
 #define DEVICE_VIEW_ID "DVVW"
@@ -278,9 +279,10 @@ String MessageData::getReceivedMessageForPrint(const String& controlStr) {
 }
 
 /* --------------- */
-DashioDevice::DashioDevice(const String& _deviceType) {
+DashioDevice::DashioDevice(const String& _deviceType, const char *_configC64Str) {
     type.reserve(MAX_DEVICE_TYPE_LEN);
     type = _deviceType;
+    configC64Str = _configC64Str;
 
     name.reserve(MAX_DEVICE_NAME_LEN);
 }
@@ -730,6 +732,26 @@ String DashioDevice::getFullConfigMessage(ControlType controlType, const String&
     message += getControlTypeStr(controlType);
     message += String(DELIM);
     message += configData;
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getC64ConfigBaseMessage() {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += CONFIG_ID;
+    message += String(DELIM);
+    message += dashboardID;
+    message += String(DELIM);
+    message += CONFIG_C64;
+    message += String(DELIM);
+    return message;
+}
+
+String DashioDevice::getC64ConfigMessage() {
+    String message = getC64ConfigBaseMessage();
+    message += configC64Str;
     message += String(END_DELIM);
     return message;
 }

@@ -215,10 +215,17 @@ void DashioTCP::run() {
                     case connect:
                         sendMessage(dashioDevice->getConnectMessage());
                         break;
-                    default:
-                        if (messageData.control == config) {
-                            dashioDevice->dashboardID = messageData.idStr;
+                    case config:
+                        dashioDevice->dashboardID = messageData.idStr;
+                        if (dashioDevice->configC64Str != NULL) {
+                            sendMessage(dashioDevice->getC64ConfigMessage());
+                        } else {
+                            if (processTCPmessageCallback != NULL) {
+                                processTCPmessageCallback(&messageData);
+                            }
                         }
+                        break;
+                    default:
                         if (processTCPmessageCallback != NULL) {
                             processTCPmessageCallback(&messageData);
                         }
@@ -295,10 +302,17 @@ void DashioMQTT::run() {
             case connect:
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
-            default:
-                if (messageData.control == config) {
-                    dashioDevice->dashboardID = messageData.idStr;
+            case config:
+                dashioDevice->dashboardID = messageData.idStr;
+                if (dashioDevice->configC64Str != NULL) {
+                    sendMessage(dashioDevice->getC64ConfigMessage());
+                } else {
+                    if (processMQTTmessageCallback != NULL) {
+                        processMQTTmessageCallback(&messageData);
+                    }
                 }
+                break;
+            default:
                 if (processMQTTmessageCallback != NULL) {
                     processMQTTmessageCallback(&messageData);
                 }
@@ -484,10 +498,17 @@ void DashioBLE::run() {
             case connect:
                 sendMessage(dashioDevice->getConnectMessage());
                 break;
-            default:
-                if (messageData.control == config) {
-                    dashioDevice->dashboardID = messageData.idStr;
+            case config:
+                dashioDevice->dashboardID = messageData.idStr;
+                if (dashioDevice->configC64Str != NULL) {
+                    sendMessage(dashioDevice->getC64ConfigMessage());
+                } else {
+                    if (processBLEmessageCallback != NULL) {
+                        processBLEmessageCallback(&messageData);
+                    }
                 }
+                break;
+            default:
                 if (processBLEmessageCallback != NULL) {
                     processBLEmessageCallback(&messageData);
                 }
