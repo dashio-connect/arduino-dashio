@@ -18,7 +18,17 @@
 
 #define MIN_SOFTAP_TIME_S 20
 
-DashioDevice    dashioDevice(DEVICE_TYPE);
+const char configC64Str[] PROGMEM =
+"lZRbb9owFMe/SuWHPUUooZe1vHFp0VQuVUaZpqkPJj4jFo6d2U6BIr77jhMnhUKlTULIPj7X3z/2jmQgC0M6v14CIugChF9b2Nie"
+"2oDfZjT3q0VhrZJDrYpji98sNc1Tv15JtXDLHTF2K4B0yGQaj7sjEpBESauV+DZA42MvjNBkQLKpFNupjEEANehvdQGu9oZ0ojAM"
+"SE41SFsGDeZlkAY2p6JA3694brktyzxiYTxMgS9TG1PLFemErfaN93hShqNNouds+uRKp2o95nLsClU1t7VPE33VrgbqK6E0RsbA"
+"MJJxKh6UEGptyqI+3Jlrx5/gjtF3zZlNm3zXVwHZnFRpozXj2Fm4d9T/WNtXUkJStbsjqTL2OR5hWkZN2nJ/XLUwNiCFAT2hmZuf"
+"7KsWKvi5hoSbMsFl0EjR68YfdBiURP+f9gArnadd0uGiQTHUAJJ8psIp8whp5IpLC/qEpiyyBeiDJP37yew+Pqvmv5IvJLfG8TsU"
+"IcHKha6vRZIfC5IrbUnnOnTAeN5lTINxKaK7diu6uW3hLwrvnCBUUJ35NAxeeQJzDutKosRqgf0+oBrf+RtCvQzdHCgAzl1ksh4E"
+"h64MGBZ9UK+SyGXqrZaS1cB6Ti9vV5qBnjbZ3m2184+U29r7xNYkpMmKHMt/8eXC37mm/kxTacpPKNkiyepk5mLwWTnTXH30edw7"
+"negWYePw/nN/zsm+gYry/OZLJw3CGhxyjvau6QyGB0+UwacmsaqW1wiONGqRuK509nt4xeswUku/pQXjas5NUd2zl/1f";
+
+DashioDevice    dashioDevice(DEVICE_TYPE, configC64Str);
 DashioWiFi      wifi;
 DashioSoftAP    soft_AP;
 DashioTCP       tcp_con(&dashioDevice, TCP_PORT, true);
@@ -49,30 +59,6 @@ void sendMessage(ConnectionType connectionType, const String& message) {
     }
 }
 
-void processConfig(ConnectionType connectionType) {
-    String message((char *)0);
-    message.reserve(2048);
-
-    message += dashioDevice.getConfigMessage(DeviceCfg(1, "name, wifi, dashio")); // One Device Views
-
-    DialCfg first_dial_control("D01", "DV01", "Dial", {0.24, 0.14, 0.54, 0.26});
-    message += dashioDevice.getConfigMessage(first_dial_control);
-
-    KnobCfg aKnob("KB01", "DV01", "Knob", {0.24, 0.42, 0.54, 0.26});
-    message += dashioDevice.getConfigMessage(aKnob);
-
-    TCPConnCfg tcpCnctnConfig(wifi.ipAddress(), TCP_PORT);
-    message += dashioDevice.getConfigMessage(tcpCnctnConfig);
-    
-    MQTTConnCfg mqttCnctnConfig(dashioProvision.dashUserName, DASH_SERVER);
-    message += dashioDevice.getConfigMessage(mqttCnctnConfig);
-
-    DeviceViewCfg deviceView("DV01", "Dial & Knob", "up", "black");
-    message += dashioDevice.getConfigMessage(deviceView);
-    
-    sendMessage(connectionType, message);
-}
-
 void processStatus(ConnectionType connectionType) {
     String message((char *)0);
     message.reserve(1024);
@@ -87,9 +73,6 @@ void processIncomingMessage(MessageData *messageData) {
     switch (messageData->control) {
     case status:
         processStatus(messageData->connectionType);
-        break;
-    case config:
-        processConfig(messageData->connectionType);
         break;
     case knob:
         if (messageData->idStr == "KB01") {

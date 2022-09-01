@@ -6,8 +6,22 @@
 #define DEVICE_NAME "Bluno Test"
 #define DEVICE_TYPE "Bluno_Type"
 
+const char configC64Str[] PROGMEM =
+"3VVLb+IwEP4rlc9oFSi0Wm6kUFQVkhXQrlarPZhkAKuOjRyHx1b89x07NgRIq55XPsQez8PzfTOTd5KBKHLS/f2nQTidA3d7DTsd"
+"yh2Y4ztJpNBK8qc+6ZKn/ow0yJoqENoK+psmCgrBNCoT3GqmOeB2Zr8NsgK2XOkJ1UySbvCt2TLLqf2QOUO5QPUwns3iMSlj9zhb"
+"GuHDIJoNJihcSJVRjZIojgZ43nvLo9/b72bh0xQkLLc+gwZ5m6ez/RpOhluW6tXRqN1pkN2Vq3aDJFzm8DxPYzEFkZKuVgUcEJiM"
+"rh1E80JrKYZKFueSEjK5WDxILhUGHioAgZHPUQyJNxgIOufgYjSIFN7wF3Aut3VofwZpBfkPIf4YPQN+SeM5UK06nJqIHsO0IpqZ"
+"sD2t8ZmocNMkBquloutVCce+t2P5mJWc7MxhZKttqvf2xXF0BdCQOE1vVvqgO9JtBkFQg8ruQuESjlPcSqHWwXMBb7tlVh1qnTau"
+"jntaxbM9R0UWUoX5d1zoquAc3ft6dA2IWBoPUghIyke+EwU0fXkp034MTd45qA1L4CQMDH2KaajqHbAZhJyXfOQO9yiejHujK+yf"
+"rVeB1c/3sZgAB5qj+oLyHEwPlBDXUKAgfaW8QN37GgIucL0NcH1CQ76SWyTfMupCX1MQ3JlV5uYbZ0yVlKblUkb5ozRdlD/j/dGN"
+"kXvlEcvgi3PB1Htmq9EwY5y4zk/QV6HcgXKqMj9H0fnQt4GxAcMUErpgS0OmKLK+Fb0y2KJO8+B1nMBMX604YvCIDE3ZX8Sz2QoM"
+"OIg95lBkwk8OdFYKjKNzSkt2jKfwbSlSn3tEN/ub0PDlLqVKQcVHjyeZt/i5wrJy2lcyd3YOPfvVwDNFRW6rJtnbpjY3tjzwb3NF"
+"X/XyY8sKMHdn8yiSAuwgyrGAEy09QTlnmJFrBLu/GMHnzTD9T5phTpXrhalN2meL8qs/zheG/13HmvoJPh2YgV3tDlXOLN8VRcrk"
+"K8uLY9PABuEayaU9Hv4B";
+
+
 // Create device
-DashioDevice dashioDevice(DEVICE_TYPE);
+DashioDevice dashioDevice(DEVICE_TYPE, configC64Str);
 
 // Create connection through Bluefruit
 DashioBluno  bluno(&dashioDevice);
@@ -37,16 +51,6 @@ void processStatus() {
     bluno.sendMessage(dashioDevice.getKnobDialMessage(KNOB_ID, 50));
 }
 
-void processConfig() {
-    // Not enough resources for full config, so just do a basic config
-    String configData = dashioDevice.getBasicConfigData(button, TOGGLE_BUTTON_ID, "Toggle");
-    configData += dashioDevice.getBasicConfigData(slider, SINGLE_SLIDER_ID, "Slider");
-    configData += dashioDevice.getBasicConfigData(graph, SIMPLE_GRAPH_ID, "Graph");
-    configData += dashioDevice.getBasicConfigData(textBox, TEXT_BOX_ID, "Text");
-    configData += dashioDevice.getBasicConfigData(knob, KNOB_ID, "Knob");
-    bluno.sendMessage(dashioDevice.getBasicConfigMessage(configData));
-}
-
 void processButton(MessageData *messageData) {
     if (messageData->idStr == TEXT_BOX_ID) {
         count = 0;
@@ -60,12 +64,12 @@ void processButton(MessageData *messageData) {
         toggle = !toggle;
         if (toggle) {
             int data[7] = {50, 255, 505, 758, 903, 400, 0};
-            bluno.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L1", "alan", bar, "12", data, 7));
+            bluno.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L1", "Alan", bar, "12", data, 7));
             int data2[6] = {153, 351, 806, 900, 200, 0};
-            bluno.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L2", "steve", segBar, "15", data2, 6));
+            bluno.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L2", "Steve", segBar, "15", data2, 6));
         } else {
             float data[7] = {90, 303.3345667, 504.4332, 809.4342, 912, 706, 64};
-            bluno.sendMessage(dashioDevice.getGraphLineFloats(SIMPLE_GRAPH_ID, "L1", "fish", peakBar, "18", data, 7));
+            bluno.sendMessage(dashioDevice.getGraphLineFloats(SIMPLE_GRAPH_ID, "L1", "Bob", peakBar, "18", data, 7));
         }
 
         bluno.sendMessage(dashioDevice.getButtonMessage(messageData->idStr, toggle));
@@ -93,9 +97,6 @@ void processMessage(MessageData *messageData) {
     switch (messageData->control) {
     case status:
         processStatus();
-        break;
-    case config:
-        processConfig();
         break;
     case button:
         processButton(messageData);

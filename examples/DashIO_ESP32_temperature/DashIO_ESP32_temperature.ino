@@ -31,8 +31,22 @@
 #define EEPROM_START PROVISIONING_EEPROM_SIZE
 #define ADDITIONAL_EEPROM_SIZE 10
 
+const char configC64Str[] PROGMEM =
+"zVbNctowEH4VRmdgMLYJ4YYdk8mUQIdAeuj0IPACmsoSleWUNJN36jP0ybqy5cZgmKZ/M714vKvV7n7f7kp6IgmILCWD9x+ahNMl"
+"cPP/RB7fypRpJsWM4pcMOm3f8ZvkM4v11qqcJtFMcygtyYDMp29Jk6T6kQNK17Ppwsi5Fcq3dN+YQ7IDRXWmoDHkVCW4vqMKhL65"
+"QpMw6DioWUmhleS5ahyMrY5LhfK7LdOA8v44wybZAtts9Y+Mu173uXkKyoXf/1MoTPwmlO5vQ8ECadjrQO6hqFHV9byIVo+fCabR"
+"nHz7Glbyr+ROasEcv1vnYzKdRKTIYMjZxqjCaDKPZqhcS5VQbYwWtyjWCMe8FKxYmntC6eMynj/u4MXrUS1O8LHiMoU3y3gq7kDE"
+"ZKBVBqa4Rxy4v8CBacdC86/xt/2L3gEH7gEH+aYqBZ127wQJbdd/NQ/d/5OHvtP/lzzghCR0Zw+zZaa1FNdKZoeaYnbkeh3aKZxB"
+"fDSnBX+FeSTokoON0CRSlNvGLIGTLNdYfKG6cEbOsnqmcwzZaFRjp+ufoqeDWoZwJjQxMQPgnJgW+Qlk53+BnDfJX4CMFd8outuW"
+"1ecQSiFgVcR/IgpovFgU6KPA9/pu1HJ7kdPyev1+K7gY+a1o2Llwe07Q7Q37mEoK6oGtwG7yRsNR2O04LWcU+C3Pv4xa/VEYtkI/"
+"vAxd17l0vMDkr/CQ/5U4zzgUQi5t2sknrQ/z3spUL2ZjdBfTdNs2HybbSAQOOGZoOTBuYka5dWOunExZgZrbyv5rrOl1SRNelsM9"
+"S/F2Kw7dSoPcXM2vTbnydbonA6/zik5we965Syf3NDYvjsMT6TUtkp9MuYNJlgTU4Ko/TmptYjoiBlNBJHTNNoZMkSVXueqewWd0"
+"4zyXNlZh7lmtOEIeIRt37Asi8TBYukXsOBhZIspBQV+FIs3jV9krHwPoKfi4EXE5UQHPoNRLFYOa/vD2oguPngtmpaaz8i2LhalA"
+"w3o+wX1jLDfVXOaKijSv5OqxKDuuzM0+fGqUcaZotIGGPTgqBud3v/BlBroynhMpIB/PFDi2tSzbMuUM0VohZqpoeSvDA3YaZl62"
+"cBYzec/SzHb483c=";
+
 // Create device
-DashioDevice dashioDevice(DEVICE_TYPE);
+DashioDevice dashioDevice(DEVICE_TYPE, configC64Str);
 // Create Connections
 DashioBLE  ble_con(&dashioDevice, true);
 DashioMQTT mqtt_con(&dashioDevice, 2048, true, true);
@@ -124,88 +138,6 @@ void processStatus(MessageData *messageData) {
     sendMessage(messageData->connectionType, message);
 }
 
-void processConfig1(MessageData *messageData) {
-    String message = dashioDevice.getConfigMessage(DeviceCfg(1, "name, wifi, dashio"));  // One device view
-
-    TextBoxCfg tempTextBox(TEMPTB_ID, CB01_ID, "Temperature", {0, 0, 1, 0.1515});
-    tempTextBox.titlePosition = titleOff;
-    tempTextBox.format = numFmt;
-    tempTextBox.kbdType = noKbd;
-    tempTextBox.units = "°C";
-    message += dashioDevice.getConfigMessage(tempTextBox);
-
-    TimeGraphCfg tempGraph(GRAPH_ID, CB01_ID, "Temperature", {0, 0.1515, 1, 0.3636});
-    tempGraph.titlePosition = titleOff;
-    tempGraph.yAxisLabel = "°C";
-    tempGraph.yAxisMin = 0;
-    tempGraph.yAxisMax = 40;
-    tempGraph.yAxisNumBars = 5;
-    message += dashioDevice.getConfigMessage(tempGraph);
-
-    LabelCfg labelHigh(LABEL_HIGH_ID, CB01_ID, "Max Temperature Alarm", {0, 0.5151, 1, 0.2424});
-    message += dashioDevice.getConfigMessage(labelHigh);
-
-    ButtonCfg alarmEnableHighButton(AEB_HIGH_ID, CB01_ID, "Enable", {0.05, 0.5758, 0.25, 0.15});
-    alarmEnableHighButton.titlePosition = titleOff;
-    alarmEnableHighButton.iconName = "bell";
-    alarmEnableHighButton.offColor = "red";
-    alarmEnableHighButton.onColor = "lime";
-    message += dashioDevice.getConfigMessage(alarmEnableHighButton);
-
-    TextBoxCfg alarmMaxTempTextBox(ALARMTB_HIGH_ID, CB01_ID, "Max °C", {0.35, 0.5758, 0.6, 0.1515});
-    alarmMaxTempTextBox.titlePosition = titleOff;
-    alarmMaxTempTextBox.format = numFmt;
-    alarmMaxTempTextBox.precision = 3;
-    alarmMaxTempTextBox.kbdType = numKbd;
-    alarmMaxTempTextBox.units = "°C";
-    message += dashioDevice.getConfigMessage(alarmMaxTempTextBox);
-    sendMessage(messageData->connectionType, message);
-}
-
-void processConfig2(MessageData *messageData) {
-    LabelCfg labelLow(LABEL_LOW_ID, CB01_ID, "Min Temperature Alarm", {0, 0.7576, 1, 0.2424});
-    String message = dashioDevice.getConfigMessage(labelLow);
-
-    ButtonCfg alarmEnableLowButton(AEB_LOW_ID, CB01_ID, "Enable", {0.05, 0.8181, 0.25, 0.15});
-    alarmEnableLowButton.titlePosition = titleOff;
-    alarmEnableLowButton.iconName = "bell";
-    alarmEnableLowButton.offColor = "red";
-    alarmEnableLowButton.onColor = "lime";
-    message += dashioDevice.getConfigMessage(alarmEnableLowButton);
-
-    TextBoxCfg alarmMinTempTextBox(ALARMTB_LOW_ID, CB01_ID, "Max °C", {0.35, 0.8181, 0.6, 0.1515});
-    alarmMinTempTextBox.titlePosition = titleOff;
-    alarmMinTempTextBox.format = numFmt;
-    alarmMinTempTextBox.precision = 3;
-    alarmMinTempTextBox.kbdType = numKbd;
-    alarmMinTempTextBox.units = "°C";
-    message += dashioDevice.getConfigMessage(alarmMinTempTextBox);
-    
-    // Connections
-    BLEConnCfg bleCnctnConfig(SERVICE_UUID, CHARACTERISTIC_UUID, CHARACTERISTIC_UUID);
-    message += dashioDevice.getConfigMessage(bleCnctnConfig);
-  
-    MQTTConnCfg mqttCnctnConfig(dashioProvision.dashUserName, DASH_SERVER);
-    message += dashioDevice.getConfigMessage(mqttCnctnConfig);
-
-    AlarmCfg alarmHighCfg("AL02", "Over Temperature", "boing");
-    message += dashioDevice.getConfigMessage(alarmHighCfg);
-
-    AlarmCfg alarmLowCfg("AL01", "Under Temperature", "boing");
-    message += dashioDevice.getConfigMessage(alarmLowCfg);
-
-    // Device View
-    DeviceViewCfg deviceView(CB01_ID, "Temperature Log", "Termperature", "16");
-    deviceView.ctrlMaxFontSize = 45;
-    deviceView.color = 16;
-    deviceView.ctrlColor = "white";
-    deviceView.ctrlBorderColor = "white";
-    deviceView.ctrlBkgndColor = "blue";
-    deviceView.ctrlTitleBoxColor = 5;
-    message += dashioDevice.getConfigMessage(deviceView);
-    sendMessage(messageData->connectionType, message);
-}
-
 void processButton(MessageData *messageData) {
     if (messageData->idStr == AEB_LOW_ID) {
         if (alarmEnableLow == on) {
@@ -244,10 +176,6 @@ void processIncomingMessage(MessageData *messageData) {
     switch (messageData->control) {
     case status:
         processStatus(messageData);
-        break;
-    case config:
-        processConfig1(messageData);
-        processConfig2(messageData);
         break;
     case textBox:
         processTextBox(messageData);

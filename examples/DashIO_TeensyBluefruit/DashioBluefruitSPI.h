@@ -17,6 +17,7 @@ class DashioBluefruit_BLE {
         MessageData messageData;
         Adafruit_BluefruitLE_SPI bluefruit;
         void (*processBLEmessageCallback)(MessageData *messageData);
+        void processConfig();
 
         void bleNotifyValue(const String& message);
 
