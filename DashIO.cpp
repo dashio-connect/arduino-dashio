@@ -279,10 +279,11 @@ String MessageData::getReceivedMessageForPrint(const String& controlStr) {
 }
 
 /* --------------- */
-DashioDevice::DashioDevice(const String& _deviceType, const char *_configC64Str) {
+DashioDevice::DashioDevice(const String& _deviceType, const char *_configC64Str, unsigned int _cfgRevision) {
     type.reserve(MAX_DEVICE_TYPE_LEN);
     type = _deviceType;
     configC64Str = _configC64Str;
+    cfgRevision = _cfgRevision;
 
     name.reserve(MAX_DEVICE_NAME_LEN);
 }
@@ -372,6 +373,8 @@ String DashioDevice::getWhoMessage() {
     message += type;
     message += String(DELIM);
     message += name;
+    message += String(DELIM);
+    message += String(cfgRevision);
     message += String(END_DELIM);
     return message;
 }
