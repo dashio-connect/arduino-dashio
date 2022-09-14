@@ -95,64 +95,6 @@ void processStatus(ConnectionType connectionType) {
     sendMessage(connectionType, message);
 }
 
-void processConfig(ConnectionType connectionType) {
-    sendMessage(connectionType, dashioDevice.getConfigMessage(DeviceCfg(1, "name, wifi, dashio"))); // One device view
-    
-    TimeGraphCfg timpGraphCfg(TIME_GRAPH_ID, DV01_ID, "Temperature", {0.25, 0.0, 0.75, 0.394});
-    timpGraphCfg.yAxisLabel = "°C";
-    timpGraphCfg.yAxisMin = 0;
-    timpGraphCfg.yAxisMax = 50;
-    sendMessage(connectionType, dashioDevice.getConfigMessage(timpGraphCfg));
-    
-    SliderCfg sliderCfg(SLIDER_ID, DV01_ID, "UV", {0.0, 0.0, 0.2, 0.394});
-    sliderCfg.knobColor = "green";
-    sliderCfg.barFollowsSlider = false;
-    sliderCfg.barColor = "yellow";
-    sendMessage(connectionType, dashioDevice.getConfigMessage(sliderCfg));
-    
-    ButtonCfg buttonCfg(BUTTON_ID, DV01_ID, "B1", {0.0, 0.424, 0.2, 0.12});
-    buttonCfg.iconName = "refresh";
-    buttonCfg.offColor = "blue";
-    buttonCfg.onColor = "black";
-    sendMessage(connectionType, dashioDevice.getConfigMessage(buttonCfg));
-    
-    TextBoxCfg textBoxCfg(TEXTBOX_ID, DV01_ID, "Counter", {0.25, 0.424, 0.75, 0.1212});
-    sendMessage(connectionType, dashioDevice.getConfigMessage(textBoxCfg));
-    
-    GraphCfg graphCfg(GRAPH_ID,  DV01_ID, "Level", {0.0, 0.576, 1.0, 0.364});
-    graphCfg.xAxisLabel = "Temperature";
-    graphCfg.xAxisMin = 0;
-    graphCfg.xAxisMax = 1000;
-    graphCfg.xAxisNumBars = 6;
-    graphCfg.yAxisLabel = "Mixing Rate";
-    graphCfg.yAxisMin = 100;
-    graphCfg.yAxisMax = 800;
-    graphCfg.yAxisNumBars = 5;
-    sendMessage(connectionType, dashioDevice.getConfigMessage(graphCfg));
-  
-    // Connections
-    BLEConnCfg bleCnctnConfig(SERVICE_UUID, CHARACTERISTIC_UUID, CHARACTERISTIC_UUID);
-    sendMessage(connectionType, dashioDevice.getConfigMessage(bleCnctnConfig));
-
-#ifndef NO_TCP
-    TCPConnCfg tcpCnctnConfig(wifi.ipAddress(), TCP_PORT);
-    sendMessage(connectionType, dashioDevice.getConfigMessage(tcpCnctnConfig));
-#endif
-
-#ifndef NO_MQTT
-    MQTTConnCfg mqttCnctnConfig(dashioProvision.dashUserName, DASH_SERVER);
-    sendMessage(connectionType, dashioDevice.getConfigMessage(mqttCnctnConfig));
-#endif
-    
-    DeviceViewCfg deviceViewCfg(DV01_ID, "Graph Page", "down", "93");
-    deviceViewCfg.ctrlBkgndColor = "blue";
-    deviceViewCfg.ctrlBkgndTransparency = 80;
-    deviceViewCfg.ctrlTitleFontSize = 16;
-    deviceViewCfg.ctrlTitleBoxColor = "5";
-    deviceViewCfg.ctrlTitleBoxTransparency = 50;
-    sendMessage(connectionType, dashioDevice.getConfigMessage(deviceViewCfg));
-}
-
 void processButton(MessageData *messageData) {
     if (messageData->idStr == BUTTON_ID) {
         if (toggle == off) {
@@ -208,9 +150,6 @@ void processIncomingMessage(MessageData *messageData) {
     switch (messageData->control) {
     case status:
         processStatus(messageData->connectionType);
-        break;
-    case config:
-        processConfig(messageData->connectionType);
         break;
     case button:
         processButton(messageData);
