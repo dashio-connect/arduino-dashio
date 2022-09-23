@@ -201,6 +201,8 @@ bool MessageData::processChar(char chr) {
                     control = eventLog;
                 } else if (readStr == SELECTOR_ID) {
                     control = selector;
+                } else if (readStr == COLOR_ID) {
+                    control = colorPicker;
                 } else if (readStr == DEVICE_NAME_ID) {
                     control = deviceName;
                 } else if (readStr == WIFI_SETUP_ID) {
