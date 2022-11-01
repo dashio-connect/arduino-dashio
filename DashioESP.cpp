@@ -606,7 +606,6 @@ void DashioBLE::begin(bool secureBLE) {
     pService->start();
     
     // Setup BLE advertising
-    BLEAdvertising *pAdvertising;
     pAdvertising = BLEDevice::getAdvertising();
     pAdvertising->addServiceUUID(BLEUUID(SERVICE_UUID));
     pAdvertising->setScanResponse(true);
@@ -619,6 +618,15 @@ String DashioBLE::macAddress() {
     BLEAddress bdAddr = BLEDevice::getAddress();
     return bdAddr.toString().c_str();
 }
+
+void DashioBLE::advertise(){
+    pAdvertising->start();
+}
+
+bool DashioBLE::isConnected(){
+    return (pServer->getConnectedCount() > 0);
+}
+
 
 // -------------------------------------------------------------------------------------
 

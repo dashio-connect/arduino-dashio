@@ -542,6 +542,7 @@ public:
     String getDirectionMessage(const String& controlID, float direction, float speed = -1);
     String getMapWaypointMessage(const String& controlID, const String& trackID, const String& latitude, const String& longitude);
     String getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[] = {}, int numWaypoints = 0);
+    String getEventLogMessage(const String& controlID, const String& color, String text[], int numTextRows);
     String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int numTextRows);
     String getEventLogMessage(const String& controlID, Event events[], int numEvents);
     String getColorMessage(const String& controlID, const String& color);

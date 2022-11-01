@@ -61,7 +61,7 @@ private:
     bool printMessages;
     DashioDevice *dashioDevice;
     MessageData messageData;
-    uint16_t tcpPort = 5000;
+    uint16_t tcpPort = 5650;
     WiFiClient client;
     WiFiServer wifiServer;
 /*???

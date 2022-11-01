@@ -61,7 +61,7 @@ private:
     void (*processTCPmessageCallback)(MessageData *messageData);
 
 public:
-    uint16_t tcpPort = 5000;
+    uint16_t tcpPort = 5650;
 
     DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
@@ -120,6 +120,7 @@ private:
     DashioDevice *dashioDevice;
     BLEServer *pServer;
     BLECharacteristic *pCharacteristic;
+    BLEAdvertising *pAdvertising;
 
     void bleNotifyValue(const String& message);
 
@@ -133,6 +134,8 @@ public:
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void begin(bool secureBLE = false);
     String macAddress();
+    void advertise();
+    bool isConnected();
 };
 #endif
 
