@@ -36,7 +36,7 @@
     #include <ESP8266WiFi.h>  // Included in the 8266 Arduino library
     #include <ESP8266mDNS.h>  // Included in the 8266 Arduino library
 #elif ESP32
-    #include <BLEDevice.h>    // ESP32 BLE Arduino library by Neil Kolban. Included in Arduino IDE
+    #include <NimBLEDevice.h>    // ESP32 BLE Arduino library by Neil Kolban. Included in Arduino IDE
     #include <ESPmDNS.h>      // Included in the espressif library
 #endif
 
@@ -117,6 +117,7 @@ public:
 class DashioBLE {
 private:
     bool printMessages;
+    bool secureBLE;
     DashioDevice *dashioDevice;
     BLEServer *pServer;
     BLECharacteristic *pCharacteristic;
@@ -128,11 +129,15 @@ public:
     MessageData data;
     void (*processBLEmessageCallback)(MessageData *messageData);
 
+    static int connHandle;
+    static bool authenticated;
+    static bool authRequestConnect;
+
     DashioBLE(DashioDevice *_dashioDevice, bool _printMessages = false);
     void sendMessage(const String& message);
     void run();
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
-    void begin(bool secureBLE = false);
+    void begin(int passKey = 0);
     String macAddress();
     void advertise();
     bool isConnected();

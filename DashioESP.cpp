@@ -451,51 +451,74 @@ void DashioMQTT::end() {
 
 // ---------------------------------------- BLE ----------------------------------------
 #ifdef ESP32
-class securityBLECallbacks : public BLESecurityCallbacks {
-    bool onConfirmPIN(uint32_t pin){
-        Serial.print(F("Confirm Pin: "));
-        Serial.println(pin);
+int DashioBLE::connHandle;
+bool DashioBLE::authenticated;
+bool DashioBLE::authRequestConnect;
+
+class SecurityBLECallbacks : public BLESecurityCallbacks {
+    bool onConfirmPIN(uint32_t pin) {
+//        Serial.print(F("Confirm Pin: "));
+//        Serial.println(pin);
         return true;  
     }
   
-    uint32_t onPassKeyRequest(){
-        Serial.println(F("onPassKeyRequest"));
+    uint32_t onPassKeyRequest() {
+//        Serial.println(F("onPassKeyRequest"));
         return 0;
     }
 
-    void onPassKeyNotify(uint32_t pass_key){
-        Serial.println(F("onPassKeyNotify"));
+    void onPassKeyNotify(uint32_t pass_key) {
+//        Serial.println(F("onPassKeyNotify"));
     }
 
-    bool onSecurityRequest(){
-        Serial.println(F("onSecurityRequest"));
+    bool onSecurityRequest() {
+//        Serial.println(F("onSecurityRequest"));
         return true;
     }
 
-    void onAuthenticationComplete(esp_ble_auth_cmpl_t cmpl){
-        if(cmpl.success){
-            Serial.println(F("Authentication Success"));
-        } else{
-            Serial.println(F("Authentication Fail"));
+    void onAuthenticationComplete(ble_gap_conn_desc * desc) {
+        if (desc->sec_state.authenticated) {
+            Serial.println(F("BLE Authenticated"));
+            DashioBLE::authenticated = true;
+            DashioBLE::authRequestConnect = true;
+        } else {
+            Serial.println(F("BLE Authentication FAIL"));
+            DashioBLE::authenticated = false;
+        }
+        if (desc->sec_state.encrypted) {
+            Serial.println(F("BLE Encrypted"));
+        }
+        if (desc->sec_state.bonded) {
+            Serial.println(F("BLE Bonded"));
         }
     }
 };
 
-// BLE callback for when a message is received
-class messageReceivedBLECallback: public BLECharacteristicCallbacks {
-
-     public:
-         messageReceivedBLECallback(DashioBLE * local_DashioBLE):
-            local_DashioBLE(local_DashioBLE)
-         {}
-        
-        void onWrite(BLECharacteristic *pCharacteristic) {
-            std::string payload = pCharacteristic->getValue();
-            local_DashioBLE->data.processMessage(payload.c_str()); // The message components are stored within the connection where the messageReceived flag is set
-        }
+class ServerCallbacks : public BLEServerCallbacks {
+    void onConnect(NimBLEServer* pServer, ble_gap_conn_desc* desc) {
+        Serial.println("BLE Connected");
+        DashioBLE::connHandle = desc->conn_handle;
+    }
     
-    public:
-        DashioBLE * local_DashioBLE = NULL;
+    void onDisconnect(BLEServer* pServer) {
+        Serial.println("BLE Disconnected");
+        DashioBLE::authenticated = false;
+    }
+};
+
+// BLE callback for when a message is received
+class MessageReceivedBLECallback: public BLECharacteristicCallbacks {
+     public:
+         MessageReceivedBLECallback(DashioBLE * local_DashioBLE):
+            local_DashioBLE(local_DashioBLE) {}
+        
+         void onWrite(BLECharacteristic *pCharacteristic) {
+             std::string payload = pCharacteristic->getValue();
+             local_DashioBLE->data.processMessage(payload.c_str()); // The message components are stored within the connection where the messageReceived flag is set
+         }
+    
+     public:
+         DashioBLE * local_DashioBLE = NULL;
 };
 
 DashioBLE::DashioBLE(DashioDevice *_dashioDevice, bool _printMessages) : data(BLE_CONN) {
@@ -504,13 +527,13 @@ DashioBLE::DashioBLE(DashioDevice *_dashioDevice, bool _printMessages) : data(BL
 }
 
 void DashioBLE::bleNotifyValue(const String& message) {
-    pCharacteristic->setValue(message.c_str());
+    pCharacteristic->setValue(message);
     pCharacteristic->notify();
 }
 
 void DashioBLE::sendMessage(const String& message) {
     if (pServer->getConnectedCount() > 0) {
-        int maxMessageLength = BLEDevice::getMTU() - 3;
+        int maxMessageLength = NimBLEDevice::getMTU() - 3;
         
         if (message.length() <= maxMessageLength) {
             bleNotifyValue(message);
@@ -541,7 +564,12 @@ void DashioBLE::sendMessage(const String& message) {
 }
     
 void DashioBLE::run() {
-     if (data.messageReceived) {
+    if (authRequestConnect) {
+        authRequestConnect = false;
+        sendMessage(dashioDevice->getConnectMessage());
+    }
+
+    if (data.messageReceived) {
         data.messageReceived = false;
 
         if (printMessages) {
@@ -553,7 +581,11 @@ void DashioBLE::run() {
             sendMessage(dashioDevice->getWhoMessage());
             break;
         case connect:
-            sendMessage(dashioDevice->getConnectMessage());
+            if (secureBLE && !authenticated) {
+                NimBLEDevice::startSecurity(connHandle);
+            } else {
+                sendMessage(dashioDevice->getConnectMessage());
+            }
             break;
         case config:
             dashioDevice->dashboardID = data.idStr;
@@ -578,35 +610,35 @@ void DashioBLE::setCallback(void (*processIncomingMessage)(MessageData *messageD
     processBLEmessageCallback = processIncomingMessage;
 }
         
-void DashioBLE::begin(bool secureBLE) {
-    esp_bt_controller_enable(ESP_BT_MODE_BLE); // Make sure we're only using BLE
-    esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT); // Release memory for Bluetooth Classic as we're not using it
+void DashioBLE::begin(int passKey) {
+    authRequestConnect = false;
+    secureBLE = (passKey > 0);
 
     String localName = F("DashIO_");
     localName += dashioDevice->type;
-    BLEDevice::init(localName.c_str());
-    BLEDevice::setMTU(BLE_MAX_SEND_MESSAGE_LENGTH);
+    NimBLEDevice::init(localName.c_str());
+    NimBLEDevice::setMTU(BLE_MAX_SEND_MESSAGE_LENGTH);
     
     // Setup BLE security (optional)
     if (secureBLE) {
-        BLEDevice::setEncryptionLevel(ESP_BLE_SEC_ENCRYPT);
-        BLEDevice::setSecurityCallbacks(new securityBLECallbacks());
-        BLESecurity *pSecurity = new BLESecurity();
-        pSecurity->setKeySize(16);
-        pSecurity->setAuthenticationMode(ESP_LE_AUTH_REQ_SC_BOND);
-        pSecurity->setCapability(ESP_IO_CAP_NONE);
-        pSecurity->setInitEncryptionKey(ESP_BLE_ENC_KEY_MASK | ESP_BLE_ID_KEY_MASK);
+        NimBLEDevice::setSecurityAuth(true, true, true); // bool bonding, bool mitm (man in the middle), bool sc
+        NimBLEDevice::setSecurityIOCap(BLE_HS_IO_DISPLAY_ONLY); // uint8_t iocap Sets the Input/Output capabilities of this device.
+        NimBLEDevice::setSecurityPasskey(passKey);
+        NimBLEDevice::setSecurityCallbacks(new SecurityBLECallbacks());
+    } else {
+        authenticated = true;
     }
     
     // Setup server, service and characteristic
-    pServer = BLEDevice::createServer();
+    pServer = NimBLEDevice::createServer();
+    pServer->setCallbacks(new ServerCallbacks());
     BLEService *pService = pServer->createService(SERVICE_UUID);
-    pCharacteristic = pService->createCharacteristic(CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_WRITE_NR | BLECharacteristic::PROPERTY_NOTIFY );
-    pCharacteristic->setCallbacks(new messageReceivedBLECallback(this));
+    pCharacteristic = pService->createCharacteristic(CHARACTERISTIC_UUID, NIMBLE_PROPERTY::WRITE_NR | NIMBLE_PROPERTY::NOTIFY);
+    pCharacteristic->setCallbacks(new MessageReceivedBLECallback(this));
     pService->start();
     
     // Setup BLE advertising
-    pAdvertising = BLEDevice::getAdvertising();
+    pAdvertising = NimBLEDevice::getAdvertising();
     pAdvertising->addServiceUUID(BLEUUID(SERVICE_UUID));
     pAdvertising->setScanResponse(true);
     pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
@@ -615,7 +647,7 @@ void DashioBLE::begin(bool secureBLE) {
 }
     
 String DashioBLE::macAddress() {
-    BLEAddress bdAddr = BLEDevice::getAddress();
+    BLEAddress bdAddr = NimBLEDevice::getAddress();
     return bdAddr.toString().c_str();
 }
 
