@@ -612,7 +612,7 @@ void DashioBLE::setCallback(void (*processIncomingMessage)(MessageData *messageD
         
 void DashioBLE::begin(int passKey) {
     authRequestConnect = false;
-    secureBLE = (passKey > 0);
+    secureBLE = (String(passKey).length() == 6);
 
     String localName = F("DashIO_");
     localName += dashioDevice->type;
