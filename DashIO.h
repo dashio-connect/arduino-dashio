@@ -557,38 +557,8 @@ public:
     String getTimeGraphLine(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color);
 
 //  Config messages
-    String getBasicConfigData(ControlType controlType, const String& controlID, const String& controlTitle);
-    String getBasicConfigMessage(ControlType controlType, const String& controlID, const String& controlTitle);
-    String getBasicConfigMessage(const String& configData);
-    String getFullConfigMessage(ControlType controlType, const String& configData);
     String getC64ConfigBaseMessage();
     String getC64ConfigMessage();
-
-    String getConfigMessage(DeviceCfg deviceConfigData);
-    String getConfigMessage(DeviceViewCfg deviceViewData);
-
-    String getConfigMessage(BLEConnCfg MessageData);
-    String getConfigMessage(TCPConnCfg MessageData);
-    String getConfigMessage(MQTTConnCfg MessageData);
-
-    String getConfigMessage(AlarmCfg alarmData);
-
-    String getConfigMessage(LabelCfg labelData);
-    String getConfigMessage(ButtonCfg buttonData);
-    String getConfigMessage(MenuCfg menuData);
-    String getConfigMessage(ButtonGroupCfg groupData);
-    String getConfigMessage(EventLogCfg eventLogData);
-    String getConfigMessage(KnobCfg knobData);
-    String getConfigMessage(DialCfg dialData);
-    String getConfigMessage(DirectionCfg directionData);
-    String getConfigMessage(TextBoxCfg textBoxData);
-    String getConfigMessage(SelectorCfg selectorData);
-    String getConfigMessage(SliderCfg sliderData);
-    String getConfigMessage(GraphCfg graphData);
-    String getConfigMessage(TimeGraphCfg timeGraphData);
-    String getConfigMessage(MapCfg mapData);
-    String getConfigMessage(ColorCfg colorData);
-    String getConfigMessage(AudioVisualCfg avData);
 
     String getOnlineMessage();
     String getOfflineMessage();
@@ -606,19 +576,6 @@ private:
 
     String getWaypointJSON(Waypoint waypoint);
     String getEventJSON(Event event);
-
-    String getTitlePositionStr(TitlePosition tbp);
-    String getLabelStyle(LabelStyle labelStyle);
-    String getKnobPresentationStyle(KnobPresentationStyle presentationStyle);
-    String getDialNumberPosition(DialNumberPosition numberPosition);
-    String getDialPresentationStyle(DialPresentationStyle presentationStyle);
-    String getDirectionPresentationStyle(DirectionPresentationStyle presentationStyle);
-    String getTextFormatStr(TextFormat format);
-    String getKeyboardTypeStr(KeyboardType kbd);
-    String getTextAlignStr(TextAlign align);
-    String getBarStyleStr(BarStyle barStyle);
-    String getXAxisLabelsStyleStr(XAxisLabelsStyle xls);
-    String getColorStyleStr(ColorPickerStyle pickerStyle);
 };
 
 #endif
