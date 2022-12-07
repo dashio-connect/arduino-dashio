@@ -29,7 +29,7 @@
 
 #include "Arduino.h"
 #include "DashIO.h"
-#include <EEPROM.h>
+#include <Preferences.h>
 
 #define PROVISIONING_EEPROM_SIZE 200
 
@@ -45,7 +45,8 @@ struct DeviceData {
 class DashioProvision {
 public:
     DashioDevice *dashioDevice;
-    
+    Preferences preferences;
+
     char wifiSSID[32];
     char wifiPassword[63];
     char dashUserName[32];
@@ -58,7 +59,6 @@ public:
 
 private:
     void (*onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged);
-    bool eepromReady = false;
 
     void load();
     void save();

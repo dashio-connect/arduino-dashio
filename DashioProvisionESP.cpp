@@ -30,28 +30,10 @@ DashioProvision::DashioProvision(DashioDevice *_dashioDevice) {
     dashioDevice = _dashioDevice;
 }
 
-void DashioProvision::setup(int size) {
-#ifdef ESP32
-    if (!EEPROM.begin(PROVISIONING_EEPROM_SIZE + size)) {
-        Serial.println(F("Failed to init EEPROM"));
-    } else {
-        eepromReady = true;
-    }
-#elif ESP8266
-    EEPROM.begin(PROVISIONING_EEPROM_SIZE + size);
-    eepromReady = true;
-#endif
-}
-
 void DashioProvision::load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged)) {
     onProvisionCallback = _onProvisionCallback;
     update(defaultDeviceData);
-    if (!eepromReady) {
-        setup();
-    }
-    if (eepromReady) {
-        load();
-    }
+    load();
 }
 
 void DashioProvision::processMessage(MessageData *messageData) {
@@ -103,29 +85,38 @@ void DashioProvision::update(DeviceData *deviceData) {
 }
 
 void DashioProvision::save() {
-    Serial.println(F("User setup saving to EEPROM"));
+    Serial.println(F("Saving user setup"));
     
-    DeviceData deviceDataWrite;
-    dashioDevice->name.toCharArray(deviceDataWrite.deviceName, dashioDevice->name.length() + 1);
-    strcpy(deviceDataWrite.wifiSSID,     wifiSSID);
-    strcpy(deviceDataWrite.wifiPassword, wifiPassword);
-    strcpy(deviceDataWrite.dashUserName, dashUserName);
-    strcpy(deviceDataWrite.dashPassword, dashPassword);
-
-    deviceDataWrite.saved = 'Y';
-    EEPROM.put(0, deviceDataWrite);
-    EEPROM.commit();
+    preferences.begin("dashio", false);
+    preferences.putChar("stored", 'Y');
+    preferences.putString("deviceName", dashioDevice->name);
+    preferences.putString("wifiSSID", String(wifiSSID));
+    preferences.putString("wifiPassword", String(wifiPassword));
+    preferences.putString("dashUserName", String(dashUserName));
+    preferences.putString("dashPassword", String(dashPassword));
+    preferences.end();
 }
 
 void DashioProvision::load() {
-#ifdef ESP32
-/*???
-    if (!EEPROM.begin(PROVISIONING_EEPROM_SIZE)) {
-        Serial.println(F("Failed to init EEPROM"));
-    } else {
-*/
     DeviceData deviceDataRead;
-    EEPROM.get(0, deviceDataRead);
+    preferences.begin("dashio", true);
+    deviceDataRead.saved = preferences.getChar("stored", 'N');
+    String str = preferences.getString("deviceName", "");
+    str.toCharArray(deviceDataRead.deviceName, 32);
+
+    str = preferences.getString("wifiSSID", "");
+    str.toCharArray(deviceDataRead.wifiSSID, 32);
+    
+    str = preferences.getString("wifiPassword", "");
+    str.toCharArray(deviceDataRead.wifiPassword, 63);
+    
+    str = preferences.getString("dashUserName", "");
+    str.toCharArray(deviceDataRead.dashUserName, 32);
+    
+    str = preferences.getString("dashPassword", "");
+    str.toCharArray(deviceDataRead.dashPassword, 32);
+    preferences.end();
+
     if (deviceDataRead.saved != 'Y') {
         save();
         Serial.println(F("User setup DEFAULTS used!"));
@@ -133,19 +124,6 @@ void DashioProvision::load() {
         update(&deviceDataRead);
         Serial.println(F("User setup read from EEPROM"));
     }
-//???    }
-#elif ESP8266
-//???    EEPROM.begin(PROVISIONING_EEPROM_SIZE);
-    DeviceData deviceDataRead;
-    EEPROM.get(0, deviceDataRead);
-    if (deviceDataRead.saved != 'Y') {
-        save();
-        Serial.println(F("User setup DEFAULTS used!"));
-    } else {
-        update(&deviceDataRead);
-        Serial.println(F("User setup read from EEPROM"));
-    }
-#endif
     
     Serial.print(F("Device Name: "));
     Serial.println(dashioDevice->name);

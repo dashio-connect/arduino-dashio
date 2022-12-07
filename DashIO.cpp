@@ -678,7 +678,7 @@ String DashioDevice::getEventLogMessage(const String& controlID, const String& t
 }
 
 String DashioDevice::getEventLogMessage(const String& controlID, const String& color, String text[], int numTextRows) {
-    getEventLogMessage(controlID, "", color, text, numTextRows);
+    return getEventLogMessage(controlID, "", color, text, numTextRows);
 }
 
 String DashioDevice::getEventLogMessage(const String& controlID, Event events[], int numEvents) {
