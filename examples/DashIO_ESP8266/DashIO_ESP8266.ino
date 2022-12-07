@@ -23,20 +23,25 @@
 #define MQTT_PASSWORD  "yourMQTTpassword"
 
 const char configC64Str[] PROGMEM =
-"zVZZb+o4FP4ryPOKUEKhpbyRsqi6bKIto9GoDyY5BauJnes4BW7V/z7HTgIhi7iVRqORKlSfnO37zmJ/kgB4HJH+35/kuBQRU0zw"
-"FcVf0rdad71ek+yZp3YnUadJFFM+ZLqkT54XS9IkzBV8TgNAwZJ6JFXD0xMoxfg2QlFIJXD1OETpcG3ZKEEjJYVvRDMjUXBQiVUc"
-"4vFQSsrqNskO2HanTiK7bX+9NolPN+DXYena3Ussdh2SSB1N4pPV4mWZAzLV7kso2gUUU2eaIvOFxPPgZ0yrcJRA3Nx3NAiN3xEH"
-"0DjwGNCwBtFvosmynx0bMxpeL8LSiK6ni3zqdDexUoJPpIjr8qzqova3u2jgar3rTeRM8l3kTPD/rWTemsGe9JWMoaql7mpbKoGX"
-"IBNvbw9pUR0/hkLgF8e0QmIw4nTjg5dFFPxsSN33ShDl+Gfwow9UJnWc1TCeUkAquC8z0L2g3gHfJxr+VtJwl9Z1cGDRjGFY28Ju"
-"OOijmYjoKZ2XxbxAyeNQ0384GaJZ4oUeSP9WeymP0uGkgGGs3PDBhxm+c1yNH4IQJFWxhFp2Crx2et0KxtLEMr8zdsCN1cCv2q/5"
-"NI8Dh0qk4jbNIS8oDGKJXk3lOxebhMlsv8wXq9lgWuDsh2O6IQLuLbh/XPAV+EAjyFopSKmp4k6Ct6a6M/t3OeZ+YOAyDzfWTe3+"
-"24k91ssUIQlasU3vbhNIWWP/MR5b1thCc49Rfyx8X+wjEzr1ocWZ8l+gP5c6s1O37gPTPZrF4KdSD4JzcJOUP8lOROplNUWvHo12"
-"Lf3DRAttmySOQKYdTb6SDJIKhBJcFhkH7fO+Xz6OHufrQj2GyTb/Pu1DjFZDu2GI+Sc6JhKAf2O8DfmhYFyBLFHK42ADMuflYTR/"
-"Hq0q6/ob9HeR/pgzhcSRMcmXQl9wsUyvKeWGl2UJhcTt0zUzzMKB50mItA/7vt2yb3st/LOte10W6lMZpG48+GAu6GWdFMpV0sd8"
-"x1iQJ/YLab2xNA4sAeKOA54BQdCJIDIDeFHA9IpGT877lnvFFa7lQnogFydvZ1mm/OeOqUy7JCus9vO7B9PwGkMDqWEuoFwaz5Ly"
-"yPSSezQLSH951qZ4+WchFqi0hcYKPHKpUG99psruXez0lxDJ/rcYtf8TRodUvjdwOI45VsdMRup/Q+pQ7Lm5KJPGxRF4Y1vd/kjf"
-"MN/L7S8NIYBJdqG+6h3v47yIbIQinyE/2SAwCemLx5xBvwCmYlv7uu10i+N8f+1FiO7ItefUaFr9HKx6hbfttqaCxh4TaxbFybZ9"
-"/foH";
+"xVjdjuo2EH4V5HOLKAlk2eWO8Fe0BDghcFqd9iIkBqwNMXWcBbrad+oz9Mk6dhIISVjgSGerIKSMx+P5Ps+Mx3lDVvc3CzW/vyGH"
+"+pxRb9BBTdS29KqCymhrM+xzKTKkIPQJD+Dt33/a8MYJ97BQp6HPMQPJGpPVmps2JxQ1q7HGhAYEBD5oWuOJmIf3vOWRlZC0uyOr"
+"a4JwSdnG5iAZjUddeD8k007Wtgw7JJCW4O1l4VqHrVi/NRzChB1x+fqkvM/Pdzwa4OeFO/an2HdRk7MQv/9ZRp35/JvkIOAHCUhv"
+"TQcCoMOZZ9j7HlAzJX/DSA2srBhx29QLNz4woaplFKyBpkgS2SwjP9wcVZTyGbeduWRSmNYpczEDRcpg4NuacJyMvKx8NxnQvTCR"
+"X9S1mO0HcrucQ4Q11uzY7KXUZ/iQ2q8eYQEvdfArcXBpTvAutmSJcZ3uk1XGYHSFSyZ2Mwq51QQnJt0B2lotpXoiTnksIwI0jOyN"
+"8KBDdz56L38a4+onMq57tvOSYnuKwRn3f6V7tkUiznXLGsk4p8tlsmi8WoquWZT7i5Bz6nd9e+FhN2GZ+sm8Sci2Hi6qEYU1QMDz"
+"//hlvFyiS1WhIOFFoYDxm5I7BXdEfSyj60Oc/R/Gqfc/BAps/3yMYkvPEUKSYz+PUb2O8cuT+7RUnbtAygz++TCPhSIF9Iui1ura"
+"Qx5q7Qaoqvr4qGl3QR3iJf8EqHKZW6K2fgPMXr1Va7TvgmkK8SfgjNbJAE2KZgaqdgPUhVNX3MZdUKecfkaOymVyQKOj5bzg3pCk"
+"CUMplHErcY6yoqjKCWn3FZRvh1p5VOBRLyKuqAWYK9oZah17njxunkdj/aytGo1NozXMoH+OynAAHdnY9w5j38QetgOcMLCx93Ce"
+"VatZ5IIyht25LQhtNlK7++zTRZ6WWrV2iYZgTXcG8Q2xUrRonhit8QAtJ1g+pVivWu1VYbpLbK9HPQ8OZLl0bEOIE+XfsRjOsVkv"
+"YrMKdG6I6HEFiUN9KDks8EiBRz03qVyEGG9B3xzPJujE1dBeYC8XVWpmj8CJqGmN4bT+Cm1UGP1Z0p/qAoTRmhSDuNH7xFvjUDLs"
+"bWESpN01JlJ03T0gULg3HXbMKFA9Au1hJgXTlkHzB6I16ouKg3U2v1SnfiRMz0M06QgWNovjcyoBJtNB/nGAFnIIs6ZxNE27fZQO"
+"1r45+TXa6NaeBIaQSy724lWGWpBMHY8ymzboCFv740SYFlkRcB+K839/VIBlzk7sVxnVp3UFiXizxczmIcMXC2ImPuqPWiHJh7Rd"
+"g+yJvyrBqLArh0bhRrcZtOcPsQ9pQSbicwzLG+mgFaV96sqrnrJ4MugORvMMgZ0oR++vlx0oVBfqpSxtxPOyEXXrcaI14IG7yJYS"
+"8YUgF21wa1tgljJ0/ByQD/YbSqdWh0c7fabonUXndNi2zFvq0MUMPF3pPOxwylBBmp+XC/O2SiQr/bh/qdLXtSz8p2suDunqap3s"
+"Dou9k0dQJhxURRVOtuYw8bu8S/Yv1PRjD5HrHIo9TrUOE9tNQWg5Qi+4CiNu9uKWRRdlRFyQ5U07jp08xEZDhaeoeRIw20MzgmnF"
+"JU0cYl8tCzXf0JoGfGZCeiLXDtYV8UdoBaZD3AWYxVCg70NGdzS7i6P63RxNMedQfa6TZKQ5glnhtnjn4wy6QEuvLxhw5aeMyEgT"
+"+eBXeUeWpMydbVnQESV29MFD7AKkIiBzlisTv0Jtehf1LeG3PREWt5SBX5os4mTbcl2GA5HAypNaUR4eK/BTlCp6f/8P";
+
 
 DashioDevice dashioDevice(DEVICE_TYPE, configC64Str);
 DashioProvision dashioProvision(&dashioDevice);
@@ -110,7 +115,7 @@ String getLocalTime() {
 }
 */
 
-static String timeToString(long time) {
+static String timeToString(long long time) {
   char buffer[22];
   sprintf(buffer, "%04d-%02d-%02dT%02d:%02d:%02dZ", year(time), month(time), day(time), hour(time), minute(time), second(time)); // Z = UTC time
   String dateTime(buffer);
@@ -199,7 +204,7 @@ void processButton(MessageData *messageData) {
 void onWiFiConnectCallback(void) {
     configTime(0, 0, ntpServer); // utcOffset = 0 and daylightSavingsOffset = 0, so time is UTC
     time_t now;
-    long currentTime;
+    long long currentTime;
     time(&currentTime);
     
     Serial.print(F("NTP Time: "));
