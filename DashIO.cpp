@@ -441,6 +441,8 @@ String DashioDevice::getAlarmMessage(const String& controlID, const String& titl
     String message = String(DELIM);
     message += deviceID;
     message += String(DELIM);
+    message += ALARM_ID;
+    message += String(DELIM);
     message += controlID;
     message += String(DELIM);
     message += title;
