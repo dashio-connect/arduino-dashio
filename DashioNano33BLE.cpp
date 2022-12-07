@@ -159,16 +159,6 @@ void DashioBLE::run() {
                 break;
             case config:
                 processConfig();
-/*???
-                dashioDevice->dashboardID = messageData.idStr;
-                if (dashioDevice->configC64Str != NULL) {
-                    sendMessage(dashioDevice->getC64ConfigMessage());
-                } else {
-                    if (processBLEmessageCallback != NULL) {
-                        processBLEmessageCallback(&messageData);
-                    }
-                }
-*/
                 break;
             default:
                 if (processBLEmessageCallback != NULL) {

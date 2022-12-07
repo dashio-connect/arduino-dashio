@@ -59,6 +59,7 @@ private:
     WiFiClient client;
     WiFiServer wifiServer;
     void (*processTCPmessageCallback)(MessageData *messageData);
+    void processConfig();
 
 public:
     uint16_t tcpPort = 5650;
@@ -90,6 +91,7 @@ private:
     char *username;
     char *password;
     void (*processMQTTmessageCallback)(MessageData *messageData);
+    void processConfig();
 
     static void messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length);
     void hostConnect();
@@ -124,6 +126,7 @@ private:
     BLEAdvertising *pAdvertising;
 
     void bleNotifyValue(const String& message);
+    void processConfig();
 
 public:
     MessageData data;

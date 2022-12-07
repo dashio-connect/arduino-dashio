@@ -27,6 +27,11 @@
 #include "DashioESP.h"
 
 #define WIFI_TIMEOUT_S 300 // Restart after 5 minutes
+#ifdef ESP32
+    #define C64_MAX_LENGHT 1000
+#elif ESP8266
+    #define C64_MAX_LENGHT 500
+#endif
 
 // MQTT
 const int MQTT_QOS     = 2;
@@ -247,6 +252,29 @@ void DashioTCP::end() {
     MDNS.end();
 }
 
+void DashioTCP::processConfig() {
+    sendMessage(dashioDevice->getC64ConfigBaseMessage());
+    
+    int c64Length = strlen_P(dashioDevice->configC64Str);
+    int length = 0;
+    String message = "";
+    for (int k = 0; k < c64Length; k++) {
+        char myChar = pgm_read_byte_near(dashioDevice->configC64Str + k);
+
+        message += myChar;
+        length++;
+        if (length == C64_MAX_LENGHT) {
+            sendMessage(message);
+            message = "";
+            length = 0;
+        }
+    }
+    if (message.length() > 0) {
+        sendMessage(message);
+    }
+    sendMessage(String('\n'));
+}
+
 void DashioTCP::run() {
     if (!client) {
         client = wifiServer.available();
@@ -270,7 +298,8 @@ void DashioTCP::run() {
                     case config:
                         dashioDevice->dashboardID = data.idStr;
                         if (dashioDevice->configC64Str != NULL) {
-                            sendMessage(dashioDevice->getC64ConfigMessage());
+                            processConfig();
+//???                            sendMessage(dashioDevice->getC64ConfigMessage());
                         } else {
                             if (processTCPmessageCallback != NULL) {
                                 processTCPmessageCallback(&data);
@@ -328,6 +357,29 @@ void DashioMQTT::sendAlarmMessage(const String& message) {
     sendMessage(message, alarm_topic);
 }
 
+void DashioMQTT::processConfig() {
+    sendMessage(dashioDevice->getC64ConfigBaseMessage());
+    
+    int c64Length = strlen_P(dashioDevice->configC64Str);
+    int length = 0;
+    String message = "";
+    for (int k = 0; k < c64Length; k++) {
+        char myChar = pgm_read_byte_near(dashioDevice->configC64Str + k);
+
+        message += myChar;
+        length++;
+        if (length == C64_MAX_LENGHT) {
+            sendMessage(message);
+            message = "";
+            length = 0;
+        }
+    }
+    if (message.length() > 0) {
+        sendMessage(message);
+    }
+    sendMessage(String('\n'));
+}
+
 void DashioMQTT::run() {
     if (mqttClient.connected()) {
         mqttClient.loop();
@@ -348,7 +400,7 @@ void DashioMQTT::run() {
             case config:
                 dashioDevice->dashboardID = data.idStr;
                 if (dashioDevice->configC64Str != NULL) {
-                    sendMessage(dashioDevice->getC64ConfigMessage());
+                    processConfig();
                 } else {
                     if (processMQTTmessageCallback != NULL) {
                         processMQTTmessageCallback(&data);
