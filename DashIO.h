@@ -222,26 +222,6 @@ struct BLEConnCfg {
     }
 };
 
-struct TCPConnCfg {
-    String ipAddress;             // current IP address of the connection
-    int port = 5650;                     // TCP port
-    
-    TCPConnCfg(String _ipAddress, int _port) {
-        ipAddress = _ipAddress;
-        port = _port;
-    }
-};
-
-struct MQTTConnCfg {
-    String userName;              // Username for the MQTT host
-    String hostURL;               // URL of the MQTT host
-    
-    MQTTConnCfg(String _userName, String _hostURL) {
-        userName = _userName;
-        hostURL = _hostURL;
-    }
-};
-
 struct DeviceCfg {
     int    numDeviceViews = 0;
     String deviceSetup;

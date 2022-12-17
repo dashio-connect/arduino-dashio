@@ -299,7 +299,6 @@ void DashioTCP::run() {
                         dashioDevice->dashboardID = data.idStr;
                         if (dashioDevice->configC64Str != NULL) {
                             processConfig();
-//???                            sendMessage(dashioDevice->getC64ConfigMessage());
                         } else {
                             if (processTCPmessageCallback != NULL) {
                                 processTCPmessageCallback(&data);
