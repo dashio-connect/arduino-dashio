@@ -31,8 +31,6 @@
 #include "DashIO.h"
 #include <Preferences.h>
 
-#define PROVISIONING_EEPROM_SIZE 200
-
 struct DeviceData {
     char deviceName[32];
     char wifiSSID[32];
@@ -53,7 +51,6 @@ public:
     char dashPassword[32];
 
     DashioProvision(DashioDevice *_dashioDevice);
-    void setup(int size = 0);
     void load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
     void processMessage(MessageData *connection);
 

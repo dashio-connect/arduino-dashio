@@ -28,8 +28,6 @@
 #define MQTT_PASSWORD  "yourMQTTpassword"
 
 #define GRAPH_UPDATE_SECONDS (60 * 10) // Every 10 mins
-#define EEPROM_START PROVISIONING_EEPROM_SIZE
-#define ADDITIONAL_EEPROM_SIZE 10
 
 const char configC64Str[] PROGMEM =
 "zVbNctowEH4VRmdgMLYJ4YYdk8mUQIdAeuj0IPACmsoSleWUNJN36jP0ybqy5cZgmKZ/M714vKvV7n7f7kp6IgmILCWD9x+ahNMl"
@@ -139,37 +137,35 @@ void processStatus(MessageData *messageData) {
 }
 
 void processButton(MessageData *messageData) {
+    dashioProvision.preferences.begin("dashio", false);
     if (messageData->idStr == AEB_LOW_ID) {
         if (alarmEnableLow == on) {
             alarmEnableLow = off;
-            EEPROM.write(EEPROM_START, 0);
         } else {
             alarmEnableLow = on;
-            EEPROM.write(EEPROM_START, 1);
         }
-        EEPROM.commit();
+        dashioProvision.preferences.putBool("AlmEnLow", alarmEnableLow);
     } else if (messageData->idStr == AEB_HIGH_ID) {
         if (alarmEnableHigh == on) {
             alarmEnableHigh = off;
-            EEPROM.write(EEPROM_START + 5, 0);
         } else {
             alarmEnableHigh = on;
-            EEPROM.write(EEPROM_START + 5, 1);
         }
-        EEPROM.commit();
+        dashioProvision.preferences.putBool("AlmEnHigh", alarmEnableHigh);
     }
+    dashioProvision.preferences.end();
 }
 
 void processTextBox(MessageData *messageData) {
+    dashioProvision.preferences.begin("dashio", false);
     if (messageData->idStr == ALARMTB_LOW_ID) {
         minTemp = (messageData->payloadStr).toFloat();
-        EEPROM.put(EEPROM_START + 1, minTemp);
-        EEPROM.commit();
+        dashioProvision.preferences.putFloat("MinTemp", minTemp);
     } else if (messageData->idStr == ALARMTB_HIGH_ID) {
         maxTemp = (messageData->payloadStr).toFloat();
-        EEPROM.put(EEPROM_START + 5 + 1, maxTemp);
-        EEPROM.commit();
+        dashioProvision.preferences.putFloat("MaxTemp", maxTemp);
     }
+    dashioProvision.preferences.end();
 }
 
 void processIncomingMessage(MessageData *messageData) {
@@ -227,34 +223,28 @@ void setTemperatureEverySecond(float temperature) {
 }
 
 void generalSetup() {
-    if (EEPROM.read(EEPROM_START) > 0) {
-        alarmEnableLow = on;
+    dashioProvision.preferences.begin("dashio", true);
+    alarmEnableLow = dashioProvision.preferences.getUChar("AlmEnLow", false);
+    if (alarmEnableLow) {
         Serial.println("Alarm Low Enabled");
     } else {
-        alarmEnableLow = off;
         Serial.println("Alarm Low Disabed");
     }
-
-    float temp;
-    EEPROM.get(EEPROM_START + 1, temp);
-    if (!isnan(temp)) {
-        minTemp = temp;
-        Serial.println("Min Temp: " + String(minTemp));
-    }
     
-    if (EEPROM.read(EEPROM_START + 5) > 0) {
-        alarmEnableHigh = on;
+    minTemp = dashioProvision.preferences.getFloat("MinTemp", 10);
+    Serial.println("Min Temp: " + String(minTemp));
+
+    alarmEnableHigh = dashioProvision.preferences.getUChar("AlmEnHigh", false);
+    if (alarmEnableHigh) {
         Serial.println("Alarm High Enabled");
     } else {
-        alarmEnableHigh = off;
         Serial.println("Alarm High Disabed");
     }
 
-    EEPROM.get(EEPROM_START + 5 + 1, temp);
-    if (!isnan(temp)) {
-        maxTemp = temp;
-        Serial.println("Max Temp: " + String(maxTemp));
-    }
+    maxTemp = dashioProvision.preferences.getFloat("MaxTemp", 20);
+    Serial.println("Max Temp: " + String(maxTemp));
+
+    dashioProvision.preferences.end();
 }
 
 void setup() {
@@ -267,7 +257,6 @@ void setup() {
         
     Serial.begin(115200);
 
-    dashioProvision.setup(ADDITIONAL_EEPROM_SIZE);
     DeviceData defaultDeviceData = {DEVICE_NAME, WIFI_SSID, WIFI_PASSWORD, MQTT_USER, MQTT_PASSWORD};
     dashioProvision.load(&defaultDeviceData, &onProvisionCallback);
 
