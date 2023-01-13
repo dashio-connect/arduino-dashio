@@ -115,5 +115,5 @@ void setup(void) {
 void loop(void)
 {
     timer.tick();
-    ble_con.checkForMessage();
+    ble_con.run();
 }
