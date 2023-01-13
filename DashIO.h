@@ -68,7 +68,7 @@ enum ControlType {
     direction,
     textBox,
     selector,
-    graph,
+    chart,
     timeGraph,
     mapper,
     colorPicker,
@@ -405,7 +405,7 @@ struct SliderCfg : CommonControl {
               : CommonControl(_controlID, _parentID, _title, _graphicsRect) {}
 };
 
-struct GraphCfg : CommonControl {
+struct ChartCfg : CommonControl {
     String xAxisLabel;            // Title of the horizontal axis
     float  xAxisMin = 0;          // Value of the horizontal axis left hand side
     float  xAxisMax = 100;        // Value of the horizontal axis right hand side
@@ -416,7 +416,7 @@ struct GraphCfg : CommonControl {
     float  yAxisMax = 100;        // Value of the vertical axis top
     int    yAxisNumBars = 6;      // Number of vertical grid lines, including the top and bottom axes.
 
-    GraphCfg(String _controlID, String _parentID, String _title, Rect _graphicsRect = Rect())
+    ChartCfg(String _controlID, String _parentID, String _title, Rect _graphicsRect = Rect())
              : CommonControl(_controlID, _parentID, _title, _graphicsRect) {}
 };
 
@@ -528,13 +528,13 @@ public:
     String getColorMessage(const String& controlID, const String& color);
     String getAudioVisualMessage(const String& controlID, const String& url = "");
 
-    String getGraphLineInts(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength);
-    String getGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, float lineData[], int dataLength);
-    String getTimeGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine = false);
-    String getTimeGraphLineBools(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength);
-    String getTimeGraphPoint(const String& controlID, const String& graphLineID, float value);
-    String getTimeGraphPoint(const String& controlID, const String& graphLineID, String time, float value);
-    String getTimeGraphLine(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color);
+    String getChartLineInts(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength);
+    String getChartLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, float lineData[], int dataLength);
+    String getTimeGraphLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine = false);
+    String getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength);
+    String getTimeGraphPoint(const String& controlID, const String& lineID, float value);
+    String getTimeGraphPoint(const String& controlID, const String& lineID, String time, float value);
+    String getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color);
 
 //  Config messages
     String getC64ConfigBaseMessage();

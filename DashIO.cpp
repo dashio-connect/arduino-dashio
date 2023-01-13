@@ -49,7 +49,7 @@
 #define KNOB_DIAL_ID "KBDL"
 #define TEXT_BOX_ID "TEXT"
 #define SELECTOR_ID "SLCTR"
-#define GRAPH_ID "GRPH"
+#define CHART_ID "CHRT"
 #define TIME_GRAPH_ID "TGRPH"
 #define DIRECTION_ID "DIR"
 #define DIAL_ID "DIAL"
@@ -716,9 +716,9 @@ String DashioDevice::getC64ConfigMessage() {
     return message;
 }
 
-String DashioDevice::getGraphLineInts(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength) {
-    String message = getControlBaseMessage(GRAPH_ID, controlID);
-    message += graphLineID;
+String DashioDevice::getChartLineInts(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength) {
+    String message = getControlBaseMessage(CHART_ID, controlID);
+    message += lineID;
     message += String(DELIM);
     message += lineName;
     message += String(DELIM);
@@ -733,9 +733,9 @@ String DashioDevice::getGraphLineInts(const String& controlID, const String& gra
     return message;
 }
 
-String DashioDevice::getGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, float lineData[], int dataLength) {
-    String message = getControlBaseMessage(GRAPH_ID, controlID);
-    message += graphLineID;
+String DashioDevice::getChartLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, float lineData[], int dataLength) {
+    String message = getControlBaseMessage(CHART_ID, controlID);
+    message += lineID;
     message += String(DELIM);
     message += lineName;
     message += String(DELIM);
@@ -750,11 +750,11 @@ String DashioDevice::getGraphLineFloats(const String& controlID, const String& g
     return message;
 }
 
-String DashioDevice::getTimeGraphLine(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color) {
+String DashioDevice::getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
     message += String("BRDCST");
     message += String(DELIM);
-    message += graphLineID;
+    message += lineID;
     message += String(DELIM);
     message += lineName;
     message += String(DELIM);
@@ -765,11 +765,11 @@ String DashioDevice::getTimeGraphLine(const String& controlID, const String& gra
     return message;
 }
 
-String DashioDevice::getTimeGraphLineFloats(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine) {
+String DashioDevice::getTimeGraphLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
     message += dashboardID;
     message += String(DELIM);
-    message += graphLineID;
+    message += lineID;
     message += String(DELIM);
     message += lineName;
     message += String(DELIM);
@@ -792,20 +792,20 @@ String DashioDevice::getTimeGraphLineFloats(const String& controlID, const Strin
     return message;
 }
 
-String DashioDevice::getTimeGraphPoint(const String& controlID, const String& graphLineID, float value) {
+String DashioDevice::getTimeGraphPoint(const String& controlID, const String& lineID, float value) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
-    message += graphLineID;
+    message += lineID;
     message += String(DELIM);
     message += formatFloat(value);
     message += String(END_DELIM);
     return message;
 }
 
-String DashioDevice::getTimeGraphPoint(const String& controlID, const String& graphLineID, String time, float value) {
+String DashioDevice::getTimeGraphPoint(const String& controlID, const String& lineID, String time, float value) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
     message += dashboardID;
     message += String(DELIM);
-    message += graphLineID;
+    message += lineID;
     message += String(DELIM);
     message += time;
     message += ",";
@@ -814,9 +814,9 @@ String DashioDevice::getTimeGraphPoint(const String& controlID, const String& gr
     return message;
 }
 
-String DashioDevice::getTimeGraphLineBools(const String& controlID, const String& graphLineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
+String DashioDevice::getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
-    message += graphLineID;
+    message += lineID;
     message += String(DELIM);
     message += lineName;
     message += String(DELIM);
@@ -857,7 +857,7 @@ String DashioDevice::getControlTypeStr(ControlType controltype) {
         case direction: return DIRECTION_ID;
         case textBox: return TEXT_BOX_ID;
         case selector: return SELECTOR_ID;
-        case graph: return GRAPH_ID;
+        case chart: return CHART_ID;
         case timeGraph: return TIME_GRAPH_ID;
         case mapper: return MAP_ID;
         case colorPicker: return COLOR_ID;
