@@ -39,6 +39,21 @@ extern char DASH_SERVER[];
 #define INVALID_FLOAT_VALUE 0xFFFFFFFF
 #define INVALID_INT_VALUE INT_MAX
 
+class DashioDevice;
+typedef DashioDevice DashDevice;
+
+class DashioBLE;
+typedef DashioBLE DashBLE;
+
+class DashioTCP;
+typedef DashioTCP DashTCP;
+
+class DashioMQTT;
+typedef DashioMQTT DashMQTT;
+
+class DashioProvision;
+typedef DashioProvision DashProvision;
+
 enum ConnectionType {
     TCP_CONN,
     BLE_CONN,
