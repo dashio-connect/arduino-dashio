@@ -63,6 +63,7 @@ private:
 
 public:
     uint16_t tcpPort = 5650;
+    bool passThrough;
 
     DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
@@ -101,6 +102,7 @@ public:
     char *mqttHost = DASH_SERVER;
     uint16_t mqttPort = DASH_PORT;
     bool wifiSetInsecure = true;
+    bool passThrough;
 
     DashioMQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
     void setup(char *_username, char *_password);
@@ -131,6 +133,7 @@ private:
 public:
     MessageData data;
     void (*processBLEmessageCallback)(MessageData *messageData);
+    bool passThrough;
 
     static int connHandle;
     static bool authenticated;
@@ -163,6 +166,8 @@ private:
 public:
     void attachConnection(DashioTCP *_tcpConnection);
     void attachConnection(DashioMQTT *_mqttConnection);
+    void detachTcp();
+    void detachMqtt();
     void setOnConnectCallback(void (*connectCallback)(void));
     void begin(char *ssid, char *password);
     void run();

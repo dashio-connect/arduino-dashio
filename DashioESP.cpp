@@ -54,8 +54,16 @@ void DashioWiFi::attachConnection(DashioTCP *_tcpConnection) {
     tcpConnection = _tcpConnection;
 }
 
+void DashioWiFi::detachTcp() {
+    tcpConnection = NULL;
+}
+
 void DashioWiFi::attachConnection(DashioMQTT *_mqttConnection) {
     mqttConnection = _mqttConnection;
+}
+
+void DashioWiFi::detachMqtt() {
+    mqttConnection = NULL;
 }
 
 void DashioWiFi::setOnConnectCallback(void (*connectCallback)(void)) {
@@ -287,29 +295,35 @@ void DashioTCP::run() {
                     if (printMessages) {
                         Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
                     }
-      
-                    switch (data.control) {
-                    case who:
-                        sendMessage(dashioDevice->getWhoMessage());
-                        break;
-                    case connect:
-                        sendMessage(dashioDevice->getConnectMessage());
-                        break;
-                    case config:
-                        dashioDevice->dashboardID = data.idStr;
-                        if (dashioDevice->configC64Str != NULL) {
-                            processConfig();
-                        } else {
-                            if (processTCPmessageCallback != NULL) {
-                                processTCPmessageCallback(&data);
-                            }
-                        }
-                        break;
-                    default:
-                        if (processTCPmessageCallback != NULL) {
+                    
+                    if (passThrough) {
+                        if (processTCPmessageCallback != nullptr) {
                             processTCPmessageCallback(&data);
                         }
-                        break;
+                    } else {
+                        switch (data.control) {
+                        case who:
+                            sendMessage(dashioDevice->getWhoMessage());
+                            break;
+                        case connect:
+                            sendMessage(dashioDevice->getConnectMessage());
+                            break;
+                        case config:
+                            dashioDevice->dashboardID = data.idStr;
+                            if (dashioDevice->configC64Str != NULL) {
+                                processConfig();
+                            } else {
+                                if (processTCPmessageCallback != nullptr) {
+                                    processTCPmessageCallback(&data);
+                                }
+                            }
+                            break;
+                        default:
+                            if (processTCPmessageCallback != nullptr) {
+                                processTCPmessageCallback(&data);
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -389,28 +403,34 @@ void DashioMQTT::run() {
                 Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
             }
 
-            switch (data.control) {
-            case who:
-                sendMessage(dashioDevice->getWhoMessage());
-                break;
-            case connect:
-                sendMessage(dashioDevice->getConnectMessage());
-                break;
-            case config:
-                dashioDevice->dashboardID = data.idStr;
-                if (dashioDevice->configC64Str != NULL) {
-                    processConfig();
-                } else {
-                    if (processMQTTmessageCallback != NULL) {
-                        processMQTTmessageCallback(&data);
-                    }
-                }
-                break;
-            default:
-                if (processMQTTmessageCallback != NULL) {
+            if (passThrough) {
+                if (processMQTTmessageCallback != nullptr) {
                     processMQTTmessageCallback(&data);
                 }
-                break;
+            } else {
+                switch (data.control) {
+                    case who:
+                        sendMessage(dashioDevice->getWhoMessage());
+                        break;
+                    case connect:
+                        sendMessage(dashioDevice->getConnectMessage());
+                        break;
+                    case config:
+                        dashioDevice->dashboardID = data.idStr;
+                        if (dashioDevice->configC64Str != NULL) {
+                            processConfig();
+                        } else {
+                            if (processMQTTmessageCallback != nullptr) {
+                                processMQTTmessageCallback(&data);
+                            }
+                        }
+                        break;
+                    default:
+                        if (processMQTTmessageCallback != nullptr) {
+                            processMQTTmessageCallback(&data);
+                        }
+                        break;
+                }
             }
         }
     }
@@ -627,32 +647,38 @@ void DashioBLE::run() {
             Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
         }
 
-        switch (data.control) {
-        case who:
-            sendMessage(dashioDevice->getWhoMessage());
-            break;
-        case connect:
-            if (secureBLE && !authenticated) {
-                NimBLEDevice::startSecurity(connHandle);
-            } else {
-                sendMessage(dashioDevice->getConnectMessage());
-            }
-            break;
-        case config:
-            dashioDevice->dashboardID = data.idStr;
-            if (dashioDevice->configC64Str != NULL) {
-                sendMessage(dashioDevice->getC64ConfigMessage());
-            } else {
-                if (processBLEmessageCallback != NULL) {
-                    processBLEmessageCallback(&data);
-                }
-            }
-            break;
-        default:
-            if (processBLEmessageCallback != NULL) {
+        if (passThrough) {
+            if (processBLEmessageCallback != nullptr) {
                 processBLEmessageCallback(&data);
             }
-            break;
+        } else {
+            switch (data.control) {
+                case who:
+                    sendMessage(dashioDevice->getWhoMessage());
+                    break;
+                case connect:
+                    if (secureBLE && !authenticated) {
+                        NimBLEDevice::startSecurity(connHandle);
+                    } else {
+                        sendMessage(dashioDevice->getConnectMessage());
+                    }
+                    break;
+                case config:
+                    dashioDevice->dashboardID = data.idStr;
+                    if (dashioDevice->configC64Str != NULL) {
+                        sendMessage(dashioDevice->getC64ConfigMessage());
+                    } else {
+                        if (processBLEmessageCallback != nullptr) {
+                            processBLEmessageCallback(&data);
+                        }
+                    }
+                    break;
+                default:
+                    if (processBLEmessageCallback != nullptr) {
+                        processBLEmessageCallback(&data);
+                    }
+                    break;
+            }
         }
     }
 }
