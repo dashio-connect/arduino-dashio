@@ -248,6 +248,25 @@ bool MessageData::processChar(char chr) {
     return messageEnd;
 }
 
+String MessageData::getMessageGeneric(const String& controlStr) {
+    String message((char *)0);
+    message.reserve(100);
+
+    message += String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += controlStr;
+    message += String(DELIM);
+    message += idStr;
+    message += String(DELIM);
+    message += payloadStr;
+    message += String(DELIM);
+    message += payloadStr2;
+    message += String(END_DELIM);
+
+    return message;
+}
+
 String MessageData::getReceivedMessageForPrint(const String& controlStr) {
     String message((char *)0);
     message.reserve(100);

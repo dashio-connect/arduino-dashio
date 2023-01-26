@@ -482,6 +482,7 @@ public:
     void processMessage(const String& message);
     bool processChar(char chr);
     String getReceivedMessageForPrint(const String& controlStr);
+    String getMessageGeneric(const String& controlStr);
 
 private:
     int segmentCount = -1;
