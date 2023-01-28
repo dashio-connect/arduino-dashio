@@ -284,18 +284,7 @@ String MessageData::getReceivedMessageForPrint(const String& controlStr) {
             break;
     }
     message += F(" Received ****\n");
-    message += String(DELIM);
-    message += deviceID;
-    message += String(DELIM);
-    message += controlStr;
-    message += String(DELIM);
-    message += idStr;
-    message += String(DELIM);
-    message += payloadStr;
-    message += String(DELIM);
-    message += payloadStr2;
-    message += String(END_DELIM);
-
+    message += getMessageGeneric(controlStr);
     return message;
 }
 
