@@ -551,17 +551,21 @@ String DashioDevice::getSingleBarMessage(const String& controlID, float value) {
 }
 
 String DashioDevice::getDoubleBarMessage(const String& controlID, int value1, int value2) {
+    String message = getControlBaseMessage(BAR_ID, controlID);
     int barValues[2];
     barValues[0] = value1;
     barValues[1] = value2;
-    return getIntArray(BAR_ID, controlID, barValues, 2);
+    message += getIntArray(barValues, 2);
+    return message;
 }
 
 String DashioDevice::getDoubleBarMessage(const String& controlID, float value1, float value2) {
+    String message = getControlBaseMessage(BAR_ID, controlID);
     float barValues[2];
     barValues[0] = value1;
     barValues[1] = value2;
-    return getFloatArray(BAR_ID, controlID, barValues, 2);
+    message += getFloatArray(barValues, 2);
+    return message;
 }
 
 String DashioDevice::getKnobMessage(const String& controlID, int value) {
@@ -933,13 +937,8 @@ String DashioDevice::getLineTypeStr(LineType lineType) {
     }
 }
 
-String DashioDevice::getIntArray(const String& controlType, const String& ID, int idata[], int dataLength) {
-    String writeStr = String(DELIM);
-    writeStr += deviceID;
-    writeStr + String(DELIM);
-    writeStr + controlType;
-    writeStr + String(DELIM);
-    writeStr + ID;
+String DashioDevice::getIntArray(int idata[], int dataLength) {
+    String writeStr = "";
     for (int i = 0; i < dataLength; i++) {
         writeStr += String(DELIM);
         writeStr += formatInt(idata[i]);
@@ -948,13 +947,8 @@ String DashioDevice::getIntArray(const String& controlType, const String& ID, in
     return writeStr;
 }
 
-String DashioDevice::getFloatArray(const String& controlType, const String& ID, float fdata[], int dataLength) {
-    String writeStr = String(DELIM);
-    writeStr + deviceID;
-    writeStr + String(DELIM);
-    writeStr + controlType;
-    writeStr + String(DELIM);
-    writeStr + ID;
+String DashioDevice::getFloatArray(float fdata[], int dataLength) {
+    String writeStr = "";
     for (int i = 0; i < dataLength; i++) {
         writeStr += String(DELIM);
         writeStr += formatFloat(fdata[i]);

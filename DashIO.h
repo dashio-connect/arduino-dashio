@@ -567,8 +567,8 @@ public:
 private:
     String getControlBaseMessage(const String& messageType, const String& controlID);
     String getLineTypeStr(LineType lineType);
-    String getIntArray(const String& controlType, const String& ID, int idata[], int dataLength);
-    String getFloatArray(const String& controlType, const String& ID, float fdata[], int dataLength);
+    String getIntArray(int idata[], int dataLength);
+    String getFloatArray(float fdata[], int dataLength);
 
     String getWaypointJSON(Waypoint waypoint);
     String getEventJSON(Event event);
