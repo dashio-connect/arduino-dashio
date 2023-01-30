@@ -4,11 +4,11 @@ So, what is **DashIO**? It is a quick effortless way to connect your IoT device 
 
 What is **dash** then? **dash** is a MQTT server with extra bits added in to allow you to store data, manage your devices, send notifications, share your devices, and save your **Dash** app setup. A free **dash** account is available for connection to a single IoT device, or you can subscribe for more **dash** services and features.
 
-## Getting Started
+## Documentation
 
 For the big picture on **DashIO**, take a look at our website: <a href="https://dashio.io">dashio.io</a>
 
-For all documenation and software guides: <a href="https://dashio.io/documents">dashio.io/documents</a>
+For all documentation and software guides: <a href="https://dashio.io/documents">dashio.io/documents</a>
 
 For the **DashIO** Python library documentation: <a href="https://dashio.io/guide-python">dashio.io/guide-python</a>
 
