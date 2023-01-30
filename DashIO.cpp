@@ -940,7 +940,9 @@ String DashioDevice::getLineTypeStr(LineType lineType) {
 String DashioDevice::getIntArray(int idata[], int dataLength) {
     String writeStr = "";
     for (int i = 0; i < dataLength; i++) {
-        writeStr += String(DELIM);
+        if (i > 0) {
+            writeStr += String(DELIM);
+        }
         writeStr += formatInt(idata[i]);
     }
     writeStr += String(END_DELIM);
@@ -950,7 +952,9 @@ String DashioDevice::getIntArray(int idata[], int dataLength) {
 String DashioDevice::getFloatArray(float fdata[], int dataLength) {
     String writeStr = "";
     for (int i = 0; i < dataLength; i++) {
-        writeStr += String(DELIM);
+        if (i > 0) {
+            writeStr += String(DELIM);
+        }
         writeStr += formatFloat(fdata[i]);
     }
     writeStr += String(END_DELIM);
