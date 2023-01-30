@@ -24,7 +24,7 @@ class DashioBluefruit_BLE {
     public:    
         DashioBluefruit_BLE(DashioDevice *_dashioDevice, bool _printMessages = false);
         void sendMessage(const String& message);
-        void checkForMessage();
+        void run();
         void setCallback(void (*processIncomingMessage)(MessageData *messageData));
         void begin(bool factoryResetEnable, bool useMacForDeviceID = true);
 };

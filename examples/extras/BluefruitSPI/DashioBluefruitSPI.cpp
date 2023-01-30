@@ -1,27 +1,3 @@
-/*
- MIT License
-
- Copyright (c) 2021 Craig Tuffnell, DashIO Connect Limited
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-*/
-
 #include "DashioBluefruitSPI.h"
 
 DashioBluefruit_BLE::DashioBluefruit_BLE(DashioDevice *_dashioDevice, bool _printMessages) : messageData(BLE_CONN),
@@ -45,6 +21,30 @@ void DashioBluefruit_BLE::sendMessage(const String& writeStr) {
     }
 }
 
+void DashioBluefruit_BLE::processConfig() {
+    sendMessage(dashioDevice->getC64ConfigBaseMessage());
+    
+    int c64Length = strlen_P(dashioDevice->configC64Str);
+    int length = 0;
+    String message = "";
+    for (int k = 0; k < c64Length; k++) {
+        char myChar = pgm_read_byte_near(dashioDevice->configC64Str + k);
+
+        message += myChar;
+        length++;
+        if (length == 100) {
+            sendMessage(message);
+            message = "";
+            length = 0;
+        }
+    }
+    if (message.length() > 0) {
+        sendMessage(message);
+    }
+
+    sendMessage(String('\n'));
+}
+
 void DashioBluefruit_BLE::run() {
     while(bluefruit.available()) {
         char data;
@@ -61,6 +61,9 @@ void DashioBluefruit_BLE::run() {
                 break;
             case connect:
                 sendMessage(dashioDevice->getConnectMessage());
+                break;
+            case config:
+                processConfig();
                 break;
             default:
                 if (processBLEmessageCallback != NULL) {
