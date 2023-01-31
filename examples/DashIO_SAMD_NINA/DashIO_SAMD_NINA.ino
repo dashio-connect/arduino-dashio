@@ -217,7 +217,7 @@ void loop() {
             oneSecond = false;
             Serial.print("BLE Timer: ");
             Serial.println(bleTimer);
-            if ((bleTimer >= MIN_BLE_TIME_S) && (ble_con.connected() == false)) {
+            if ((bleTimer >= MIN_BLE_TIME_S) && (ble_con.isConnected() == false)) {
                 startWiFi();
             }
             bleTimer += 1;
@@ -225,7 +225,7 @@ void loop() {
     } else {
         int buttonState = digitalRead(buttonPin); // read the button pin    
         if (buttonState) {
-            if (!ble_con.connected()) {
+            if (!ble_con.isConnected()) {
                 startBLE();
             }
         }

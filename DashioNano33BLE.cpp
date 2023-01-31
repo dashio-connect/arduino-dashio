@@ -170,7 +170,7 @@ void DashioBLE::run() {
     }
 }
 
-bool DashioBLE::connected() {
+bool DashioBLE::isConnected() {
     return BLE.connected();
 }
 

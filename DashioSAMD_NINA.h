@@ -159,7 +159,7 @@ public:
     void run();
     void setCallback(void (*processIncomingMessage)(MessageData *connection));
     void begin();
-    bool connected();
+    bool isConnected();
     void end();
     String macAddress();
 };
