@@ -231,6 +231,17 @@ void DashioTCP::begin() {
     wifiServer.begin(tcpPort);
 }
 
+uint8_t DashioTCP::hasClient() {
+    uint8_t rVal;
+    if (!client) {
+        rVal = 0;
+    }
+    else {
+        rVal = client.connected();
+    }
+    return rVal;
+}
+
 void DashioTCP::sendMessage(const String& message) {
     if (client.connected()) {
         client.print(message);
@@ -396,6 +407,7 @@ void DashioMQTT::processConfig() {
 void DashioMQTT::run() {
     if (mqttClient.connected()) {
         mqttClient.loop();
+        connected = true;
         if (data.messageReceived) {
             data.messageReceived = false;
 
@@ -433,6 +445,8 @@ void DashioMQTT::run() {
                 }
             }
         }
+    } else {
+        connected = false;
     }
 }
 

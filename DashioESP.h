@@ -64,6 +64,7 @@ private:
 public:
     uint16_t tcpPort = 5650;
     bool passThrough = false;
+    uint8_t hasClient();
 
     DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
@@ -103,6 +104,7 @@ public:
     uint16_t mqttPort = DASH_PORT;
     bool wifiSetInsecure = true;
     bool passThrough = false;
+    bool connected;
 
     DashioMQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
     void setup(char *_username, char *_password);
