@@ -19,16 +19,17 @@
 #define MIN_SOFTAP_TIME_S 20
 
 const char configC64Str[] PROGMEM =
-"lZRbb9owFMe/SuWHPUUooZe1vHFp0VQuVUaZpqkPJj4jFo6d2U6BIr77jhMnhUKlTULIPj7X3z/2jmQgC0M6v14CIugChF9b2Nie"
-"2oDfZjT3q0VhrZJDrYpji98sNc1Tv15JtXDLHTF2K4B0yGQaj7sjEpBESauV+DZA42MvjNBkQLKpFNupjEEANehvdQGu9oZ0ojAM"
-"SE41SFsGDeZlkAY2p6JA3694brktyzxiYTxMgS9TG1PLFemErfaN93hShqNNouds+uRKp2o95nLsClU1t7VPE33VrgbqK6E0RsbA"
-"MJJxKh6UEGptyqI+3Jlrx5/gjtF3zZlNm3zXVwHZnFRpozXj2Fm4d9T/WNtXUkJStbsjqTL2OR5hWkZN2nJ/XLUwNiCFAT2hmZuf"
-"7KsWKvi5hoSbMsFl0EjR68YfdBiURP+f9gArnadd0uGiQTHUAJJ8psIp8whp5IpLC/qEpiyyBeiDJP37yew+Pqvmv5IvJLfG8TsU"
-"IcHKha6vRZIfC5IrbUnnOnTAeN5lTINxKaK7diu6uW3hLwrvnCBUUJ35NAxeeQJzDutKosRqgf0+oBrf+RtCvQzdHCgAzl1ksh4E"
-"h64MGBZ9UK+SyGXqrZaS1cB6Ti9vV5qBnjbZ3m2184+U29r7xNYkpMmKHMt/8eXC37mm/kxTacpPKNkiyepk5mLwWTnTXH30edw7"
-"negWYePw/nN/zsm+gYry/OZLJw3CGhxyjvau6QyGB0+UwacmsaqW1wiONGqRuK509nt4xeswUku/pQXjas5NUd2zl/1f";
+"lVNLk9owDP4rjA89ZToQytJyIw8CQyAheEM7nR6yxJu4BJs6Do8y/PfKebC0Sw9MLor0SbK+Tzoj13DR4PsPDU3nngHWGRUFjdEA"
+"TXvGvkiKpwWLwtXM2fq+U4QJ0lAuTxkBwNwLZkMXHGvOpODZxFJZRrujMITFHstOHgtIRqIc8FIUREPb6IgGnXZbQ7tIECbLJCss"
+"kwSJwygrANuHuKSybDNl/AWCKaFJKoNIUo4G7Y/6U43weU7BxwCJPV+1TvlhRtlMNap6nhrMNbv3Cb6ehjZQ2+QZF+oRhOxaPmUb"
+"qBHTKBvxLOOHvGxfF1LuBv6NqDBgDzSW6U1lDR3f9dP1vt7vwvQU3tm+ANtL1woq3rH9FVeWNalds6FfG/b8ubJcz6mMYWhVxtI1"
+"cY033dqwwnBVathoZHiBZQdLJZIUGXAyAq2W9DfEusBxImgMAxVblqOBrivyQJXK0wzNiu0V0vlb7Fo3VdrgIiaiIWeVUkmayCZh"
+"cRMwlLyV/79YLCKWl9uxPgFbqmWTHK2VOs1mWCBH60OrXhCVj1XE4Mc77ZrQu+qKgwCEBka6N9A3ojqfNURh7Hm0VV2fd+hSijV0"
+"b8/lSzsUvwxjjB1nYqUptXfTn8fFzbkYwwD+doKsaV7ua/cfMksuH78PxcIj91HuNs2u/DuCEIbuXUmnpz54CadMvol73XzYjBci"
+"bhqY9hzbwd0bfORKCkYlyIHQ7cGY46A+E+wE/rgyDYznjeXUN2OO4FLOKCZ7uiZLIosdlGKgnXagr1SLozzVZguMNWz61RBWCQ0p"
+"OdQr/poEZA/m5fIH";
 
-DashioDevice    dashioDevice(DEVICE_TYPE, configC64Str);
+DashioDevice    dashioDevice(DEVICE_TYPE, configC64Str, 1);
 DashioWiFi      wifi;
 DashioSoftAP    soft_AP;
 DashioTCP       tcp_con(&dashioDevice, TCP_PORT, true);

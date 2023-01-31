@@ -59,7 +59,7 @@ void DashioBluno::processConfig() {
     sendMessage(String('\n'));
 }
 
-void DashioBluno::checkForMessage() {
+void DashioBluno::run() {
     while(Serial.available()) {
         char data;
         data = (char)Serial.read();

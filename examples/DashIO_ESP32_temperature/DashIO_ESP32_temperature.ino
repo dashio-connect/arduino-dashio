@@ -30,21 +30,23 @@
 #define GRAPH_UPDATE_SECONDS (60 * 10) // Every 10 mins
 
 const char configC64Str[] PROGMEM =
-"zVbNctowEH4VRmdgMLYJ4YYdk8mUQIdAeuj0IPACmsoSleWUNJN36jP0ybqy5cZgmKZ/M714vKvV7n7f7kp6IgmILCWD9x+ahNMl"
-"cPP/RB7fypRpJsWM4pcMOm3f8ZvkM4v11qqcJtFMcygtyYDMp29Jk6T6kQNK17Ppwsi5Fcq3dN+YQ7IDRXWmoDHkVCW4vqMKhL65"
-"QpMw6DioWUmhleS5ahyMrY5LhfK7LdOA8v44wybZAtts9Y+Mu173uXkKyoXf/1MoTPwmlO5vQ8ECadjrQO6hqFHV9byIVo+fCabR"
-"nHz7Glbyr+ROasEcv1vnYzKdRKTIYMjZxqjCaDKPZqhcS5VQbYwWtyjWCMe8FKxYmntC6eMynj/u4MXrUS1O8LHiMoU3y3gq7kDE"
-"ZKBVBqa4Rxy4v8CBacdC86/xt/2L3gEH7gEH+aYqBZ127wQJbdd/NQ/d/5OHvtP/lzzghCR0Zw+zZaa1FNdKZoeaYnbkeh3aKZxB"
-"fDSnBX+FeSTokoON0CRSlNvGLIGTLNdYfKG6cEbOsnqmcwzZaFRjp+ufoqeDWoZwJjQxMQPgnJgW+Qlk53+BnDfJX4CMFd8outuW"
-"1ecQSiFgVcR/IgpovFgU6KPA9/pu1HJ7kdPyev1+K7gY+a1o2Llwe07Q7Q37mEoK6oGtwG7yRsNR2O04LWcU+C3Pv4xa/VEYtkI/"
-"vAxd17l0vMDkr/CQ/5U4zzgUQi5t2sknrQ/z3spUL2ZjdBfTdNs2HybbSAQOOGZoOTBuYka5dWOunExZgZrbyv5rrOl1SRNelsM9"
-"S/F2Kw7dSoPcXM2vTbnydbonA6/zik5we965Syf3NDYvjsMT6TUtkp9MuYNJlgTU4Ko/TmptYjoiBlNBJHTNNoZMkSVXueqewWd0"
-"4zyXNlZh7lmtOEIeIRt37Asi8TBYukXsOBhZIspBQV+FIs3jV9krHwPoKfi4EXE5UQHPoNRLFYOa/vD2oguPngtmpaaz8i2LhalA"
-"w3o+wX1jLDfVXOaKijSv5OqxKDuuzM0+fGqUcaZotIGGPTgqBud3v/BlBroynhMpIB/PFDi2tSzbMuUM0VohZqpoeSvDA3YaZl62"
-"cBYzec/SzHb483c=";
+"zZbbbqNIEIZfxeKajoDmmLtuutsTDbazmGRGWu0FNm27NRgijCfORnmnfYZ9sikOTnwaRSNlV3OD+lAUVV9V/fazFtFIu/7zWXu6"
+"LTeqVmURp/DUro0rx3R07VFl9ao/MnWtVnUu95batZZMbjVd29RPuYTdMJ7cNfuHtJJFfcPgKKSGCSfbrcpgR0wacuqYyDY8eBBb"
+"oMBzBTIws0wCNyzgYD0vi7oq89YBxNd6aL8M+1G6GyRy/SCrtN5WckDytFq37+RlBfdfVqqWsN+d5qNrK6mWq/o1P8s2betFv5S6"
+"5/gfnrrhGW5ATMSxAalTg6CAWAIxSkzf8R0v5OxC6tZh6qr40NT/0rXP4wmF8sNqGrG4WyX8a9K2RB+5S0joO5gi5lKCbO6biDJm"
+"IIwFMwLbDixOTyJPutQvwChUvYHtv/+EB4kdJKWdxWo6pu0F5/zHk3HTK7Xc1SRXy+Yo5OOEx3C4KKt1WjdGdyPYnhUYQqvkXG1a"
+"T7D7NsuSpwf55vWk9heIzvNyIz/PskkxlQVgqqutbJqph4YxEcwLoMg+bTrd9xAJqYUMz/KJjT3fZt45NPwL0JpB6E7+B2BXjuce"
+"QcNH0NqXDpkZV+4FalfYeRccNR3CgtBHgnHoNosbKMDcQ4yHrvCYa7nMPQdn/bbgfNP/L8HBvLKbfnBH5LZf8PFdt4omw25B7tl+"
+"zsOktw+jfsHu77+0E79XMzqJGY+nDee6ygGYANxT9Tfc2RDJslJZWObbdQF0LQtUcAXsu5MuLl0rtutXE/O4Xn11Gte0rDJZhScC"
+"1t58WxbZ/oLm2/35T22TKi02bQ/Mn7oJ7S1HKiuaOg96LxdUZxCVy95X0tzScrf/zgTcLuUgltmJwdn3Gipx+Qj5Ynxg+oau6QQF"
+"IMbpui1+WUitKyCJ+op8ipNehIfx7adDFbZdEVqhoAhzxpDtGj7yGQwHo9Q1iIe5oKRpQLJTG/ih0K6dY+g3LBm+3qc7CNK4NDIn"
+"I4FdHBjOz5S6dRalM5kfD9n57JzPBQxb+wej9THermlabdqg35PehhhNkvERHMLNUNgY8ZDayA58gShmJmLCpERgYTHRKES5WOzL"
+"2tfzAFAnIrNtXZcFL9JZLrN9L5fF/rVIreVFqTmVEjvwDPuNW+fwV/i0gttIDhidaYTlXBKJplAH/UVlnmsHysp91xOBZSNCMUe2"
+"H3jINywHcdfyGRGuIwh+H5L5O0FqxfUDILUtNezVMxSgmc9aJr+ruZzKevsAdgWY649qofQs3ax0GnF99EeSaK3Qsdb0XsnHXuwW"
+"y1h+h+XLyw8=";
 
 // Create device
-DashioDevice dashioDevice(DEVICE_TYPE, configC64Str);
+DashioDevice dashioDevice(DEVICE_TYPE, configC64Str, 1);
 // Create Connections
 DashioBLE  ble_con(&dashioDevice, true);
 DashioMQTT mqtt_con(&dashioDevice, 2048, true, true);

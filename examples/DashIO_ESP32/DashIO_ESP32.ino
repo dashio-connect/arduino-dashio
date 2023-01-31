@@ -1,62 +1,54 @@
 #include "DashioESP.h"
 #include "DashioProvisionESP.h"
-#include <WiFiUdp.h>
-#include <TimeLib.h>
 
-//#define NO_BLE
-#define NO_TCP
-//#define NO_MQTT
+#define DEVICE_TYPE "ESP32_DashIOM"
+#define DEVICE_NAME "DashIO32_Master"
 
-#define DEVICE_TYPE "ESP32_DashIO"
-#define DEVICE_NAME "DashIO32"
-
-#define TCP_PORT 5000
-#define MQTT_BUFFER_SIZE 2048
+#define TCP_PORT 5650
+#define MQTT_BUFFER_SIZE 4096
 
 // WiFi
-#define WIFI_SSID "yourWiFiSSID"
-#define WIFI_PASSWORD "yourWiFiPassword"
+#define WIFI_SSID      "yourWiFiSSID"
+#define WIFI_PASSWORD  "yourWiFiPassword"
 
 // MQTT
-#define MQTT_USER "yourMQTTuserName"
-#define MQTT_PASSWORD "yourMQTTpassword"
+#define MQTT_USER      "yourMQTTuserName"
+#define MQTT_PASSWORD  "yourMQTTpassword"
 
-const char configC64Str[] PROGMEM =
-"zVjrbuo4EH6Vyudv6SYh4dJ/JARUlQKC0tXq7PlhiAGrIeY4Tgtb9Z32GfbJduwkEHLZ5uylWqlC9WDP+JtvPBfe0I4EUYhuv76h"
-"45SFVFAWzDB8olvtpt3pXKNX6ontSWReI0GFT9K96BY9TqboGtEVC8Z4R0AwxR5KtsFqToSgwSYE0R5zEoi7Pkj7T5oOEjgkOPOV"
-"6EFJBDmI+FS0h+WhcCnNukZbQjdbcRLphv7+7Rr5eEn8KiyWbl1i0auQhOKoLj6cTRbTDJCRVF9AYeRQjOxRgsxnHNa97xEuw1EA"
-"0eyaEoTEb7MDiXFkNTuPttKcsQ+rKKAC9qI/fncyd3VYFAjCUd5KFWZptefTjZQ47vjRnYFwzfgOSzLGk7EL64JT4S6crGioNMHq"
-"eek9HvfSfm80QrnQKfXBymchuV96k2BOAg/dCh4R6YUd3lcQWZPE1BEPx6sHvP849qZK9DFLEEbyfstICBYMOYuq7ln2eIwffjy9"
-"ldz38duxh9nHYw/h/w2n3hMlr7FTy15Su/IlxfBiZGy9dpJYnhEvZ3cRh2S83w3w0ideapAF6blpxPcAJx+6paEJX02CX3+arNeo"
-"ylslMZEArxVzGWePWUDQ+/UHIIf/BcjF/hPwgZEcuiEnJCjiMz7G96XrddfGqjbAPnsNPgGiMpMD+UU3mqbVKsJs1oBpGJ2OZdWG"
-"OSJr8QkwlZk6kWrWgDgwe822UxviTIo/AWNsJwfS9vHquQjTqgFzuTJ1r10b5lywz3iTykwBZERQIbPWeJSpd4rVoZjYz0jdF9hc"
-"H2pcyirgyqJWLC3WBWSb+D6SdWXD8X6bFMzegYYPFMzqmvSZXKoOK5wn/ddknHPJXV/WtcPpIByLteADum1JLcXW7HDaAGYunu2L"
-"aubOdiV+stsTjkXESaV3cn41O1ZpcByzeh/oATrgK/hW6lVfjaOdjTm4opXcISvIdTgF96oS7ROHBQFZxbd7Q5xgb7GIuwHXtsxO"
-"0200W67eMFudTsNuD6yG29PazZZuG61eBy4SEv5CVyQ5ZA56A8fQ9IY+sK2GaXXdRmfgOA3HcrpOs6l3ddOW5HMqyI/YeYe+MGDL"
-"mPW0tx5PZg+9UY7f+7jOhtAJTgL/OAlmxCc4JGnY7xIay3jmxHvC8hXdtjMs34PhImdNrVnFbrhlrxBbKmBioyWTRLsVQzrn04Gm"
-"DTQ47lHsD5jvs9dQmU50SHG6+Rcivy68IrNq1NmpSFc98XchLinfslAsZiPQ6uFweyM/KLuBszAWALnJ65MMyBvEDGQ6duM860zv"
-"3LvxU46PfjzJ/Ljb+2Ctwu3KQ9Q/uSPtR+qmIuX8PaNyuim4NIh2S8IzWk6jTJHXGu63rPN4NUBZKuRwF8nH+lVObKv9JS17xiFT"
-"Wirf0H3P8zgJpQ69a9zorc4N/OlaW9KCfcx3qRq6I8M0P8LaI/JxguY13UitAK6vRLKphz3me7onEchxUXAfMA6AxDn9DahoahI7"
-"0Aa+inZBCh50xYJQJZgL0pPhAjTZz5vAy5coKWfcI3xy0naWpZt/3lKR7i7IknUf8+croP+IzoEzoDwUVzHMKzW8ZG7yyHEQqhBc"
-"HVWOld88ypMwL6dWJrBpQ66S1iizofr02Vt6p7y1/HfcanyKW9OO4NTVELiG97/xqZxIvskc78N7YbzWkK9VpYczxlgbyrd6WQbm"
-"o1m9GV/dz6fg96Rmqf9zLdil5v7fKFyV2XPxVMid/6BcXZaqNN0uMU/q1FyhS4+D/K8LVan/4FTatM3d4UWm9CgnyW8YKqsR2XqO"
-"2KbyZzrTyufm7kf0gzpU1gJnOXJH5eSX/Zxo6Ia8Oo48yp5oGMWl89v7nw==";
+const PROGMEM char *configStr = 
+"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";
 
-
-DashioDevice    dashioDevice(DEVICE_TYPE, configC64Str);
-DashioProvision dashioProvision(&dashioDevice);
+DashDevice dashioDevice(DEVICE_TYPE, configStr, 1);
+DashProvision dashioProvision(&dashioDevice);
 
 // DashIO comms connections
     DashioWiFi wifi;
-#ifndef NO_TCP
-    DashioTCP  tcp_con(&dashioDevice, TCP_PORT, true);
-#endif
-#ifndef NO_MQTT
-    DashioMQTT mqtt_con(&dashioDevice, MQTT_BUFFER_SIZE, true, true);
-#endif
-#ifndef NO_BLE
-    DashioBLE  ble_con(&dashioDevice, true);
-#endif
+    DashTCP  tcp_con(&dashioDevice, TCP_PORT, true);
+    DashMQTT mqtt_con(&dashioDevice, MQTT_BUFFER_SIZE, true, true);
+    DashBLE  ble_con(&dashioDevice, true);
 
 // Create controls
 int menuSelectorIndex = 0;
@@ -73,6 +65,7 @@ float menuSliderValue = 14;
 // Device Views
 const char *DV01_ID = "DV01";
 const char *DV02_ID = "DV02";
+const char *DV03_ID = "DV03";
 
 // Device View 1 Controls
 const char *LOG_ID = "EL01";
@@ -93,31 +86,33 @@ const char *BGROUP_B04_ID = "GB04";
 const char *BGROUP_B05_ID = "GB05";
 
 // Device View 2 Controls
-const char *GRAPH_ID = "IDG";
+const char *CHART_ID = "IDG";
+const char *TGRAPH_ID = "TG01";
 const char *LABEL_ID = "LBL01";
 const char *KNOB_ID = "KB01";
 const char *DIAL_ID = "DL01";
 
+// Device View 3 Controls
+const char *COL_ID = "IDC01";
+const char *AV_ID = "AV01";
+
 const char* ntpServer = "pool.ntp.org";
-bool oneSecond = false; // Set by timer every second.
+bool oneSecond = false; // Set by hardware timer every second.
 int count = 0;
 String messageToSend = ((char *)0);
+int walk = 5;
+int sawNum = 0;
 
-String getLocalTime() {
+static DeviceData defaultDeviceData = {DEVICE_NAME, WIFI_SSID, WIFI_PASSWORD, MQTT_USER, MQTT_PASSWORD};
+    
+String getUTCtime() {
   struct tm dt; // dateTime
   if(!getLocalTime(&dt)){
     Serial.println(F("Failed to obtain time"));
     return "";
   }
   char buffer[22];
-  sprintf(buffer, "%04d-%02d-%02dT%02d:%02d:%02dZ", 1900 + dt.tm_year, dt.tm_mon, dt.tm_mday, dt.tm_hour, dt.tm_min, dt.tm_sec); // Z = UTC time
-  String dateTime(buffer);
-  return dateTime;
-}
-
-static String timeToString(long time) {
-  char buffer[22];
-  sprintf(buffer, "%04d-%02d-%02dT%02d:%02d:%02dZ", year(time), month(time), day(time), hour(time), minute(time), second(time)); // Z = UTC time
+  sprintf(buffer, "%04d-%02d-%02dT%02d:%02d:%02dZ", 1900 + dt.tm_year, 1 + dt.tm_mon, dt.tm_mday, dt.tm_hour, dt.tm_min, dt.tm_sec); // Z = UTC time
   String dateTime(buffer);
   return dateTime;
 }
@@ -130,18 +125,18 @@ char *ip2CharArray(IPAddress ip) {
 
 void sendMessage(ConnectionType connectionType, const String& message) {
     if (connectionType == TCP_CONN) {
-#ifndef NO_TCP
         tcp_con.sendMessage(message);
-#endif
     } else if (connectionType == BLE_CONN) {
-#ifndef NO_BLE
         ble_con.sendMessage(message);
-#endif
     } else {
-#ifndef NO_MQTT
         mqtt_con.sendMessage(message);
-#endif
     }
+}
+
+void sendMessageAll(const String& message) {
+    tcp_con.sendMessage(message);
+    ble_con.sendMessage(message);
+    mqtt_con.sendMessage(message);
 }
 
 // Process incoming control mesages
@@ -162,107 +157,97 @@ void processStatus(ConnectionType connectionType) {
   message += dashioDevice.getButtonMessage(BGROUP_B04_ID, buttonFourValue);
   message += dashioDevice.getButtonMessage(BGROUP_B05_ID, buttonFiveValue);
 
-  int data1[] = {150, 270, 390, 410, 400};
-  message += dashioDevice.getGraphLineInts(GRAPH_ID, "L1", "Line One", line, "3", data1, sizeof(data1)/sizeof(int));
+  sendMessage(connectionType, message);
+  message = dashioDevice.getColorMessage(COL_ID, "#0080FF");
+  message += dashioDevice.getAudioVisualMessage(AV_ID, F("http://192.168.68.170/mjpeg/1")); // URL for av feed (e.g. ESP32 Camera)
+
+  int data1[] = {300, 270, 390, 410, 400};
+  message += dashioDevice.getChartLineInts(CHART_ID, "L1", "Line One", line, "3", data1, sizeof(data1)/sizeof(int));
   int data2[] = {160, 280, 400, 410, 420};
-  message += dashioDevice.getGraphLineInts(GRAPH_ID, "L2", "Line Two", line, "4", data2, sizeof(data2)/sizeof(int));
+  message += dashioDevice.getChartLineInts(CHART_ID, "L2", "Line Two", line, "4", data2, sizeof(data2)/sizeof(int));
   int data3[] = {170, 290, 410, 400, 390};
-  message += dashioDevice.getGraphLineInts(GRAPH_ID, "L3", "Line Three", line, "5", data3, sizeof(data3)/sizeof(int));
+  message += dashioDevice.getChartLineInts(CHART_ID, "L3", "Line Three", line, "5", data3, sizeof(data3)/sizeof(int));
   int data4[] = {180, 270, 390, 410, 430};
-  message += dashioDevice.getGraphLineInts(GRAPH_ID, "L4", "Line Four", line, "6", data4, sizeof(data4)/sizeof(int));
+  message += dashioDevice.getChartLineInts(CHART_ID, "L4", "Line Four", line, "6", data4, sizeof(data4)/sizeof(int));
   int data5[] = {200, 250, 260, 265, 240};
-  message += dashioDevice.getGraphLineInts(GRAPH_ID, "L5", "Line Five", line, "8", data5, sizeof(data5)/sizeof(int));
+  message += dashioDevice.getChartLineInts(CHART_ID, "L5", "Line Five", line, "8", data5, sizeof(data5)/sizeof(int));
+    
+  message += dashioDevice.getTimeGraphLine(TGRAPH_ID, "l1", "Roger", line, "purple");
+  message += dashioDevice.getTimeGraphLine(TGRAPH_ID, "l2", "Betty", line, "white");
+
+  message += dashioDevice.getMapTrackMessage(MAP_ID, "T3", "StatusX", "blue");
 
   sendMessage(connectionType, message);
 }
 
-void processButton(MessageData *connection) {
-    if (connection->idStr == MENU_BUTTON_ID) {
+void processButton(MessageData *messageData) {
+    if (messageData->idStr == MENU_BUTTON_ID) {
         menuButtonValue = !menuButtonValue;
         String message = dashioDevice.getButtonMessage(MENU_BUTTON_ID, menuButtonValue);
-        sendMessage(connection->connectionType, message);
-    } else if (connection->idStr == BGROUP_B01_ID) {
+        sendMessage(messageData->connectionType, message);
+    } else if (messageData->idStr == BGROUP_B01_ID) {
         buttonOneValue = !buttonOneValue;
         String message = dashioDevice.getButtonMessage(BGROUP_B01_ID, buttonOneValue);
-        sendMessage(connection->connectionType, message);
+        sendMessage(messageData->connectionType, message);
 
         message = dashioDevice.getAlarmMessage("AL03", "An Alarm", "This is a test alarm");
-#ifndef NO_MQTT
         mqtt_con.sendAlarmMessage(message);
-#endif
-    } else if (connection->idStr == BUTTON02_ID) {
-        String localTimeStr = getLocalTime();
+    } else if (messageData->idStr == BUTTON02_ID) {
+        String currentTimeStr = getUTCtime();
         String textArr[] = {"one", "two"};
-        String message = dashioDevice.getEventLogMessage(LOG_ID, localTimeStr, "red", textArr, 2);
-        sendMessage(connection->connectionType, message);
+        String message = dashioDevice.getEventLogMessage(LOG_ID, currentTimeStr, "red", textArr, 2);
+        sendMessage(messageData->connectionType, message);
     }
 }
 
 void onWiFiConnectCallback(void) {
     configTime(0, 0, ntpServer); // utcOffset = 0 and daylightSavingsOffset = 0, so time is UTC
-    time_t now;
-    long currentTime;
-    time(&currentTime);
-    
-    Serial.print(F("NTP Time: "));
-    Serial.println(timeToString(currentTime));
+    Serial.print(F("NTP UTC Time: "));
+    Serial.println(getUTCtime());
 }
 
-void processIncomingMessage(MessageData *connection) {
-    switch (connection->control) {
+void processIncomingMessage(MessageData *messageData) {
+    switch (messageData->control) {
     case status:
-        processStatus(connection->connectionType);
+        processStatus(messageData->connectionType);
         break;
     case button:
-        processButton(connection);
+        processButton(messageData);
         break;
     case textBox:
-        if (connection->idStr == MENU_TEXTBOX_ID) {
-            menuTextBoxValue = connection->payloadStr.toFloat();
+        if (messageData->idStr == MENU_TEXTBOX_ID) {
+            menuTextBoxValue = messageData->payloadStr.toFloat();
             String message = dashioDevice.getTextBoxMessage(MENU_TEXTBOX_ID, String(menuTextBoxValue));
-            sendMessage(connection->connectionType, message);
+            sendMessage(messageData->connectionType, message);
         }
         break;
     case slider:
-        if (connection->idStr == MENU_SLIDER_ID) {
-            menuSliderValue = connection->payloadStr.toFloat();
+        if (messageData->idStr == MENU_SLIDER_ID) {
+            menuSliderValue = messageData->payloadStr.toFloat();
             String message = dashioDevice.getSliderMessage(MENU_SLIDER_ID, menuSliderValue);
-            sendMessage(connection->connectionType, message);
+            sendMessage(messageData->connectionType, message);
         }
         break;
     case selector:
-        if (connection->idStr == MENU_SELECTOR_ID) {
-            menuSelectorIndex = connection->payloadStr.toInt();
+        if (messageData->idStr == MENU_SELECTOR_ID) {
+            menuSelectorIndex = messageData->payloadStr.toInt();
             String message = dashioDevice.getSelectorMessage(MENU_SELECTOR_ID, menuSelectorIndex);
-            sendMessage(connection->connectionType, message);
+            sendMessage(messageData->connectionType, message);
         }
         break;
     case knob:
-        if (connection->idStr == KNOB_ID) {
-            String message = dashioDevice.getDialMessage(DIAL_ID, connection->payloadStr.toFloat());
-            sendMessage(connection->connectionType, message);
+        if (messageData->idStr == KNOB_ID) {
+            String message = dashioDevice.getDialMessage(DIAL_ID, messageData->payloadStr.toFloat());
+            sendMessage(messageData->connectionType, message);
         }
         break;
     case timeGraph:
         break;
-    default:
-        dashioProvision.processMessage(connection);
+    case colorPicker:
         break;
-    }
-}
-
-void checkOutgoingMessages() {
-    if (messageToSend.length() > 0) {
-#ifndef NO_BLE
-        ble_con.sendMessage(messageToSend);
-#endif
-#ifndef NO_TCP
-        tcp_con.sendMessage(messageToSend);
-#endif
-#ifndef NO_MQTT
-        mqtt_con.sendMessage(messageToSend);
-#endif
-        messageToSend = "";
+    default:
+        dashioProvision.processMessage(messageData);
+        break;
     }
 }
 
@@ -270,10 +255,17 @@ void onProvisionCallback(ConnectionType connectionType, const String& message, b
     sendMessage(connectionType, message);
 
     if (commsChanged) {
-#ifndef NO_MQTT
         mqtt_con.setup(dashioProvision.dashUserName, dashioProvision.dashPassword);
-#endif
         wifi.begin(dashioProvision.wifiSSID, dashioProvision.wifiPassword);
+    }
+}
+
+void checkOutgoingMessages() {
+    if (messageToSend.length() > 0) {
+        ble_con.sendMessage(messageToSend);
+        tcp_con.sendMessage(messageToSend);
+        mqtt_con.sendMessage(messageToSend);
+        messageToSend = "";
     }
 }
 
@@ -291,29 +283,26 @@ void setup() {
 
     DeviceData defaultDeviceData = {DEVICE_NAME, WIFI_SSID, WIFI_PASSWORD, MQTT_USER, MQTT_PASSWORD};
     dashioProvision.load(&defaultDeviceData, &onProvisionCallback);
-
+    
     dashioDevice.setup(wifi.macAddress()); // Get unique deviceID
     Serial.print(F("Device ID: "));
     Serial.println(dashioDevice.deviceID);
-  
-#ifndef NO_BLE
+
+    wifi.setOnConnectCallback(&onWiFiConnectCallback);
+
     ble_con.setCallback(&processIncomingMessage);
-    ble_con.begin(true);
-#endif
-#ifndef NO_TCP
+    ble_con.begin(); // 6 Digid PassKey for BLE
+
+    mqtt_con.setup(dashioProvision.dashUserName, dashioProvision.dashPassword);
+    mqtt_con.setCallback(&processIncomingMessage);
+    wifi.attachConnection(&mqtt_con);
+
     tcp_con.setCallback(&processIncomingMessage);
     wifi.attachConnection(&tcp_con);
-#endif
-#ifndef NO_MQTT
-    mqtt_con.setCallback(&processIncomingMessage);
-    mqtt_con.setup(dashioProvision.dashUserName, dashioProvision.dashPassword);
-    wifi.attachConnection(&mqtt_con);
-#endif
-    
-    wifi.setOnConnectCallback(&onWiFiConnectCallback);
+
     wifi.begin(dashioProvision.wifiSSID, dashioProvision.wifiPassword);
 
-    // Setup 1 second timer task for checking connectivity
+    // Setup 1 second timer task
     xTaskCreate(
         oneSecondTimerTask,
         "One Second",
@@ -325,22 +314,53 @@ void setup() {
 }
 
 void loop() {
-    wifi.run();
-
-#ifndef NO_BLE
     ble_con.run();
-#endif
+    wifi.run();
 
     checkOutgoingMessages();
 
     if (oneSecond) { // Tasks to occur every second
         oneSecond = false;
         count++;
-        if (count > 64000) {
+        if (count > 60000) {
             count = 0;
         }
-        if (count % 5 == 0) {
-            messageToSend = dashioDevice.getMapWaypointMessage(MAP_ID, "TX1", "-43.603488", "172.649536");
+        if (count % 60 == 0) {
+            messageToSend = "";
+            
+            long rNum = random(-49, 50);
+            int num = walk + rNum;
+            if (num >= 100) {
+                num = 200 - num;
+            }   
+            if (num <= -100) {
+                num = -200 - num;
+            }
+
+            // CReate something for TimeGraph control
+            messageToSend += dashioDevice.getTimeGraphPoint(TGRAPH_ID, "l1", float(num));
+            sawNum += 20;
+            if (sawNum > 200) {
+                sawNum = 0;
+            }
+            messageToSend += dashioDevice.getTimeGraphPoint(TGRAPH_ID, "l2", float(sawNum - 100));
+
+            // Create something for EventLog control
+            String lines[2];
+            lines[0] = "Event Log Test";
+            lines[1] = String(count);
+            messageToSend += dashioDevice.getEventLogMessage(LOG_ID, "blue", lines, 2);
+            
+            // Create something for the Map control
+            float lat = -43.559880 + (float)rNum / 10000;
+            char latBuffer[16];
+            sprintf(latBuffer, "%f", lat);
+            
+            float lon = 172.655620 + (float)random(-49, 50) / 10000;
+            char lonBuffer[16];
+            sprintf(lonBuffer, "%f", lon);
+
+            messageToSend += dashioDevice.getMapWaypointMessage(MAP_ID, "T3", latBuffer, lonBuffer);
         }
     }
 }

@@ -42,7 +42,7 @@ private:
 public:
     DashioBluno(DashioDevice *_dashioDevice);
     void sendMessage(const String& message);
-    void checkForMessage();
+    void run();
     void setCallback(void (*processIncomingMessage)(MessageData *messagrData));
     void begin(bool useMacForDeviceID = true);
 };

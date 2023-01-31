@@ -23,19 +23,16 @@
 #define MIN_BLE_TIME_S 10
   
 const PROGMEM char *configC64Str = 
-"lVXdbuI4FH6VyteACJDwc1cog6phoALa0Wi1F05yklhNbMZ2Btiq77TPME82x04CBOiqKyEUn5zfL9/5/EYy4Lkio7/+bpCU+pCW"
-"zxr2eiz2YI5vJBBcS5E+PpAReXzYjEmDbKkErq3ladZ20JJzptGd4KNmOgV8nIica5BoSYDFiV5RzQQZtVtOxym9noRiaOTovVk+"
-"kaLyfcpiY5lMF5vpCo2RkBnVaFksF1M8H6qwY8Zep4dNSQiYstnaDfLqh5vD1vRxP59j0I6FOjkG9N0G2V+l6aA1SIWCr3645Gvg"
-"IRlpmcM7YpLRbYmOn2st+EyKvG4p0BJRNBGpkFh4nOaAlev4GfgK/ymnfgpliQYR/BRHg9ebKF8BeUJ77JCPQP0AL4N18cXq2HRu"
-"QNMgDMdY0MyUWkEkQSXEwBJLuk2KyQ/3e6a+MazrtDFgb45zy6q1Ptgel4srOGak9LSBGFZkoXsyGpgs1xjsjw5Ypn0CYA6/ICXn"
-"dQ0AkG1BUp1L+BCeC1C7Xu8WZG7fK5urcn9je8bjO/Qwue2rRZ6NqUQ43LKPo8Gro+zcwNjAiYSYCM4hKDp8IxJo+Pxs5/fBd3uD"
-"LjS7HjjNnjcYNP1+5DaBtvtdz/E7Hh1gIwrkLxZAGdSLaBR02k7TiXy32XOH0BxEQdAM3GAYdLvO0On5hgGSafg/dd5xw7jwywXI"
-"fmpd7zsRSj+v5pgupCppmT8mWjgnSgV2WDLJpAkZrXQnwAXIZSVCwbaecisk8tX1XMPG7X0YIgmN5DjDTsvxBi38OZ5nUtKUyqxK"
-"wzKY3SJp+5KKmxk5p597k32XZBn2Tgysk63Gld//Tj6/npdk8j6rXoZBIZivj8hFLDao8Tx7sKYXBjtM5rxXPqXBKLyWKc78BeFY"
-"s39wlC72oBIcHiUpz3glUZirMCjL4HP4SnhMpvFrzMNLDTR2IUOQy2O2k61y/p4wXXlf2crzIw9ZLM6uGftx755oDOf1N5JyZT9f"
-"cDBSUrzamBi82arkS/SK4W6FKlx3qIe75+EnlByvJosPYsetJipIkbWiIrJKGc5YIF08Xyh/nYZru8McL6D0sOQrzEUVVK5ZqXu3"
-"qCkhfKEG7lH/TBafX/6LtVdkVInY4XrYDShK3qCn2fwKwpkE4OZOo/KLSFOxU2s7IxlFuNdgX1S+P8A4fPLCwbjq3lhPzWpmdmst"
-"x5ksZKFEGJWf67mIyyPNQyZemMpLYXn/Aw==";
+"dVRdd6IwEP0rnjzsy3J2RWt3j2/yUetWwQKl27O7D1EipEKwEAra43/fCQRr1Z48MCR3ZpJ7Z+YNTbUpGv75p6A7y9Yay50aDlhv"
+"qChogIZIVd1sp790HfuF+evyOSlsZoZIQXlMA5KZDC9iAkCeFURBy5TxLI0nBnhODFfACAtsFm9t5pCY4Jyg4QrHOWATXKGh2u0q"
+"aIMzwnjtZPhdFbwyEvg4LgD8A8455TGYyKu/CooIDSPuYE5TNOx+u+qJJWHzNKewzwBu2ZYpbhCl5YyymUgnU29b1CHG4ArWQEFr"
+"li70NE4z8J/hEK6FIcQCZzdpHKdl7tavPgSCgxbtbjLKws44I4SBS0kDHh3Cqz/FUlB1lljtX/evr+pILt/Wz3TNMQRIKLyhuwdJ"
+"PPO314hjTJzGmI3m0jCth8aa2uPGGPlGK6XuSbw+lYbh+4+1vLlMptmOYTpCqSXPYiDpBiR06Q7O+kB9mNEAXlgkLEfDXk+wCWI1"
+"O63orEgOEPVjDUg5RWgtzYC5lq3HiHLSnqxDFrQHmlC92f8U62WY5XXRLLfAkUjZOuPlGr0XjEFx3PnSuQNRpX9dQlpaXUjXHp1F"
+"Fxw4oD0w0j+CvhMllKXwbAsnIuvDBu1rsUayu/RbxzvuqYeJwcLnp1/3PnW+BndjauqDpIRrbEcVzWe18FAr4meKFyTO28qwLXTa"
+"Y6JUqmO3JobsrYvNVZ0gTtvrPTFsok/76qQLByqs3oXeklc6Clj/W0Wi4QxIHciMxxvH3aNeaJu6LcbO/LYhWPM865jgySxKSme9"
+"cHe6v7Oo//d7t1rP7yF1ulq10jswtk7Z1ESzF5yn7GSwpax1eyJiEKBLxJ4w0lPFOuf3Ez7Ph9K1nA2cVBxweoRZSM5mS1+Mlt6l"
+"2TL4UJZTcbmOVsSLujw1byxniH4Dk+MNBeSVLolLeLEBNAMnpaQrqgQ4jxRPnyuze89DdbsbNdSnpJQtvwod8grmfv8f";
 
 DashioDevice dashioDevice(DEVICE_TYPE, configC64Str);
 DashioProvision dashioProvision(&dashioDevice);
@@ -54,12 +51,9 @@ DashioWiFi wifi;
 const int buttonPin = 2;
 
 // Create Control IDs
-const char *DV01_ID = "PG01";
-const char *TIME_GRAPH_ID = "IDTG";
 const char *SLIDER_ID = "IDS";
 const char *BUTTON_ID = "IDB";
-const char *TEXTBOX_ID = "IDTB";
-const char *GRAPH_ID = "IDG";
+const char *CHART_ID = "IDG";
 
 auto timer = timer_create_default();
 bool oneSecond = false; // Set by hardware timer every second.
@@ -87,11 +81,11 @@ void processStatus(ConnectionType connectionType) {
     String message = dashioDevice.getButtonMessage(BUTTON_ID, toggle);
     message += dashioDevice.getSingleBarMessage(SLIDER_ID, 25);
     int data[] = {100, 200, 300, 400, 500};
-    message += dashioDevice.getGraphLineInts(GRAPH_ID, "L1", "Line 1", peakBar, "purple", data, sizeof(data)/sizeof(int));
+    message += dashioDevice.getChartLineInts(CHART_ID, "L1", "Line 1", peakBar, "purple", data, sizeof(data)/sizeof(int));
     sendMessage(connectionType, message);
     
     int data2[] = {100, 200, 300, 250, 225, 280, 350, 500, 550, 525, 500};
-    message = dashioDevice.getGraphLineInts(GRAPH_ID, "L2", "Line 2", line, "aqua", data2, sizeof(data2)/sizeof(int));
+    message = dashioDevice.getChartLineInts(CHART_ID, "L2", "Line 2", line, "aqua", data2, sizeof(data2)/sizeof(int));
     sendMessage(connectionType, message);
 }
 
@@ -100,16 +94,16 @@ void processButton(MessageData *messageData) {
         if (toggle == off) {
             toggle = on;
             int data[] = {50, 255, 505, 758, 903, 400, 0};
-            String message = dashioDevice.getGraphLineInts(GRAPH_ID, "L1", "Line 1 a", bar, "green", data, sizeof(data)/sizeof(int));
+            String message = dashioDevice.getChartLineInts(CHART_ID, "L1", "Line 1 a", bar, "green", data, sizeof(data)/sizeof(int));
             int data2[] = {153, 351, 806, 900, 200, 0};
-            message += dashioDevice.getGraphLineInts(GRAPH_ID, "L2", "Line 2 a", segBar, "yellow", data2, sizeof(data2)/sizeof(int));
+            message += dashioDevice.getChartLineInts(CHART_ID, "L2", "Line 2 a", segBar, "yellow", data2, sizeof(data2)/sizeof(int));
             sendMessage(messageData->connectionType, message);
         } else if (toggle == on) {
             toggle = off;
             float data[] = {200, 303.334, 504.433, 809.434, 912, 706, 643};
-            String message = dashioDevice.getGraphLineFloats(GRAPH_ID, "L1", "Line 1 b", peakBar, "orange", data, sizeof(data)/sizeof(float));
+            String message = dashioDevice.getChartLineFloats(CHART_ID, "L1", "Line 1 b", peakBar, "orange", data, sizeof(data)/sizeof(float));
             int data2[] = {};
-            message += dashioDevice.getGraphLineInts(GRAPH_ID, "L2", "Line 2 b", peakBar, "blue", data2, sizeof(data2)/sizeof(int));
+            message += dashioDevice.getChartLineInts(CHART_ID, "L2", "Line 2 b", peakBar, "blue", data2, sizeof(data2)/sizeof(int));
             sendMessage(messageData->connectionType, message);
         }
         
@@ -128,24 +122,6 @@ void processSlider(MessageData *messageData) {
     sendMessage(messageData->connectionType, dashioDevice.getDoubleBarMessage(SLIDER_ID, data[0], data[1]));
 }
 
-void processTimeGraph(MessageData *messageData) {
-/*???
-  long startTime = currentTime - (60 * 5);
-    
-  String timeStrArr[] = {timeToString(startTime),
-                         timeToString(startTime + (60 * 1)),
-                         timeToString(startTime + (60 * 2)),
-                         timeToString(startTime + (60 * 3)),
-                         timeToString(startTime + (60 * 4)),
-                         timeToString(startTime + (60 * 5))};
-
-  float data3[] = {20, 30, 35, 38, 40, 35};
-  String message = dashioDevice.getTimeGraphLineFloats(TIME_GRAPH_ID, "L1", "Line 1", line, "aqua", timeStrArr, data3, sizeof(data3)/sizeof(float), true);
-
-  sendMessage(messageData->connectionType, message);
-*/
-}
-
 void processIncomingMessage(MessageData *messageData) {
     switch (messageData->control) {
     case status:
@@ -156,10 +132,6 @@ void processIncomingMessage(MessageData *messageData) {
         break;
     case slider:
         processSlider(messageData);
-        break;
-    case timeGraph:
-Serial.println(messageData->payloadStr);//???
-        processTimeGraph(messageData);
         break;
     default:
         dashioProvision.processMessage(messageData);

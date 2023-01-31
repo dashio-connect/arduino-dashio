@@ -7,21 +7,22 @@
 #define DEVICE_TYPE "Bluno_Type"
 
 const char configC64Str[] PROGMEM =
-"3VVLb+IwEP4rlc9oFSi0Wm6kUFQVkhXQrlarPZhkAKuOjRyHx1b89x07NgRIq55XPsQez8PzfTOTd5KBKHLS/f2nQTidA3d7DTsd"
-"yh2Y4ztJpNBK8qc+6ZKn/ow0yJoqENoK+psmCgrBNCoT3GqmOeB2Zr8NsgK2XOkJ1UySbvCt2TLLqf2QOUO5QPUwns3iMSlj9zhb"
-"GuHDIJoNJihcSJVRjZIojgZ43nvLo9/b72bh0xQkLLc+gwZ5m6ez/RpOhluW6tXRqN1pkN2Vq3aDJFzm8DxPYzEFkZKuVgUcEJiM"
-"rh1E80JrKYZKFueSEjK5WDxILhUGHioAgZHPUQyJNxgIOufgYjSIFN7wF3Aut3VofwZpBfkPIf4YPQN+SeM5UK06nJqIHsO0IpqZ"
-"sD2t8ZmocNMkBquloutVCce+t2P5mJWc7MxhZKttqvf2xXF0BdCQOE1vVvqgO9JtBkFQg8ruQuESjlPcSqHWwXMBb7tlVh1qnTau"
-"jntaxbM9R0UWUoX5d1zoquAc3ft6dA2IWBoPUghIyke+EwU0fXkp034MTd45qA1L4CQMDH2KaajqHbAZhJyXfOQO9yiejHujK+yf"
-"rVeB1c/3sZgAB5qj+oLyHEwPlBDXUKAgfaW8QN37GgIucL0NcH1CQ76SWyTfMupCX1MQ3JlV5uYbZ0yVlKblUkb5ozRdlD/j/dGN"
-"kXvlEcvgi3PB1Htmq9EwY5y4zk/QV6HcgXKqMj9H0fnQt4GxAcMUErpgS0OmKLK+Fb0y2KJO8+B1nMBMX604YvCIDE3ZX8Sz2QoM"
-"OIg95lBkwk8OdFYKjKNzSkt2jKfwbSlSn3tEN/ub0PDlLqVKQcVHjyeZt/i5wrJy2lcyd3YOPfvVwDNFRW6rJtnbpjY3tjzwb3NF"
-"X/XyY8sKMHdn8yiSAuwgyrGAEy09QTlnmJFrBLu/GMHnzTD9T5phTpXrhalN2meL8qs/zheG/13HmvoJPh2YgV3tDlXOLN8VRcrk"
-"K8uLY9PABuEayaU9Hv4B";
+"vVXbdto4FP2VWXod1hQ7YdryhrFDCL4E24WQtg++CFAwErVlbln59x7JNnXASWdeuvSAfG6S9tln84xMzUTdr99baGQ7GuyeUZ6T"
+"GHXRtw9Xms8XNHKtv4f0/sE0lrq56aEWyvghwRBhO67VM8EQMcpTlgx1MA71kQjBNHZocnCoixMcZBA+D5IMt9A62KOu0m630CZI"
+"MeUySZ8okJTieBIkOcR+BDcnXJ7iy98WWmKyWHI34IShbvufqzasMuqeZQTMFKI1x/cdS9xgyXYWoZY4rjz6UMWdinQUWGoLrSgL"
+"+yxhKVSwgpRBqRaKSZDcsCRhu2wE/lMZYa+CdRYvcPqXJm7dQjsS8+Wp+EcVFlxxf3GsKl2ABYErt18AfM/U3Tr4d+oj7TwMV2P6"
+"Y7tdkNEWj11/J56VkBinBg3CBEMgT3N8jr/3R/C/7oj1HxtQXPN/4h8GaQm/Jx99egI4quAZFgEX0KtvQS+TvZK/njFA9Sb4xoNf"
+"b8LtcXoMjwPia87yMbx1ZsfpOB9f8N1HDVjmlPAMvtBvgVRUsd4BkuM97yVkIYx9w/YNF4xzlq4DLofQNlATtp+uYUGDNimOSCZr"
+"wvNXYewfNvhX4mvgOk10BWOUsAyPQuCUB8wqGiog04duoR5W777cGPaXYmc6g2LTm+jFxjP7fhnfN8uNPplMJeiVqmiOqxuuIHHE"
+"0wTocwNoe+QIPkWFFyxSEkP78zUFfFVVEA3ALywV02i+PoUor/tVtEeU1lgKrKqYNEjxoXKsFjSu7HawPVTzLZyVfbokHNcT/DSg"
+"meRBdJBQR2WklgTRqoEHIlPuNba/IH/deVFZQODCXKDu1VUttAbUvy1E4NV2sJatZhSjol29Uu37t+4rrkcKHo9XPx79gTe/i2bG"
+"U/vOCgXXD709ySxSsGcvPswgxElWDZFjXwyEmKp9Pa2oUQpPk/LszwLOofp1bm2kmmblXKTkEDRMR3mnWkn5bedrLUgB1055Zt1Q"
+"nxSlYU6khAzc+9sCYc337TrCT0+frW8f1Hnm9oINu57OzJU/2wntYvN51X+TrPEFnpoQw5xzRs90n9EqzwVjA67vSU0N3jfhfFtV"
+"hCgVwL0WEOWTWO/96dV46RMYjBeJ1aCUj/4NiMYzivGWRNjDPN+I+5hCqWCodWmeELwrB3u+cPEWti8vPwE=";
 
 
 // Create device
-DashioDevice dashioDevice(DEVICE_TYPE, configC64Str);
+DashioDevice dashioDevice(DEVICE_TYPE, configC64Str, 1);
 
 // Create connection through Bluefruit
 DashioBluno  bluno(&dashioDevice);
@@ -37,11 +38,12 @@ DashioBluno  bluno(&dashioDevice);
 SimpleTimer timer;
 int count = 0;
 bool toggle = true;
+String messageToSend = ((char *)0);
 
 // Timer Interrupt
 static void Timer() {
     count ++;
-    bluno.sendMessage(dashioDevice.getTextBoxMessage(TEXT_BOX_ID, String(count)));
+    messageToSend = dashioDevice.getTextBoxMessage(TEXT_BOX_ID, String(count));
 } 
 
 // Process incoming contr ol mesages
@@ -57,19 +59,19 @@ void processButton(MessageData *messageData) {
         bluno.sendMessage(dashioDevice.getSliderMessage(SINGLE_SLIDER_ID, 10));
         bluno.sendMessage(dashioDevice.getDoubleBarMessage(SINGLE_SLIDER_ID, 90, 10));
         int data[5] = {800, 200, 100, 0, 100};
-        bluno.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L1", "bob", line, "red", data, 5));
+        bluno.sendMessage(dashioDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "bob", line, "red", data, 5));
     }
 
     if (messageData->idStr == TOGGLE_BUTTON_ID) {
         toggle = !toggle;
         if (toggle) {
             int data[7] = {50, 255, 505, 758, 903, 400, 0};
-            bluno.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L1", "Alan", bar, "12", data, 7));
+            bluno.sendMessage(dashioDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "Alan", bar, "12", data, 7));
             int data2[6] = {153, 351, 806, 900, 200, 0};
-            bluno.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L2", "Steve", segBar, "15", data2, 6));
+            bluno.sendMessage(dashioDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L2", "Steve", segBar, "15", data2, 6));
         } else {
             float data[7] = {90, 303.3345667, 504.4332, 809.4342, 912, 706, 64};
-            bluno.sendMessage(dashioDevice.getGraphLineFloats(SIMPLE_GRAPH_ID, "L1", "Bob", peakBar, "18", data, 7));
+            bluno.sendMessage(dashioDevice.getChartLineFloats(SIMPLE_GRAPH_ID, "L1", "Bob", peakBar, "18", data, 7));
         }
 
         bluno.sendMessage(dashioDevice.getButtonMessage(messageData->idStr, toggle));
@@ -121,5 +123,9 @@ void setup() {
 void loop()
 {
     timer.run();
-    bluno.checkForMessage();
+    bluno.run();
+    if (messageToSend.length() > 0) {
+        bluno.sendMessage(messageToSend);
+        messageToSend = "";
+    }
 }

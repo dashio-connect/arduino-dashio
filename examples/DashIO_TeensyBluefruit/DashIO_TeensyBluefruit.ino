@@ -12,20 +12,21 @@
 #define TEXT_BOX_ID "IDT"
 
 const char configC64Str[] PROGMEM =
-"hVTbctowEP2VjJ6hNZfQwhsXh8mUAAMOmU7bB4EXWxNZYmQ5QDP8e1eyBThAOnqRjvamoz37ThIQWUo6v/5UCKdL4MVew0735A7M"
-"8Z2spNBK8scB6ZDHQUAqZEMVCG2B6dCrIZIJptGa4FYzzQG3fZkJDQqRGFgU6xnVTJKO96V2b1ZhOJUpQ1ygQzCZkjx3l7PIIH1/"
-"HPgzBNdSJVQjMugGfvD45CO2d67HwK0GriaWp2DFUhvUq5DXZRjsN1B23rJQxydHrGZ3Ea5RISsuU/ixDCdiDiIkHa0yOCBBCd0U"
-"VC0zraUYKpmVkZw6uV73JZcKk88gxLxlLnvEmfuCLjkUGSpECuc2YglcZfwzUtFqIn5/nazX5BbNt9kzH5D/ZJmk+jWOPEzJ8FFj"
-"mpisL0B1jH9uOIoU3cQ5DfvujqVPDLPXPPyRnTmObL/N9T4vd3xBzpAUltYR3fIodEc6LRPlkpLd0QDTeCcuRvAGnJznNTRAsgFF"
-"dabgJkkfOG60zbrCXVGbC/3EdkxEd3hrQturcZb0qEI2WkUZ50CZ5/Z1ng2l2CJ9KQSs8irfiQIaPj9bDlp+Ex/tNaq9+26j+oCV"
-"Vn2v2676955fbw76/W7bNH4K6o2toOxU+4/TVjH9waX+qcsBZSfkslBEyKibLCts60wVB8qpStzIwT4fuo4xPmDKxNeuWWReKrJk"
-"YKEFgy3a1A7OpgDMoNKK4/c/YBvN2V/8+Qb+TBpjn6CasgQZW2MhKC8MliPoVy/3XdFKJlTvNRKh02GPZ+BwqUJQE+HEesKc8UvM"
-"tLO+wIrzNFMbfmy9XHDHrIGiIrUNvtrb/jI3gTHEsewiTtAogrtisJwZ3PY+UVP7XhLuQG6FVW0KHNtLui9KOcN35fTm+w+TqqzZ"
-"ue0wgfOS7ydihrFoCs40KZR5TboKwgU1FHe+nQn3eXFl0H0365Zi01hucV7YIZBnvRx0zbpZeYc6LocKQJhpTNWD5Fxu07l9rYuC"
-"uDP9Ceb+YjzekK11dVNu7puhlth5drDCULmWnSCykMkFS7OjXnByCT2SkT0e/gE=";
+"nVVLb/I4FP0ryIvZNBqR9MFXduQBrRoSmqTpV41mEYgBTx2bOk6btOp/n+s8aApUI428wLHPvbbPPefygVzTReO//tbQneebzSx0"
+"7QBmH6goSIrGyDIqfvby5N2PcPk4L//5HU2H3gZpKKckxcJhyZJiAEpRYA2tOJOC01sbIm/tUMEwS31GK58FmOIkx2i8TmgO2Cwp"
+"0VgfDjW0SwRmsg6y46EOUQKncUILAI9gXxJJYYqi+ldDW0w2WxkkknA0Hv55YajRwhY8J7DOAO75nqNusOVvc8Lm6rj26KpD7XNc"
+"XsC41NAz40uLUy4gPoB3aWiZiCmnlL/lYf3ifRLY6JDhThC2GcwExgxC3kgqt/vUhjEyRucaKo8OHV6rUWcKZVU/MXRmkCAjcP/h"
+"J5Qjcn5H/XLcxGGY7i78+7PiNX4nlTMkxcM9OmQ+QqdYLRiROXyi/6RUN9T4kVKJSzmhZKOWLMeLnAAW11xkifwC/UzyTuAVyeuM"
+"UN3nZRpVO/wV+J2+LuiYvvMrNeDplOf4bgkyC0FsjRQVd/Zt0Gh6Plm0E8d7aGauP2smk9juhG9FLd5y24kdx481+3lbHtMPbCdQ"
+"ul5JQUFSU6A9JO+wdw5P2QiSgiaKjAHNhqG0B0VoVjqLsCLbQ/TvdWvLpFKbXIDWOn09bonE3c7zhqXdhqk80qz/iI1EwvJaDKuq"
+"Jny1D05Wzz0t2CShgz8Gd2CBNr5Wh8nLE8d1W0fZFQcBuAUYOe9Bv4jSf2mIwLO9JFOnPuxQU6xJ24usm+Cb5M+m+sILw0VYvJw9"
+"VemTPVmbLxMlsElJ8jlpVFSqDzdZYpp3XvK9I18oc5X9sCZH24lOtqLyAHHonK+De846tsyBwS51GMYJk7RX6iWsv70iMxMBpF62"
+"J/YX+obRTzilbiSzYHHTEGxGkdcneKRfzH6R7Cm48YP4fW1Xi+uXXPUUvl53lbeqhB2xaar2WEjJ2cHfAGddnEsyfLIXHfCheqQx"
+"Omb3BzaPe8vV9dX1qOlMAFsInOeDOf4f3aQnTVddcWAWdFlL1IxmbR+xptA9PlCKX8kKh1gWO0DP76NIi6yFZrrqiuBzu96PCX5r"
+"vb7eBPgVpp+f/wI=";
 
 // Create device
-DashioDevice dashioDevice(DEVICE_TYPE, configC64Str);
+DashioDevice dashioDevice(DEVICE_TYPE, configC64Str, 1);
 
 // Create connection through Bluefruit
 DashioBluefruit_BLE  bluefruitBLE(&dashioDevice, true);
@@ -40,7 +41,7 @@ void processStatus() {
     bluefruitBLE.sendMessage(dashioDevice.getSingleBarMessage(SINGLE_SLIDER_ID, 25));
     bluefruitBLE.sendMessage(dashioDevice.getTextBoxMessage(TEXT_BOX_ID, String(count)));
     int data[5] = {100, 200, 300, 400, 500};
-    bluefruitBLE.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "black", data, 5));
+    bluefruitBLE.sendMessage(dashioDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "black", data, 5));
 }
 
 void processButton(MessageData *messageData) {
@@ -49,14 +50,14 @@ void processButton(MessageData *messageData) {
         
         if (toggle) {
             int data[7] = {50, 255, 505, 758, 903, 400, 0};
-            bluefruitBLE.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L1", "Line Name", bar, "0", data, 7));
+            bluefruitBLE.sendMessage(dashioDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "Line Name", bar, "0", data, 7));
             int data2[6] = {153, 351, 806, 900, 200, 0};
-            bluefruitBLE.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L2", "Line Name", segBar, "1", data2, 6));
+            bluefruitBLE.sendMessage(dashioDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L2", "Line Name", segBar, "1", data2, 6));
         } else {
             float data[7] = {200, 303.3345667, 504.4332, 809.43424545465, 912, 706, 643};
-            bluefruitBLE.sendMessage(dashioDevice.getGraphLineFloats(SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "4", data, 7));
+            bluefruitBLE.sendMessage(dashioDevice.getChartLineFloats(SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "4", data, 7));
             int data2[0] = {};
-            bluefruitBLE.sendMessage(dashioDevice.getGraphLineInts(SIMPLE_GRAPH_ID, "L2", "Line Name", peakBar, "1", data2, 0));
+            bluefruitBLE.sendMessage(dashioDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L2", "Line Name", peakBar, "1", data2, 0));
         }
         
         bluefruitBLE.sendMessage(dashioDevice.getButtonMessage(messageData->idStr, toggle, "weather"));
@@ -101,5 +102,5 @@ void setup() {
 }
 
 void loop() {
-    bluefruitBLE.checkForMessage();
+    bluefruitBLE.run();
 }
