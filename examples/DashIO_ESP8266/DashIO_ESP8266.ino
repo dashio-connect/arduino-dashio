@@ -2,6 +2,8 @@
 #include "DashioProvisionESP.h"
 
 #include <Arduino-timer.h>
+#include <NTPClient.h>
+#include <TimeLib.h>
 
 #define DEVICE_TYPE "ESP8266_DashIO"
 #define DEVICE_NAME "DashIO8266_Baby"
@@ -91,22 +93,25 @@ bool oneSecond = false; // Set by hardware timer every second.
 int count = 0;
 String messageToSend = ((char *)0);
 
-String getUTCtime() {
-  struct tm dt; // dateTime
-  if(!getLocalTime(&dt)){
-    Serial.println(F("Failed to obtain time"));
-    return "";
-  }
-  char buffer[22];
-  sprintf(buffer, "%04d-%02d-%02dT%02d:%02d:%02dZ", 1900 + dt.tm_year, dt.tm_mon, dt.tm_mday, dt.tm_hour, dt.tm_min, dt.tm_sec); // Z = UTC time
-  String dateTime(buffer);
-  return dateTime;
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, ntpServer, 0);
+
+static String getUTCtime() {
+    time_t time = timeClient.getEpochTime();
+    if (time > 1000) {
+        char buffer[22];
+        sprintf(buffer, "%04d-%02d-%02dT%02d:%02d:%02dZ", year(time), month(time), day(time), hour(time), minute(time), second(time)); // Z = UTC time
+        String dateTime(buffer);
+        return dateTime;
+    } else {
+        return "";
+    }
 }
 
 char *ip2CharArray(IPAddress ip) {
-  static char a[16];
-  sprintf(a, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
-  return a;
+    static char a[16];
+    sprintf(a, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+    return a;
 }
 
 // Timer Interrupt
@@ -121,6 +126,11 @@ void sendMessage(ConnectionType connectionType, const String& message) {
     } else {
         mqtt_con.sendMessage(message);
     }
+}
+
+void sendMessageAll(const String& message) {
+    tcp_con.sendMessage(message);
+    mqtt_con.sendMessage(message);
 }
 
 // Process incoming control mesages
@@ -168,13 +178,17 @@ void processButton(MessageData *messageData) {
         mqtt_con.sendAlarmMessage(message);
     } else if (messageData->idStr == BUTTON02_ID) {
         String textArr[] = {"one", "two"};
-        String message = dashioDevice.getEventLogMessage(LOG_ID, "red", textArr, 2);
-        sendMessage(messageData->connectionType, message);
+        String message = dashioDevice.getEventLogMessage(LOG_ID, getUTCtime(), "red", textArr, 2);
+        sendMessageAll(message);
     }
 }
 
 
 void setupWiFiMQTT();
+
+void onWiFiConnectCallback(void) {
+    timeClient.begin();
+}
 
 void processIncomingMessage(MessageData *messageData) {
     switch (messageData->control) {
@@ -253,6 +267,8 @@ void setup() {
     tcp_con.setCallback(&processIncomingMessage);
     wifi.attachConnection(&tcp_con);
 
+    wifi.setOnConnectCallback(&onWiFiConnectCallback);
+
     mqtt_con.setCallback(&processIncomingMessage);
     mqtt_con.setup(dashioProvision.dashUserName, dashioProvision.dashPassword);
     wifi.attachConnection(&mqtt_con);
@@ -263,8 +279,8 @@ void setup() {
 }
 
 void loop() {
+    timeClient.update();
     timer.tick();
-
     wifi.run();
     
     checkOutgoingMessages();
