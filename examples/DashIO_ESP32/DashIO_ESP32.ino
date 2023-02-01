@@ -193,10 +193,9 @@ void processButton(MessageData *messageData) {
         message = dashioDevice.getAlarmMessage("AL03", "An Alarm", "This is a test alarm");
         mqtt_con.sendAlarmMessage(message);
     } else if (messageData->idStr == BUTTON02_ID) {
-        String currentTimeStr = getUTCtime();
         String textArr[] = {"one", "two"};
-        String message = dashioDevice.getEventLogMessage(LOG_ID, currentTimeStr, "red", textArr, 2);
-        sendMessage(messageData->connectionType, message);
+        String message = dashioDevice.getEventLogMessage(LOG_ID, getUTCtime(), "red", textArr, 2);
+        sendMessageAll(message); // Send to all to make sure it get captured by the dash server.
     }
 }
 
@@ -349,7 +348,7 @@ void loop() {
             String lines[2];
             lines[0] = "Event Log Test";
             lines[1] = String(count);
-            messageToSend += dashioDevice.getEventLogMessage(LOG_ID, "blue", lines, 2);
+            messageToSend += dashioDevice.getEventLogMessage(LOG_ID, getUTCtime(), "blue", lines, 2);
             
             // Create something for the Map control
             float lat = -43.559880 + (float)rNum / 10000;
