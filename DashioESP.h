@@ -98,6 +98,9 @@ private:
     static void messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length);
     void hostConnect();
     void setupLWT();
+    
+    DashStore *dashStore;
+    int dashStoreSize = 0;
 
 public:
     char *mqttHost = DASH_SERVER;
@@ -108,6 +111,7 @@ public:
 
     DashioMQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
     void setup(char *_username, char *_password);
+    void addDashStore(ControlType controlType, String controlID);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
     void sendAlarmMessage(const String& message);
     void run();

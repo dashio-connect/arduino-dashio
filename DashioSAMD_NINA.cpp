@@ -353,6 +353,12 @@ void DashioMQTT::hostConnect() { // Non-blocking
         sendMessage(dashioDevice->getOnlineMessage());
         sendMessage(dashioDevice->getWhoMessage(), announce_topic); // Update announce topic with new name
 
+        if (dashStore != nullptr) {
+            for (int i=0; i<dashStoreSize; i++) { // Announce control for data store on dash server
+                sendMessage(dashioDevice->getDataStoreEnableMessage(dashStore[i]), announce_topic);
+            }
+        }
+        
         if (reboot) {
             reboot = false;
             if (sendRebootAlarm) {
@@ -363,6 +369,25 @@ void DashioMQTT::hostConnect() { // Non-blocking
         Serial.print(F("Failed - Try again in 10 seconds: "));
         Serial.println(mqttClient.connectError());
     }
+}
+
+void DashioMQTT::addDashStore(ControlType controlType, String controlID) {
+    DashStore tempDashStore[dashStoreSize];
+    
+    if (dashStore != nullptr) {
+        for (int i=0; i<dashStoreSize; i++) {
+            tempDashStore[i] = dashStore[i];
+        }
+        delete[] dashStore;
+    }
+
+    dashStore = new DashStore[dashStoreSize + 1];
+    for (int i=0; i<dashStoreSize; i++) {
+        dashStore[i] = tempDashStore[i];
+    }
+    DashStore newDashStore = {controlType, controlID};
+    dashStore[dashStoreSize] = newDashStore;
+    dashStoreSize += 1;
 }
 
 void DashioMQTT::setCallback(void (*processIncomingMessage)(MessageData *connection)) {

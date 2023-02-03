@@ -45,7 +45,7 @@ DashDevice dashioDevice(DEVICE_TYPE, configStr, 1);
 DashProvision dashioProvision(&dashioDevice);
 
 // DashIO comms connections
-    DashioWiFi wifi;
+    DashWiFi wifi;
     DashTCP  tcp_con(&dashioDevice, TCP_PORT, true);
     DashMQTT mqtt_con(&dashioDevice, MQTT_BUFFER_SIZE, true, true);
     DashBLE  ble_con(&dashioDevice, true);
@@ -102,8 +102,6 @@ int count = 0;
 String messageToSend = ((char *)0);
 int walk = 5;
 int sawNum = 0;
-
-static DeviceData defaultDeviceData = {DEVICE_NAME, WIFI_SSID, WIFI_PASSWORD, MQTT_USER, MQTT_PASSWORD};
     
 String getUTCtime() {
   struct tm dt; // dateTime
@@ -151,6 +149,8 @@ void processStatus(ConnectionType connectionType) {
   message += dashioDevice.getTextBoxMessage(MENU_TEXTBOX_ID, String(menuTextBoxValue));
   message += dashioDevice.getSliderMessage(MENU_SLIDER_ID, menuSliderValue);
 
+  message += dashioDevice.getButtonMessage(BUTTON02_ID, true);
+  
   message += dashioDevice.getButtonMessage(BGROUP_B01_ID, buttonOneValue);
   message += dashioDevice.getButtonMessage(BGROUP_B02_ID, buttonTwoValue);
   message += dashioDevice.getButtonMessage(BGROUP_B03_ID, buttonThreeValue);
@@ -294,6 +294,9 @@ void setup() {
 
     mqtt_con.setup(dashioProvision.dashUserName, dashioProvision.dashPassword);
     mqtt_con.setCallback(&processIncomingMessage);
+    mqtt_con.addDashStore(timeGraph, TGRAPH_ID);
+    mqtt_con.addDashStore(eventLog, LOG_ID);
+    
     wifi.attachConnection(&mqtt_con);
 
     tcp_con.setCallback(&processIncomingMessage);

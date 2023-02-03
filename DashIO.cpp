@@ -72,6 +72,9 @@
 // Alarm
 #define ALARM_ID "ALM"
 
+// Store Enable
+#define STORE_ENABLE_ID "STE"
+
 // Button control states
 #define BUTTON_ON "ON"
 #define BUTTON_OFF "OFF"
@@ -371,6 +374,13 @@ String DashioDevice::getOfflineMessage() {
     String message = String(DELIM);
     message += deviceID;
     message += MQTT_OFFLINE_MSSG;
+    return message;
+}
+
+String DashioDevice::getDataStoreEnableMessage(DashStore dashStore) {
+    String message = getControlBaseMessage(STORE_ENABLE_ID, getControlTypeStr(dashStore.controlType));
+    message += dashStore.controlID;
+    message += String(END_DELIM);
     return message;
 }
 
