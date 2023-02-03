@@ -26,8 +26,7 @@
 //#ifdef ARDUINO_ARCH_SAMD
 
 #include "DashioSAMD_NINA.h"
-
-//???#include <MDNS_Generic.h>
+#include <MDNS_Generic.h>
 
 // WiFi
 const int WIFI_CONNECT_TIMEOUT_MS = 5000; // 5s
@@ -39,11 +38,9 @@ const int     MQTT_RETRY_S = 10; // Retry after 10 seconds
 // BLE
 const int BLE_MAX_SEND_MESSAGE_LENGTH = 100;
 
-/*???
 // mDNS
 WiFiUDP udp;
 MDNS mdns(udp);
-*/
 
 // ---------------------------------------- WiFi ---------------------------------------
 
@@ -161,8 +158,8 @@ String DashioWiFi::ipAddress() {
 
 // ---------------------------------------- TCP ----------------------------------------
 
-//???DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), mdns(udp), messageData(TCP_CONN) {
-DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), messageData(TCP_CONN) {
+DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), mdns(udp), messageData(TCP_CONN) {
+//DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), messageData(TCP_CONN) { // Use this if not using mDNS
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
@@ -186,15 +183,18 @@ void DashioTCP::sendMessage(const String& message) {
 void DashioTCP::begin() {
     wifiServer.begin();
 
-/*???
-    Serial.println("Starting mDNS");//???
-    mdns.begin(WiFi.localIP(), "arduino");
-    mdns.addServiceRecord("_tcp._DashIO", tcpPort, MDNSServiceTCP);
-*/
+    mdns.begin(WiFi.localIP(), dashioDevice->deviceID.c_str());
+    String service = "_";
+    service += dashioDevice->deviceID;
+    service += "._DashIO";
+    if (printMessages) {
+        Serial.println("Starting mDNS " + service);
+    }
+    mdns.addServiceRecord(service.c_str(), tcpPort, MDNSServiceTCP);
 }
 
 void DashioTCP::run() {
-//???    mdns.run();
+    mdns.run();
 
     if (!client) {
         client = wifiServer.available();
@@ -415,7 +415,7 @@ void DashioMQTT::checkConnection() {
 
 void DashioMQTT::end() {
     sendMessage(dashioDevice->getOfflineMessage());
-//???    mqttClient.disconnect();
+//    mqttClient.disconnect();
 }
 
 // ---------------------------------------- BLE ----------------------------------------

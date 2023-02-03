@@ -33,15 +33,13 @@
 #include <arduino-timer.h>
 
 #include "DashIO.h"
-#include <WiFiNINA.h>
-//???#include <WiFiNINA_Generic.h>
-//???#include <PubSubClient.h>     // MQTT
+//#include <WiFiNINA.h>
+#include <WiFiNINA_Generic.h> // For mDNS
 #include <ArduinoMqttClient.h>
-/*???
+
+#include <MDNS_Generic.hpp>
 #define WIFI_NETWORK_WIFININA   true
 #include <WiFiUdp_Generic.h> // mDNS for TCP
-#warning WIFI_NETWORK_TYPE == NETWORK_WIFI_ESP
-*/
 
 #if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010
 
@@ -64,10 +62,9 @@ private:
     uint16_t tcpPort = 5650;
     WiFiClient client;
     WiFiServer wifiServer;
-/*???
+
     WiFiUDP udp;
     MDNS mdns;
-*/
 
     void (*processTCPmessageCallback)(MessageData *connection);
 
