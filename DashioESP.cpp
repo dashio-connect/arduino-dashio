@@ -165,9 +165,9 @@ bool DashioSoftAP::begin(const String& password) {
     Serial.println(F("Starting soft-AP"));
 
 #ifdef ESP32
-    bool result = WiFi.softAP("DashIO_Provision", password.c_str(), 1, 0, 1);
+    bool result = WiFi.softAP("Dash_Provision", password.c_str(), 1, 0, 1);
 #elif ESP8266
-    bool result = WiFi.softAP(F("DashIO_Provision"), password, 1, 0, 1);
+    bool result = WiFi.softAP(F("Dash_Provision"), password, 1, 0, 1);
 #endif
     if (result == true) {
         WiFi.softAPConfig(IP, IP, NMask);

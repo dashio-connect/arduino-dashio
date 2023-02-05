@@ -275,7 +275,7 @@ void DashioMQTT::sendMessage(const String& message, MQTTTopicType topic) {
 
         if (printMessages) {
             Serial.print(F("---- MQTT Sent ---- Topic: "));
-            Serial.println(topic);
+            Serial.println(publishTopic);
             Serial.println(message);
         }
     }

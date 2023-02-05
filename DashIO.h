@@ -63,6 +63,9 @@ typedef DashioBluefruit_BLE DashBluefruit_BLE;
 class DashioBluno;
 typedef DashioBluno DashBluno;
 
+class DashioSoftAP;
+typedef DashioSoftAP DashSoftAP;
+
 enum ConnectionType {
     TCP_CONN,
     BLE_CONN,
