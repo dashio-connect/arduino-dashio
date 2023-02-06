@@ -296,7 +296,7 @@ void DashioTCP::processConfig() {
 
 void DashioTCP::run() {
     if (!client) {
-        client = wifiServer.available();
+        client = wifiServer.accept();
         client.setTimeout(2000);
     } else {
        if (client.connected()) {
@@ -340,7 +340,7 @@ void DashioTCP::run() {
             }
         } else {
             client.stop();
-            client = wifiServer.available();
+            client = wifiServer.accept();
             client.setTimeout(2000);
         }
     }
