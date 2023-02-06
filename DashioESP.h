@@ -114,8 +114,9 @@ public:
     void addDashStore(ControlType controlType, String controlID);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
     void sendAlarmMessage(const String& message);
-    void run();
     void checkConnection();
+    void run();
+    void sendWhoAnnounce();
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void begin();
     void end();

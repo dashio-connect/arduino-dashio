@@ -256,6 +256,8 @@ void onProvisionCallback(ConnectionType connectionType, const String& message, b
     if (commsChanged) {
         mqtt_con.setup(dashProvision.dashUserName, dashProvision.dashPassword);
         wifi.begin(dashProvision.wifiSSID, dashProvision.wifiPassword);
+    } else {
+        mqtt_con.sendWhoAnnounce(); // Update announce topic with new name
     }
 }
 

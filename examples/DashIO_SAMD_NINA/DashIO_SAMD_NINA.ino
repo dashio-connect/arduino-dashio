@@ -3,7 +3,7 @@
 
 #include <arduino-timer.h>
 
-#define NO_TCP
+//#define NO_TCP
 //#define NO_MQTT
 
 #define DEVICE_TYPE "SAMD_NINA_Type"
@@ -12,12 +12,12 @@
 #define TCP_PORT 5650
 
 // WiFi
-#define WIFI_SSID     "yourWiFiSSID"
-#define WIFI_PASSWORD "yourWiFiPassword"
+#define WIFI_SSID     "KotukuBlue"
+#define WIFI_PASSWORD "Judecat12"
 
 // MQTT
-#define MQTT_USER     "yourMQTTuserName"
-#define MQTT_PASSWORD "yourMQTTpassword"
+#define MQTT_USER     "craig"
+#define MQTT_PASSWORD "ThingyThing"
 
 // BLE
 #define MIN_BLE_TIME_S 10
@@ -34,7 +34,7 @@ const PROGMEM char *configC64Str =
 "cHe6v7Oo//d7t1rP7yF1ulq10jswtk7Z1ESzF5yn7GSwpax1eyJiEKBLxJ4w0lPFOuf3Ez7Ph9K1nA2cVBxweoRZSM5mS1+Mlt6l"
 "2TL4UJZTcbmOVsSLujw1byxniH4Dk+MNBeSVLolLeLEBNAMnpaQrqgQ4jxRPnyuze89DdbsbNdSnpJQtvwod8grmfv8f";
 
-DashDevice dashDevice(DEVICE_TYPE, configC64Str);
+DashDevice dashDevice(DEVICE_TYPE, configC64Str, 1);
 DashProvision dashProvision(&dashDevice);
 
 // dash comms connections
@@ -142,9 +142,15 @@ void processIncomingMessage(MessageData *messageData) {
 void onProvisionCallback(ConnectionType connectionType, const String& message, bool commsChanged) {
     sendMessage(connectionType, message);
 
-    if ((!bleActive) && (commsChanged)) {
-        bleTimer = MIN_BLE_TIME_S; // Force reconnect of WiFi
-        bleActive = true;
+    if (!bleActive) {
+        if (commsChanged) {
+            bleTimer = MIN_BLE_TIME_S; // Force reconnect of WiFi
+            bleActive = true;
+        } else {
+#ifndef NO_MQTT
+            mqtt_con.sendWhoAnnounce(); // Update announce topic with new name
+#endif
+        }
     }
 }
 

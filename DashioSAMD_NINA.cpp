@@ -285,6 +285,10 @@ void DashioMQTT::sendAlarmMessage(const String& message) {
     sendMessage(message, alarm_topic);
 }
 
+void DashioMQTT::sendWhoAnnounce() {
+    sendMessage(dashioDevice->getWhoMessage(), announce_topic);
+}
+
 void DashioMQTT::run() {
     mqttClient.poll();
     if (mqttClient.connected()) {

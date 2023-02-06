@@ -248,6 +248,8 @@ void onProvisionCallback(ConnectionType connectionType, const String& message, b
         delay(2); // Make sure last message is sent before restarting comms
         wifi.begin(dashProvision.wifiSSID, dashProvision.wifiPassword);
         mqtt_con.setup(dashProvision.dashUserName, dashProvision.dashPassword);
+    } else {
+        mqtt_con.sendWhoAnnounce(); // Update announce topic with new name
     }
 }
 
