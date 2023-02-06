@@ -610,12 +610,12 @@ class SecurityBLECallbacks : public BLESecurityCallbacks {
 
 class ServerCallbacks : public BLEServerCallbacks {
     void onConnect(NimBLEServer* pServer, ble_gap_conn_desc* desc) {
-        Serial.println("BLE Connected");
+        Serial.println("BLE Server Connected");
         DashioBLE::connHandle = desc->conn_handle;
     }
     
     void onDisconnect(BLEServer* pServer) {
-        Serial.println("BLE Disconnected");
+        Serial.println("BLE Server Disconnected");
         DashioBLE::authenticated = false;
     }
 };
