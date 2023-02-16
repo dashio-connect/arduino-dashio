@@ -366,6 +366,7 @@ void DashioMQTT::messageReceivedMQTTCallback(MQTTClient *client, char *topic, ch
 
 void DashioMQTT::sendMessage(const String& message, MQTTTopicType topic) {
     if (mqttClient.connected()) {
+        connected = true;
         String publishTopic = dashioDevice->getMQTTTopic(username, topic);
         mqttClient.publish(publishTopic.c_str(), message.c_str(), false, MQTT_QOS);
 
@@ -548,11 +549,13 @@ void DashioMQTT::checkConnection() {
                 hostConnect();
             }
             if (mqttConnectCount >= MQTT_RETRY_S) {
+                connected = false;
                 mqttConnectCount = 0;
             } else {
                 mqttConnectCount++;
             }
         } else {
+            connected = false;
             mqttConnectCount = 0;
         }
     }
@@ -724,6 +727,10 @@ void DashioBLE::run() {
             }
         }
     }
+}
+
+void DashioBLE::end() {
+    esp_ble_gatts_stop_service(connHandle);
 }
 
 void DashioBLE::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {

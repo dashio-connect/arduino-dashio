@@ -30,14 +30,15 @@
 #include "Arduino.h"
 #include <arduino-timer.h>
 
-#include <WiFiClientSecure.h> // Included in the espressif library
-#include <MQTT.h>             // arduino-mqtt library created by Joël Gähwiler.
+#include <WiFiClientSecure.h>  // Included in the espressif library
+#include <MQTT.h>              // arduino-mqtt library created by Joël Gähwiler.
 #ifdef ESP8266
-    #include <ESP8266WiFi.h>  // Included in the 8266 Arduino library
-    #include <ESP8266mDNS.h>  // Included in the 8266 Arduino library
+    #include <ESP8266WiFi.h>   // Included in the 8266 Arduino library
+    #include <ESP8266mDNS.h>   // Included in the 8266 Arduino library
 #elif ESP32
-    #include <NimBLEDevice.h>    // ESP32 BLE Arduino library by Neil Kolban. Included in Arduino IDE
-    #include <ESPmDNS.h>      // Included in the espressif library
+    #include <NimBLEDevice.h>  // ESP32 BLE Arduino library by Neil Kolban. Included in Arduino IDE
+    #include <esp_gatts_api.h> // needed to close ble service 
+    #include <ESPmDNS.h>       // Included in the espressif library
 #endif
 
 #include "DashIO.h"
@@ -149,6 +150,7 @@ public:
     DashioBLE(DashioDevice *_dashioDevice, bool _printMessages = false);
     void sendMessage(const String& message);
     void run();
+    void end();
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void begin(int passKey = 0);
     String macAddress();

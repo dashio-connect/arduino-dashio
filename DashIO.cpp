@@ -32,6 +32,7 @@
 // Control type IDs
 #define CONNECT_ID "CONNECT"
 #define WHO_ID "WHO"
+#define CTRL_ID "CTRL"
 #define STATUS_ID "STATUS"
 #define CONFIG_ID "CFG"
 #define CONFIG_C64 "C64"
@@ -180,6 +181,8 @@ bool MessageData::processChar(char chr) {
             case 1:
                 if (readStr == WHO_ID) {
                     control = who;
+                } else if (readStr == CTRL_ID) {
+                    control = ctrl;
                 } else if (readStr == CONNECT_ID) {
                     control = connect;
                 } else if (readStr == STATUS_ID) {
@@ -257,14 +260,22 @@ String MessageData::getMessageGeneric(const String& controlStr) {
 
     message += String(DELIM);
     message += deviceID;
-    message += String(DELIM);
-    message += controlStr;
-    message += String(DELIM);
-    message += idStr;
-    message += String(DELIM);
-    message += payloadStr;
-    message += String(DELIM);
-    message += payloadStr2;
+    if (controlStr.length() > 0) {
+        message += String(DELIM);
+        message += controlStr;
+    }
+    if (idStr.length() > 0) {
+        message += String(DELIM);
+        message += idStr;
+    }
+    if (payloadStr.length() > 0) {
+        message += String(DELIM);
+        message += payloadStr;
+    }
+    if (payloadStr2.length() > 0) {
+        message += String(DELIM);
+        message += payloadStr2;
+    }
     message += String(END_DELIM);
 
     return message;
@@ -285,8 +296,35 @@ String MessageData::getReceivedMessageForPrint(const String& controlStr) {
         case MQTT_CONN:
             message += "MQTT";
             break;
+        case SERIAL_CONN:
+            message += "SERIAL";
+            break;
     }
     message += F(" Received ****\n");
+    message += getMessageGeneric(controlStr);
+    return message;
+}
+
+String MessageData::getTransmittedMessageForPrint(const String& controlStr) {
+    String message((char *)0);
+    message.reserve(100);
+
+    message += F("**** ");
+    switch (connectionType) {
+        case BLE_CONN:
+            message += "BLE";
+            break;
+        case TCP_CONN:
+            message += "TCP";
+            break;
+        case MQTT_CONN:
+            message += "MQTT";
+            break;
+        case SERIAL_CONN:
+            message += "SERIAL";
+            break;
+    }
+    message += F(" Sent ****\n");
     message += getMessageGeneric(controlStr);
     return message;
 }
@@ -863,6 +901,7 @@ String DashioDevice::getControlTypeStr(ControlType controltype) {
     switch (controltype) {
         case connect: return CONNECT_ID;
         case who: return WHO_ID;
+        case ctrl: return CTRL_ID;
         case status: return STATUS_ID;
         case config: return CONFIG_ID;
               

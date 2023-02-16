@@ -32,13 +32,6 @@
 #include "Arduino.h"
 #include <limits.h>
 
-extern char DASH_SERVER[];
-#define DASH_PORT 8883
-
-#define SMALLEST_FLOAT_VALUE 0.1e-10
-#define INVALID_FLOAT_VALUE 0xFFFFFFFF
-#define INVALID_INT_VALUE INT_MAX
-
 class DashioDevice;
 typedef DashioDevice DashDevice;
 
@@ -66,14 +59,23 @@ typedef DashioBluno DashBluno;
 class DashioSoftAP;
 typedef DashioSoftAP DashSoftAP;
 
+extern char DASH_SERVER[];
+#define DASH_PORT 8883
+
+#define SMALLEST_FLOAT_VALUE 0.1e-10
+#define INVALID_FLOAT_VALUE 0xFFFFFFFF
+#define INVALID_INT_VALUE INT_MAX
+
 enum ConnectionType {
     TCP_CONN,
     BLE_CONN,
-    MQTT_CONN
+    MQTT_CONN,
+    SERIAL_CONN
 };
 
 enum ControlType {
     who,
+    ctrl,
     connect,
     status,
     config,
@@ -260,8 +262,9 @@ public:
     MessageData(ConnectionType connType);
     void processMessage(const String& message);
     bool processChar(char chr);
-    String getReceivedMessageForPrint(const String& controlStr);
     String getMessageGeneric(const String& controlStr);
+    String getReceivedMessageForPrint(const String& controlStr);
+    String getTransmittedMessageForPrint(const String& controlStr);
 
 private:
     int segmentCount = -1;
