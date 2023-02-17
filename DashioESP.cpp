@@ -549,13 +549,11 @@ void DashioMQTT::checkConnection() {
                 hostConnect();
             }
             if (mqttConnectCount >= MQTT_RETRY_S) {
-                connected = false;
                 mqttConnectCount = 0;
             } else {
                 mqttConnectCount++;
             }
         } else {
-            connected = false;
             mqttConnectCount = 0;
         }
     }
