@@ -84,6 +84,7 @@ public:
 class DashioMQTT {
 private:
     bool reboot = true;
+    bool runOnConnected = false;
     bool printMessages;
     DashioDevice *dashioDevice;
     static MessageData data;
@@ -97,6 +98,7 @@ private:
     void processConfig();
 
     static void messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length);
+    void onConnected();
     void hostConnect();
     void setupLWT();
     

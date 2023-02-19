@@ -257,10 +257,15 @@ void DashioTCP::setupmDNSservice(const String& id) {
     char charBuf[id.length()];
     id.toCharArray(charBuf, id.length() + 1);
     if (!MDNS.begin(charBuf)) {
-       Serial.println(F("Error starting mDNS"));
-       return;
+        if (printMessages) {
+            Serial.println(F("Error starting mDNS"));
+        }
+        return;
     }
-    Serial.println(F("mDNS started"));
+    if (printMessages) {
+        Serial.print(F("mDNS started: "));
+        Serial.println(String(tcpPort));
+    }
     MDNS.addService("DashIO", "tcp", tcpPort);
 }
     
@@ -409,89 +414,6 @@ void DashioMQTT::processConfig() {
     sendMessage(String('\n'));
 }
 
-void DashioMQTT::run() {
-    if (mqttClient.connected()) {
-        mqttClient.loop();
-        connected = true;
-        if (data.messageReceived) {
-            data.messageReceived = false;
-
-            if (printMessages) {
-                Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
-            }
-
-            if (passThrough) {
-                if (processMQTTmessageCallback != nullptr) {
-                    processMQTTmessageCallback(&data);
-                }
-            } else {
-                switch (data.control) {
-                    case who:
-                        sendMessage(dashioDevice->getWhoMessage());
-                        break;
-                    case connect:
-                        sendMessage(dashioDevice->getConnectMessage());
-                        break;
-                    case config:
-                        dashioDevice->dashboardID = data.idStr;
-                        if (dashioDevice->configC64Str != NULL) {
-                            processConfig();
-                        } else {
-                            if (processMQTTmessageCallback != nullptr) {
-                                processMQTTmessageCallback(&data);
-                            }
-                        }
-                        break;
-                    default:
-                        if (processMQTTmessageCallback != nullptr) {
-                            processMQTTmessageCallback(&data);
-                        }
-                        break;
-                }
-            }
-        }
-    } else {
-        connected = false;
-    }
-}
-
-void DashioMQTT::hostConnect() { // Non-blocking
-    Serial.print(F("Connecting to MQTT..."));
-    if (wifiSetInsecure) {
-        wifiClient.setInsecure();
-    }
-
-    if (mqttClient.connect(dashioDevice->deviceID.c_str(), username, password, false)) { // skip = false is the default. Used in order to establish and verify TLS connections manually before giving control to the MQTT client
-        Serial.print(F("connected "));
-        Serial.println(String(mqttClient.returnCode()));
-
-        // Subscribe to private MQTT connection
-        String subscriberTopic = dashioDevice->getMQTTSubscribeTopic(username);
-        mqttClient.subscribe(subscriberTopic.c_str(), MQTT_QOS); // ... and subscribe
-
-        // Send MQTT ONLINE and WHO messages to connection (Optional)
-        // WHO is only required here if using the Dash server and it must be send to the ANNOUNCE topic
-        sendMessage(dashioDevice->getOnlineMessage());
-        sendMessage(dashioDevice->getWhoMessage(), announce_topic); // Update announce topic with new name
-        
-        if (dashStore != nullptr) {
-            for (int i=0; i<dashStoreSize; i++) { // Announce control for data store on dash server
-                sendMessage(dashioDevice->getDataStoreEnableMessage(dashStore[i]), announce_topic);
-            }
-        }
-        
-        if (reboot) {
-            reboot = false;
-            if (sendRebootAlarm) {
-                sendAlarmMessage(dashioDevice->getAlarmMessage("ALX", "System Reboot", dashioDevice->name));
-            }
-        }
-    } else {
-        Serial.print(F("Failed - Try again in 10 seconds. E = "));
-        Serial.println(String(mqttClient.lastError()) + "  R = " + mqttClient.returnCode());
-    }
-}
-
 void DashioMQTT::addDashStore(ControlType controlType, String controlID) {
     DashStore tempDashStore[dashStoreSize];
     
@@ -541,6 +463,48 @@ void DashioMQTT::begin() {
     setupLWT(); // Once the deviceID is known
 }
 
+void DashioMQTT::onConnected() {
+        // Subscribe to private MQTT connection
+        String subscriberTopic = dashioDevice->getMQTTSubscribeTopic(username);
+        mqttClient.subscribe(subscriberTopic.c_str(), MQTT_QOS); // ... and subscribe
+
+        // Send MQTT ONLINE and WHO messages to connection (Optional)
+        // WHO is only required here if using the Dash server and it must be send to the ANNOUNCE topic
+        sendMessage(dashioDevice->getOnlineMessage());
+        sendMessage(dashioDevice->getWhoMessage(), announce_topic); // Update announce topic with new name
+        
+        if (dashStore != nullptr) {
+            for (int i=0; i<dashStoreSize; i++) { // Announce control for data store on dash server
+                sendMessage(dashioDevice->getDataStoreEnableMessage(dashStore[i]), announce_topic);
+            }
+        }
+        
+        if (reboot) {
+            reboot = false;
+            if (sendRebootAlarm) {
+                sendAlarmMessage(dashioDevice->getAlarmMessage("ALX", "System Reboot", dashioDevice->name));
+            }
+        }
+}
+
+void DashioMQTT::hostConnect() {
+    Serial.print(F("Connecting to MQTT..."));
+    if (wifiSetInsecure) {
+        wifiClient.setInsecure();
+    }
+
+    if (mqttClient.connect(dashioDevice->deviceID.c_str(), username, password, false)) { // skip = false is the default. Used in order to establish and verify TLS connections manually before giving control to the MQTT client
+        Serial.print(F("connected "));
+        Serial.println(String(mqttClient.returnCode()));
+        runOnConnected = true;
+    } else {
+        Serial.print(F("Failed - Try again in 10 seconds. E = "));
+        Serial.println(String(mqttClient.lastError()) + "  R = " + mqttClient.returnCode());
+        // Invalid URL or port => E = -3  R = 0
+        // Invalid username or password => E = -10  R = 5
+    }
+}
+
 void DashioMQTT::checkConnection() {
     // Check and connect MQTT as necessary
     if (WiFi.status() == WL_CONNECTED) {
@@ -559,6 +523,58 @@ void DashioMQTT::checkConnection() {
     }
 }
     
+void DashioMQTT::run() {
+    if (mqttClient.connected()) {
+        mqttClient.loop();
+        connected = true;
+
+        if (runOnConnected) {
+            runOnConnected = false;
+            onConnected();
+        }
+
+        if (data.messageReceived) {
+            data.messageReceived = false;
+
+            if (printMessages) {
+                Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
+            }
+
+            if (passThrough) {
+                if (processMQTTmessageCallback != nullptr) {
+                    processMQTTmessageCallback(&data);
+                }
+            } else {
+                switch (data.control) {
+                    case who:
+                        sendMessage(dashioDevice->getWhoMessage());
+                        break;
+                    case connect:
+                        sendMessage(dashioDevice->getConnectMessage());
+                        break;
+                    case config:
+                        dashioDevice->dashboardID = data.idStr;
+                        if (dashioDevice->configC64Str != NULL) {
+                            processConfig();
+                        } else {
+                            if (processMQTTmessageCallback != nullptr) {
+                                processMQTTmessageCallback(&data);
+                            }
+                        }
+                        break;
+                    default:
+                        if (processMQTTmessageCallback != nullptr) {
+                            processMQTTmessageCallback(&data);
+                        }
+                        break;
+                }
+            }
+        }
+    } else {
+        connected = false;
+    }
+}
+
 void DashioMQTT::end() {
     sendMessage(dashioDevice->getOfflineMessage());
     mqttClient.disconnect();
