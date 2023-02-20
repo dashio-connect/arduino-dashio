@@ -96,12 +96,18 @@ private:
     char *password;
     void (*processMQTTmessageCallback)(MessageData *messageData);
     void processConfig();
+#ifdef ESP32
+    TaskHandle_t mqttConnectTask;
+#endif
 
     static void messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length);
     void onConnected();
     void hostConnect();
     void setupLWT();
-    
+#ifdef ESP32
+    static void checkConnectionTask(void * parameter);
+#endif
+
     DashStore *dashStore;
     int dashStoreSize = 0;
 

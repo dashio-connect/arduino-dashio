@@ -125,10 +125,11 @@ void DashioWiFi::run() {
                     mqttConnection->begin();
                 }
             }
-            
+#ifdef ESP8266
             if (mqttConnection != NULL) {
                 mqttConnection->checkConnection();
             }
+#endif
         }
     }
 }
@@ -361,6 +362,10 @@ DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRe
     dashioDevice = _dashioDevice;
     sendRebootAlarm  = _sendRebootAlarm;
     printMessages = _printMessages;
+
+#ifdef ESP32
+    xTaskCreatePinnedToCore(this->checkConnectionTask, "Task1", 10000, this, 0, &mqttConnectTask, 0);
+#endif
 }
 
 MessageData DashioMQTT::data(MQTT_CONN);
@@ -455,6 +460,18 @@ void DashioMQTT::setup(char *_username, char *_password) {
     password = _password;
 }
 
+#ifdef ESP32
+void DashioMQTT::checkConnectionTask(void * parameter) {
+    for(;;) {
+        DashioMQTT *mqttConn = (DashioMQTT *) parameter;
+        if (mqttConn != NULL) {
+            mqttConn->checkConnection();
+        }
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+}
+#endif
+
 void DashioMQTT::begin() {
     mqttClient.begin(mqttHost, mqttPort, wifiClient);
     mqttClient.setOptions(10, true, 10000);  // 10s timeout
@@ -464,27 +481,27 @@ void DashioMQTT::begin() {
 }
 
 void DashioMQTT::onConnected() {
-        // Subscribe to private MQTT connection
-        String subscriberTopic = dashioDevice->getMQTTSubscribeTopic(username);
-        mqttClient.subscribe(subscriberTopic.c_str(), MQTT_QOS); // ... and subscribe
+    // Subscribe to private MQTT connection
+    String subscriberTopic = dashioDevice->getMQTTSubscribeTopic(username);
+    mqttClient.subscribe(subscriberTopic.c_str(), MQTT_QOS); // ... and subscribe
 
-        // Send MQTT ONLINE and WHO messages to connection (Optional)
-        // WHO is only required here if using the Dash server and it must be send to the ANNOUNCE topic
-        sendMessage(dashioDevice->getOnlineMessage());
-        sendMessage(dashioDevice->getWhoMessage(), announce_topic); // Update announce topic with new name
-        
-        if (dashStore != nullptr) {
-            for (int i=0; i<dashStoreSize; i++) { // Announce control for data store on dash server
-                sendMessage(dashioDevice->getDataStoreEnableMessage(dashStore[i]), announce_topic);
-            }
+    // Send MQTT ONLINE and WHO messages to connection (Optional)
+    // WHO is only required here if using the Dash server and it must be send to the ANNOUNCE topic
+    sendMessage(dashioDevice->getOnlineMessage());
+    sendMessage(dashioDevice->getWhoMessage(), announce_topic); // Update announce topic with new name
+    
+    if (dashStore != nullptr) {
+        for (int i=0; i<dashStoreSize; i++) { // Announce control for data store on dash server
+            sendMessage(dashioDevice->getDataStoreEnableMessage(dashStore[i]), announce_topic);
         }
-        
-        if (reboot) {
-            reboot = false;
-            if (sendRebootAlarm) {
-                sendAlarmMessage(dashioDevice->getAlarmMessage("ALX", "System Reboot", dashioDevice->name));
-            }
+    }
+    
+    if (reboot) {
+        reboot = false;
+        if (sendRebootAlarm) {
+            sendAlarmMessage(dashioDevice->getAlarmMessage("ALX", "System Reboot", dashioDevice->name));
         }
+    }
 }
 
 void DashioMQTT::hostConnect() {
@@ -502,6 +519,7 @@ void DashioMQTT::hostConnect() {
         Serial.println(String(mqttClient.lastError()) + "  R = " + mqttClient.returnCode());
         // Invalid URL or port => E = -3  R = 0
         // Invalid username or password => E = -10  R = 5
+        // Invalid SSL record => E = -5  R = 6
     }
 }
 
