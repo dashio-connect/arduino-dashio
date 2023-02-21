@@ -67,7 +67,7 @@ public:
     bool passThrough = false;
     uint8_t hasClient();
 
-    DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
+    DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort = 5650, bool _printMessages = false);
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void setPort(uint16_t _tcpPort);
     void begin();
@@ -118,7 +118,7 @@ public:
     bool passThrough = false;
     bool connected;
 
-    DashioMQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages = false);
+    DashioMQTT(DashioDevice *_dashioDevice, int bufferSize = 2048, bool _sendRebootAlarm = false, bool _printMessages = false);
     void setup(char *_username, char *_password);
     void addDashStore(ControlType controlType, String controlID);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
