@@ -4,12 +4,12 @@
 #define DEVICE_TYPE "ESP32_Dash"
 #define DEVICE_NAME "Dash32_Master"
 
-#define TCP_PORT 5650
-#define MQTT_BUFFER_SIZE 4096
-
 // WiFi
 #define WIFI_SSID      "yourWiFiSSID"
 #define WIFI_PASSWORD  "yourWiFiPassword"
+
+// TCP
+#define TCP_PORT 5650
 
 // MQTT
 #define MQTT_USER      "yourMQTTuserName"
@@ -47,7 +47,7 @@ DashProvision dashProvision(&dashDevice);
 // dash comms connections
     DashWiFi wifi;
     DashTCP  tcp_con(&dashDevice, TCP_PORT, true);
-    DashMQTT mqtt_con(&dashDevice, MQTT_BUFFER_SIZE, true, true);
+    DashMQTT mqtt_con(&dashDevice, true, true);
     DashBLE  ble_con(&dashDevice, true);
 
 // Create controls

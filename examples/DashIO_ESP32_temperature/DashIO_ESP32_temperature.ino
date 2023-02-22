@@ -51,7 +51,7 @@ DashDevice dashDevice(DEVICE_TYPE, configC64Str, 1);
 
 // Create Connections
 DashBLE  ble_con(&dashDevice, true);
-DashMQTT mqtt_con(&dashDevice, 2048, true, true);
+DashMQTT mqtt_con(&dashDevice, true, true);
 DashWiFi wifi;
 DashProvision dashProvision(&dashDevice);
 

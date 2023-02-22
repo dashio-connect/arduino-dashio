@@ -5,7 +5,6 @@
 #define DEVICE_NAME "Dash8266_ SAP"
 
 #define TCP_PORT 5050
-#define MQTT_BUFFER_SIZE 2048
 
 // WiFi
 #define WIFI_SSID      "yourWiFiSSID"
@@ -33,7 +32,7 @@ DashDevice    dashDevice(DEVICE_TYPE, configC64Str, 1);
 DashWiFi      wifi;
 DashSoftAP    soft_AP;
 DashTCP       tcp_con(&dashDevice, TCP_PORT, true);
-DashMQTT      mqtt_con(&dashDevice, MQTT_BUFFER_SIZE, true, true);
+DashMQTT      mqtt_con(&dashDevice, true, true);
 DashProvision dashProvision(&dashDevice);
 
 int dialValue = 0;

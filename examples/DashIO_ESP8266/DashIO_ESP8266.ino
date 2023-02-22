@@ -8,12 +8,12 @@
 #define DEVICE_TYPE "ESP8266_Dash"
 #define DEVICE_NAME "Dash8266_Master"
 
-#define TCP_PORT 5000
-#define MQTT_BUFFER_SIZE 2048
-
 // WiFi
 #define WIFI_SSID      "yourWiFiSSID"
 #define WIFI_PASSWORD  "yourWiFiPassword"
+
+// TCP
+#define TCP_PORT 5650
 
 // MQTT
 #define MQTT_USER      "yourMQTTuserName"
@@ -49,7 +49,7 @@ DashProvision dashProvision(&dashDevice);
 // dash comms connections
 DashWiFi wifi;
 DashTCP  tcp_con(&dashDevice, TCP_PORT, true);
-DashMQTT mqtt_con(&dashDevice, MQTT_BUFFER_SIZE, true, true);
+DashMQTT mqtt_con(&dashDevice, true, true);
 
 // Create controls
 int menuSelectorIndex = 0;

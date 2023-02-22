@@ -33,6 +33,8 @@
     #define C64_MAX_LENGHT 500
 #endif
 
+#define MQTT_BUFFER_SIZE 2048
+
 // MQTT
 const int MQTT_QOS     = 2;
 const int MQTT_RETRY_S = 10; // Retry after 10 seconds
@@ -102,6 +104,10 @@ void DashioWiFi::run() {
             Serial.print(F("Connecting to Wi-Fi "));
             Serial.println(String(wifiConnectCount));
 
+            if (mqttConnection != NULL) {
+                mqttConnection->state = notReady;
+            }
+
             if (wifiConnectCount > WIFI_TIMEOUT_S) { // If too many fails, restart the ESP32. Sometimes ESP32's WiFi gets tied up in a knot.
                 ESP.restart();
             }
@@ -125,11 +131,16 @@ void DashioWiFi::run() {
                     mqttConnection->begin();
                 }
             }
-#ifdef ESP8266
             if (mqttConnection != NULL) {
+#ifdef ESP32
+                if (mqttConnection->esp32_mqtt_blocking) {
+                    mqttConnection->checkConnection();
+                }
+#elif ESP8266
                 mqttConnection->checkConnection();
-            }
 #endif
+
+            }
         }
     }
 }
@@ -226,6 +237,7 @@ void DashioTCP::setCallback(void (*processIncomingMessage)(MessageData *messageD
 
 void DashioTCP::setPort(uint16_t _tcpPort) {
     tcpPort = _tcpPort;
+//???    wifiServer = WiFiServer(_tcpPort);
 }
 
 void DashioTCP::begin() {
@@ -358,7 +370,7 @@ void DashioTCP::run() {
 
 // ---------------------------------------- MQTT ---------------------------------------
 
-DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, int bufferSize, bool _sendRebootAlarm, bool _printMessages) : mqttClient(bufferSize) {
+DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool _printMessages) : mqttClient(MQTT_BUFFER_SIZE) {
     dashioDevice = _dashioDevice;
     sendRebootAlarm  = _sendRebootAlarm;
     printMessages = _printMessages;
@@ -376,7 +388,6 @@ void DashioMQTT::messageReceivedMQTTCallback(MQTTClient *client, char *topic, ch
 
 void DashioMQTT::sendMessage(const String& message, MQTTTopicType topic) {
     if (mqttClient.connected()) {
-        connected = true;
         String publishTopic = dashioDevice->getMQTTTopic(username, topic);
         mqttClient.publish(publishTopic.c_str(), message.c_str(), false, MQTT_QOS);
 
@@ -407,7 +418,7 @@ void DashioMQTT::processConfig() {
 
         message += myChar;
         length++;
-        if (length == C64_MAX_LENGHT) {
+        if (length == (MQTT_BUFFER_SIZE / 2)) {
             sendMessage(message);
             message = "";
             length = 0;
@@ -458,26 +469,20 @@ void DashioMQTT::setCallback(void (*processIncomingMessage)(MessageData *message
 void DashioMQTT::setup(char *_username, char *_password) {
     username = _username;
     password = _password;
+    state = notReady;
 }
-
-#ifdef ESP32
-void DashioMQTT::checkConnectionTask(void * parameter) {
-    for(;;) {
-        DashioMQTT *mqttConn = (DashioMQTT *) parameter;
-        if (mqttConn != NULL) {
-            mqttConn->checkConnection();
-        }
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
-}
-#endif
 
 void DashioMQTT::begin() {
+    if (wifiSetInsecure) {
+        wifiClient.setInsecure();
+    }
+
     mqttClient.begin(mqttHost, mqttPort, wifiClient);
     mqttClient.setOptions(10, true, 10000);  // 10s timeout
     mqttClient.onMessageAdvanced(messageReceivedMQTTCallback);
   
     setupLWT(); // Once the deviceID is known
+    state = ready;
 }
 
 void DashioMQTT::onConnected() {
@@ -506,27 +511,25 @@ void DashioMQTT::onConnected() {
 
 void DashioMQTT::hostConnect() {
     Serial.print(F("Connecting to MQTT..."));
-    if (wifiSetInsecure) {
-        wifiClient.setInsecure();
-    }
-
-    if (mqttClient.connect(dashioDevice->deviceID.c_str(), username, password, false)) { // skip = false is the default. Used in order to establish and verify TLS connections manually before giving control to the MQTT client
+    state = connecting;
+    if (mqttClient.connect("dashioDevice->deviceID.c_str()", username, password, false)) { // skip = false is the default. Used in order to establish and verify TLS connections manually before giving control to the MQTT client
         Serial.print(F("connected "));
         Serial.println(String(mqttClient.returnCode()));
-        runOnConnected = true;
+        state = serverConnected;
     } else {
         Serial.print(F("Failed - Try again in 10 seconds. E = "));
         Serial.println(String(mqttClient.lastError()) + "  R = " + mqttClient.returnCode());
         // Invalid URL or port => E = -3  R = 0
         // Invalid username or password => E = -10  R = 5
         // Invalid SSL record => E = -5  R = 6
+        state = ready;
     }
 }
 
 void DashioMQTT::checkConnection() {
     // Check and connect MQTT as necessary
     if (WiFi.status() == WL_CONNECTED) {
-        if (!mqttClient.connected()) {
+        if (state == ready) {
             if (mqttConnectCount == 0) {
                 hostConnect();
             }
@@ -535,20 +538,33 @@ void DashioMQTT::checkConnection() {
             } else {
                 mqttConnectCount++;
             }
-        } else {
+        } else if (state == serverConnected) {
             mqttConnectCount = 0;
         }
     }
 }
     
+#ifdef ESP32
+void DashioMQTT::checkConnectionTask(void * parameter) {
+    DashioMQTT *mqttConn = (DashioMQTT *) parameter;
+    for(;;) {
+        if (mqttConn != NULL) {
+            if (!mqttConn->esp32_mqtt_blocking) {
+                mqttConn->checkConnection();
+            }
+        }
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+}
+#endif
+
 void DashioMQTT::run() {
     if (mqttClient.connected()) {
         mqttClient.loop();
-        connected = true;
 
-        if (runOnConnected) {
-            runOnConnected = false;
+        if (state == serverConnected) {
             onConnected();
+            state = subscribed;
         }
 
         if (data.messageReceived) {
@@ -589,7 +605,9 @@ void DashioMQTT::run() {
             }
         }
     } else {
-        connected = false;
+        if (state == serverConnected) {
+            state = disconnected;
+        }
     }
 }
 

@@ -67,7 +67,7 @@ public:
     bool passThrough = false;
     uint8_t hasClient();
 
-    DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort = 5650, bool _printMessages = false);
+    DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void setPort(uint16_t _tcpPort);
     void begin();
@@ -80,11 +80,18 @@ public:
 };
 
 // ---------------------------------------- MQTT ---------------------------------------
+enum MQTTstate {
+    notReady,
+    ready,
+    connecting,
+    serverConnected,
+    subscribed,
+    disconnected
+};
 
 class DashioMQTT {
 private:
     bool reboot = true;
-    bool runOnConnected = false;
     bool printMessages;
     DashioDevice *dashioDevice;
     static MessageData data;
@@ -116,9 +123,10 @@ public:
     uint16_t mqttPort = DASH_PORT;
     bool wifiSetInsecure = true;
     bool passThrough = false;
-    bool connected;
+    MQTTstate state = notReady;
+    bool esp32_mqtt_blocking = true;
 
-    DashioMQTT(DashioDevice *_dashioDevice, int bufferSize = 2048, bool _sendRebootAlarm = false, bool _printMessages = false);
+    DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm = false, bool _printMessages = false);
     void setup(char *_username, char *_password);
     void addDashStore(ControlType controlType, String controlID);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
