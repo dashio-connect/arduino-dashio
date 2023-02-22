@@ -82,11 +82,10 @@ public:
 // ---------------------------------------- MQTT ---------------------------------------
 enum MQTTstate {
     notReady,
-    ready,
+    disconnected,
     connecting,
     serverConnected,
-    subscribed,
-    disconnected
+    subscribed
 };
 
 class DashioMQTT {

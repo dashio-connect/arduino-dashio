@@ -482,7 +482,7 @@ void DashioMQTT::begin() {
     mqttClient.onMessageAdvanced(messageReceivedMQTTCallback);
   
     setupLWT(); // Once the deviceID is known
-    state = ready;
+    state = disconnected;
 }
 
 void DashioMQTT::onConnected() {
@@ -512,7 +512,7 @@ void DashioMQTT::onConnected() {
 void DashioMQTT::hostConnect() {
     Serial.print(F("Connecting to MQTT..."));
     state = connecting;
-    if (mqttClient.connect("dashioDevice->deviceID.c_str()", username, password, false)) { // skip = false is the default. Used in order to establish and verify TLS connections manually before giving control to the MQTT client
+    if (mqttClient.connect(dashioDevice->deviceID.c_str(), username, password, false)) { // skip = false is the default. Used in order to establish and verify TLS connections manually before giving control to the MQTT client
         Serial.print(F("connected "));
         Serial.println(String(mqttClient.returnCode()));
         state = serverConnected;
@@ -522,14 +522,14 @@ void DashioMQTT::hostConnect() {
         // Invalid URL or port => E = -3  R = 0
         // Invalid username or password => E = -10  R = 5
         // Invalid SSL record => E = -5  R = 6
-        state = ready;
+        state = disconnected;
     }
 }
 
 void DashioMQTT::checkConnection() {
     // Check and connect MQTT as necessary
     if (WiFi.status() == WL_CONNECTED) {
-        if (state == ready) {
+        if (state == disconnected) {
             if (mqttConnectCount == 0) {
                 hostConnect();
             }
@@ -605,7 +605,7 @@ void DashioMQTT::run() {
             }
         }
     } else {
-        if (state == serverConnected) {
+        if ((state == serverConnected) or (state == subscribed)) {
             state = disconnected;
         }
     }
