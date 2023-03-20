@@ -67,7 +67,7 @@ public:
     bool passThrough = false;
     uint8_t hasClient();
 
-    DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
+    DashioTCP(DashioDevice *_dashioDevice, bool _printMessages = false, uint16_t _tcpPort = 5650);
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void setPort(uint16_t _tcpPort);
     void begin();

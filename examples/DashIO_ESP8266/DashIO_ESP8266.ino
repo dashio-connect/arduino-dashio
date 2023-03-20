@@ -12,9 +12,6 @@
 #define WIFI_SSID      "yourWiFiSSID"
 #define WIFI_PASSWORD  "yourWiFiPassword"
 
-// TCP
-#define TCP_PORT 5650
-
 // MQTT
 #define MQTT_USER      "yourMQTTuserName"
 #define MQTT_PASSWORD  "yourMQTTpassword"
@@ -48,7 +45,7 @@ DashProvision dashProvision(&dashDevice);
 
 // dash comms connections
 DashWiFi wifi;
-DashTCP  tcp_con(&dashDevice, TCP_PORT, true);
+DashTCP  tcp_con(&dashDevice, true);
 DashMQTT mqtt_con(&dashDevice, true, true);
 
 // Create controls

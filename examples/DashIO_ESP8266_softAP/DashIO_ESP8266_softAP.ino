@@ -4,8 +4,6 @@
 #define DEVICE_TYPE "ESP8266_Dash"
 #define DEVICE_NAME "Dash8266_ SAP"
 
-#define TCP_PORT 5050
-
 // WiFi
 #define WIFI_SSID      "yourWiFiSSID"
 #define WIFI_PASSWORD  "yourWiFiPassword"
@@ -31,7 +29,7 @@ const char configC64Str[] PROGMEM =
 DashDevice    dashDevice(DEVICE_TYPE, configC64Str, 1);
 DashWiFi      wifi;
 DashSoftAP    soft_AP;
-DashTCP       tcp_con(&dashDevice, TCP_PORT, true);
+DashTCP       tcp_con(&dashDevice, true);
 DashMQTT      mqtt_con(&dashDevice, true, true);
 DashProvision dashProvision(&dashDevice);
 

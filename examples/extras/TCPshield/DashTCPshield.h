@@ -41,7 +41,7 @@ private:
     void (*processTCPmessageCallback)(MessageData *messageData);
 
 public:
-    DashTCPshield(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages = false);
+    DashTCPshield(DashioDevice *_dashioDevice, bool _printMessages = false, uint16_t _tcpPort = 5650);
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void sendMessage(const String& message);
     void begin(byte mac[]);

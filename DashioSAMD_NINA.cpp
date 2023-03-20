@@ -158,8 +158,7 @@ String DashioWiFi::ipAddress() {
 
 // ---------------------------------------- TCP ----------------------------------------
 
-DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), mdns(udp), messageData(TCP_CONN) {
-//DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), messageData(TCP_CONN) { // Use this if not using mDNS
+DashioTCP::DashioTCP(DashioDevice *_dashioDevice, bool _printMessages, uint16_t _tcpPort) : wifiServer(_tcpPort), mdns(udp), messageData(TCP_CONN) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;

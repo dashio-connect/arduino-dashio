@@ -9,15 +9,13 @@
 #define DEVICE_TYPE "SAMD_NINA_Type"
 #define DEVICE_NAME "SAMD_NINA_Dash"
 
-#define TCP_PORT 5650
-
 // WiFi
-#define WIFI_SSID     "KotukuBlue"
-#define WIFI_PASSWORD "Judecat12"
+#define WIFI_SSID     "yourWiFiSSID"
+#define WIFI_PASSWORD "yourWiFiPassword"
 
 // MQTT
-#define MQTT_USER     "craig"
-#define MQTT_PASSWORD "ThingyThing"
+#define MQTT_USER     "yourMQTTuserName"
+#define MQTT_PASSWORD "yourMQTTpassword"
 
 // BLE
 #define MIN_BLE_TIME_S 10
@@ -41,7 +39,7 @@ DashProvision dashProvision(&dashDevice);
 DashWiFi wifi;
 DashBLE  ble_con(&dashDevice, true);
 #ifndef NO_TCP
-DashTCP  tcp_con(&dashDevice, TCP_PORT, true);
+DashTCP  tcp_con(&dashDevice, true);
 #endif
 #ifndef NO_MQTT
 DashMQTT mqtt_con(&dashDevice, true, true);

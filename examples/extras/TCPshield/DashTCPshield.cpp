@@ -26,7 +26,7 @@
 
 #include "DashTCPshield.h"
 
-DashTCPshield::DashTCPshield(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : server(_tcpPort), dashioConnection(TCP_CONN) {
+DashTCPshield::DashTCPshield(DashioDevice *_dashioDevice, bool _printMessages, uint16_t _tcpPort) : server(_tcpPort), dashioConnection(TCP_CONN) {
     dashioDevice = _dashioDevice;
     printMessages = _printMessages;
 }

@@ -217,14 +217,14 @@ void DashioSoftAP::run() {
 // ---------------------------------------- TCP ----------------------------------------
 
 #ifdef ESP32
-DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : data(TCP_CONN) {
+DashioTCP::DashioTCP(DashioDevice *_dashioDevice, bool _printMessages, uint16_t _tcpPort) : data(TCP_CONN) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
     wifiServer = WiFiServer(_tcpPort);
 }
 #elif ESP8266
-DashioTCP::DashioTCP(DashioDevice *_dashioDevice, uint16_t _tcpPort, bool _printMessages) : wifiServer(_tcpPort), data(TCP_CONN) {
+DashioTCP::DashioTCP(DashioDevice *_dashioDevice, bool _printMessages, uint16_t _tcpPort) : wifiServer(_tcpPort), data(TCP_CONN) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
