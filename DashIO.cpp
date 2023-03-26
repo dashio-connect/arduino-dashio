@@ -80,12 +80,16 @@
 #define BUTTON_ON "ON"
 #define BUTTON_OFF "OFF"
 
-// Graph control line types
+// Graph/Chart control line types
 #define LINE_ID "LINE"
 #define BAR_GRAPH_ID "BAR"
 #define SEGMENTED_BAR_ID "SEGBAR"
 #define PEAK_BAR_ID "PEAKBAR"
 #define BOOL_ID "BOOL"
+
+// Graph/Chart control Y axis select options
+#define LEFT_ID "LEFT"
+#define RIGHT_ID "RIGHT"
 
 // MQTT topic tips
 #define DATA_TOPIC_TIP     "data"
@@ -776,7 +780,7 @@ String DashioDevice::getC64ConfigMessage() {
     return message;
 }
 
-String DashioDevice::getChartLineInts(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, int lineData[], int dataLength) {
+String DashioDevice::getChartLineInts(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, int lineData[], int dataLength) {
     String message = getControlBaseMessage(CHART_ID, controlID);
     message += lineID;
     message += String(DELIM);
@@ -785,6 +789,8 @@ String DashioDevice::getChartLineInts(const String& controlID, const String& lin
     message += getLineTypeStr(lineType);
     message += String(DELIM);
     message += color;
+    message += String(DELIM);
+    message += getYaxisSelectStr(yAxisSelect);
     for (int i = 0; i < dataLength; i++) {
         message += String(DELIM);
         message += formatInt(lineData[i]);
@@ -793,7 +799,7 @@ String DashioDevice::getChartLineInts(const String& controlID, const String& lin
     return message;
 }
 
-String DashioDevice::getChartLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, float lineData[], int dataLength) {
+String DashioDevice::getChartLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, float lineData[], int dataLength) {
     String message = getControlBaseMessage(CHART_ID, controlID);
     message += lineID;
     message += String(DELIM);
@@ -802,6 +808,8 @@ String DashioDevice::getChartLineFloats(const String& controlID, const String& l
     message += getLineTypeStr(lineType);
     message += String(DELIM);
     message += color;
+    message += String(DELIM);
+    message += getYaxisSelectStr(yAxisSelect);
     for (int i = 0; i < dataLength; i++) {
         message += String(DELIM);
         message += formatFloat(lineData[i]);
@@ -810,7 +818,7 @@ String DashioDevice::getChartLineFloats(const String& controlID, const String& l
     return message;
 }
 
-String DashioDevice::getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color) {
+String DashioDevice::getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
     message += String("BRDCST");
     message += String(DELIM);
@@ -821,11 +829,13 @@ String DashioDevice::getTimeGraphLine(const String& controlID, const String& lin
     message += getLineTypeStr(lineType);
     message += String(DELIM);
     message += color;
+    message += String(DELIM);
+    message += getYaxisSelectStr(yAxisSelect);
     message += String(END_DELIM);
     return message;
 }
 
-String DashioDevice::getTimeGraphLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], float lineData[], int dataLength, bool breakLine) {
+String DashioDevice::getTimeGraphLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], float lineData[], int dataLength, bool breakLine) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
     message += dashboardID;
     message += String(DELIM);
@@ -836,6 +846,8 @@ String DashioDevice::getTimeGraphLineFloats(const String& controlID, const Strin
     message += getLineTypeStr(lineType);
     message += String(DELIM);
     message += color;
+    message += String(DELIM);
+    message += getYaxisSelectStr(yAxisSelect);
     if (breakLine && (dataLength > 0)) {
         message += String(DELIM);
         message += times[0];
@@ -874,7 +886,7 @@ String DashioDevice::getTimeGraphPoint(const String& controlID, const String& li
     return message;
 }
 
-String DashioDevice::getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
+String DashioDevice::getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], bool lineData[], int dataLength) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
     message += lineID;
     message += String(DELIM);
@@ -883,6 +895,8 @@ String DashioDevice::getTimeGraphLineBools(const String& controlID, const String
     message += getLineTypeStr(lineType);
     message += String(DELIM);
     message += color;
+    message += String(DELIM);
+    message += getYaxisSelectStr(yAxisSelect);
     for (int i = 0; i < dataLength; i++) {
         message += String(DELIM);
         message += times[i];
@@ -983,6 +997,15 @@ String DashioDevice::getLineTypeStr(LineType lineType) {
             return BOOL_ID;
         default:
             return LINE_ID;
+    }
+}
+
+String DashioDevice::getYaxisSelectStr(YAxisSelect yAxisSelect) {
+    switch (yAxisSelect) {
+        case yLeft:
+            return LEFT_ID;
+        default:
+            return RIGHT_ID;
     }
 }
 
