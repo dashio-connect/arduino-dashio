@@ -886,7 +886,7 @@ String DashioDevice::getTimeGraphPoint(const String& controlID, const String& li
     return message;
 }
 
-String DashioDevice::getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], bool lineData[], int dataLength) {
+String DashioDevice::getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
     message += lineID;
     message += String(DELIM);
@@ -896,7 +896,7 @@ String DashioDevice::getTimeGraphLineBools(const String& controlID, const String
     message += String(DELIM);
     message += color;
     message += String(DELIM);
-    message += getYaxisSelectStr(yAxisSelect);
+    message += getYaxisSelectStr(yLeft);
     for (int i = 0; i < dataLength; i++) {
         message += String(DELIM);
         message += times[i];

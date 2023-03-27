@@ -334,7 +334,7 @@ public:
     String getChartLineInts(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, int lineData[], int dataLength);
     String getChartLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, float lineData[], int dataLength);
     String getTimeGraphLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], float lineData[], int dataLength, bool breakLine = false);
-    String getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], bool lineData[], int dataLength);
+    String getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength);
     String getTimeGraphPoint(const String& controlID, const String& lineID, float value);
     String getTimeGraphPoint(const String& controlID, const String& lineID, String time, float value);
     String getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect);
