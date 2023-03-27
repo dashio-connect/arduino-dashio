@@ -41,7 +41,7 @@ void processStatus() {
     bluefruitBLE.sendMessage(dashDevice.getSingleBarMessage(SINGLE_SLIDER_ID, 25));
     bluefruitBLE.sendMessage(dashDevice.getTextBoxMessage(TEXT_BOX_ID, String(count)));
     int data[5] = {100, 200, 300, 400, 500};
-    bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "black", data, 5));
+    bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "black", yLeft, data, 5));
 }
 
 void processButton(MessageData *messageData) {
@@ -50,14 +50,14 @@ void processButton(MessageData *messageData) {
         
         if (toggle) {
             int data[7] = {50, 255, 505, 758, 903, 400, 0};
-            bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "Line Name", bar, "0", data, 7));
+            bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "Line Name", bar, "0", yLeft, data, 7));
             int data2[6] = {153, 351, 806, 900, 200, 0};
-            bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L2", "Line Name", segBar, "1", data2, 6));
+            bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L2", "Line Name", segBar, "1", yLeft, data2, 6));
         } else {
             float data[7] = {200, 303.3345667, 504.4332, 809.43424545465, 912, 706, 643};
-            bluefruitBLE.sendMessage(dashDevice.getChartLineFloats(SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "4", data, 7));
+            bluefruitBLE.sendMessage(dashDevice.getChartLineFloats(SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "4", yLeft, data, 7));
             int data2[0] = {};
-            bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L2", "Line Name", peakBar, "1", data2, 0));
+            bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L2", "Line Name", peakBar, "1", yLeft, data2, 0));
         }
         
         bluefruitBLE.sendMessage(dashDevice.getButtonMessage(messageData->idStr, toggle, "weather"));

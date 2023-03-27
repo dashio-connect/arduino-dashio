@@ -59,19 +59,19 @@ void processButton(MessageData *messageData) {
         bluno.sendMessage(dashDevice.getSliderMessage(SINGLE_SLIDER_ID, 10));
         bluno.sendMessage(dashDevice.getDoubleBarMessage(SINGLE_SLIDER_ID, 90, 10));
         int data[5] = {800, 200, 100, 0, 100};
-        bluno.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "bob", line, "red", data, 5));
+        bluno.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "bob", line, "red", yLeft, data, 5));
     }
 
     if (messageData->idStr == TOGGLE_BUTTON_ID) {
         toggle = !toggle;
         if (toggle) {
             int data[7] = {50, 255, 505, 758, 903, 400, 0};
-            bluno.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "Alan", bar, "12", data, 7));
+            bluno.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "Alan", bar, "12", yLeft, data, 7));
             int data2[6] = {153, 351, 806, 900, 200, 0};
-            bluno.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L2", "Steve", segBar, "15", data2, 6));
+            bluno.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L2", "Steve", segBar, "15", yLeft, data2, 6));
         } else {
             float data[7] = {90, 303.3345667, 504.4332, 809.4342, 912, 706, 64};
-            bluno.sendMessage(dashDevice.getChartLineFloats(SIMPLE_GRAPH_ID, "L1", "Bob", peakBar, "18", data, 7));
+            bluno.sendMessage(dashDevice.getChartLineFloats(SIMPLE_GRAPH_ID, "L1", "Bob", peakBar, "18", yLeft, data, 7));
         }
 
         bluno.sendMessage(dashDevice.getButtonMessage(messageData->idStr, toggle));

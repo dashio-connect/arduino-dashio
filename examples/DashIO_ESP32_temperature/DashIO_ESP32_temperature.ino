@@ -135,7 +135,7 @@ void processStatus(MessageData *messageData) {
 
     message += dashDevice.getTextBoxMessage(TEMPTB_ID, String(temperatureC));
 
-    message += dashDevice.getTimeGraphLine(GRAPH_ID, "L1", "Avge Temp", line, "red");
+    message += dashDevice.getTimeGraphLine(GRAPH_ID, "L1", "Avge Temp", line, "red", yLeft);
 
     sendMessage(messageData->connectionType, message);
 }

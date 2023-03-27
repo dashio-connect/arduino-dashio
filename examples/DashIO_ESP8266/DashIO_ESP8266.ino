@@ -149,15 +149,15 @@ void processStatus(ConnectionType connectionType) {
   message += dashDevice.getButtonMessage(BGROUP_B05_ID, buttonFiveValue);
 
   int data1[] = {150, 270, 390, 410, 400};
-  message += dashDevice.getChartLineInts(GRAPH_ID, "L1", "Line One", line, "3", data1, sizeof(data1)/sizeof(int));
+  message += dashDevice.getChartLineInts(GRAPH_ID, "L1", "Line One", line, "3", yLeft, data1, sizeof(data1)/sizeof(int));
   int data2[] = {160, 280, 400, 410, 420};
-  message += dashDevice.getChartLineInts(GRAPH_ID, "L2", "Line Two", line, "4", data2, sizeof(data2)/sizeof(int));
+  message += dashDevice.getChartLineInts(GRAPH_ID, "L2", "Line Two", line, "4", yLeft, data2, sizeof(data2)/sizeof(int));
   int data3[] = {170, 290, 410, 400, 390};
-  message += dashDevice.getChartLineInts(GRAPH_ID, "L3", "Line Three", line, "5", data3, sizeof(data3)/sizeof(int));
+  message += dashDevice.getChartLineInts(GRAPH_ID, "L3", "Line Three", line, "5", yLeft, data3, sizeof(data3)/sizeof(int));
   int data4[] = {180, 270, 390, 410, 430};
-  message += dashDevice.getChartLineInts(GRAPH_ID, "L4", "Line Four", line, "6", data4, sizeof(data4)/sizeof(int));
+  message += dashDevice.getChartLineInts(GRAPH_ID, "L4", "Line Four", line, "6", yLeft, data4, sizeof(data4)/sizeof(int));
   int data5[] = {200, 250, 260, 265, 240};
-  message += dashDevice.getChartLineInts(GRAPH_ID, "L5", "Line Five", line, "8", data5, sizeof(data5)/sizeof(int));
+  message += dashDevice.getChartLineInts(GRAPH_ID, "L5", "Line Five", line, "8", yLeft, data5, sizeof(data5)/sizeof(int));
   sendMessage(connectionType, message);
 }
 

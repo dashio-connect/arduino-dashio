@@ -159,18 +159,18 @@ void processStatus(ConnectionType connectionType) {
   message += dashDevice.getAudioVisualMessage(AV_ID, F("http://192.168.68.170/mjpeg/1")); // URL for av feed (e.g. ESP32 Camera)
 
   int data1[] = {300, 270, 390, 410, 400};
-  message += dashDevice.getChartLineInts(CHART_ID, "L1", "Line One", line, "3", data1, sizeof(data1)/sizeof(int));
+  message += dashDevice.getChartLineInts(CHART_ID, "L1", "Line One", line, "3", yLeft, data1, sizeof(data1)/sizeof(int));
   int data2[] = {160, 280, 400, 410, 420};
-  message += dashDevice.getChartLineInts(CHART_ID, "L2", "Line Two", line, "4", data2, sizeof(data2)/sizeof(int));
+  message += dashDevice.getChartLineInts(CHART_ID, "L2", "Line Two", line, "4", yLeft, data2, sizeof(data2)/sizeof(int));
   int data3[] = {170, 290, 410, 400, 390};
-  message += dashDevice.getChartLineInts(CHART_ID, "L3", "Line Three", line, "5", data3, sizeof(data3)/sizeof(int));
+  message += dashDevice.getChartLineInts(CHART_ID, "L3", "Line Three", line, "5", yLeft, data3, sizeof(data3)/sizeof(int));
   int data4[] = {180, 270, 390, 410, 430};
-  message += dashDevice.getChartLineInts(CHART_ID, "L4", "Line Four", line, "6", data4, sizeof(data4)/sizeof(int));
+  message += dashDevice.getChartLineInts(CHART_ID, "L4", "Line Four", line, "6", yLeft, data4, sizeof(data4)/sizeof(int));
   int data5[] = {200, 250, 260, 265, 240};
-  message += dashDevice.getChartLineInts(CHART_ID, "L5", "Line Five", line, "8", data5, sizeof(data5)/sizeof(int));
+  message += dashDevice.getChartLineInts(CHART_ID, "L5", "Line Five", line, "8", yLeft, data5, sizeof(data5)/sizeof(int));
     
-  message += dashDevice.getTimeGraphLine(TGRAPH_ID, "l1", "Roger", line, "purple");
-  message += dashDevice.getTimeGraphLine(TGRAPH_ID, "l2", "Betty", line, "white");
+  message += dashDevice.getTimeGraphLine(TGRAPH_ID, "l1", "Roger", line, "purple", yLeft);
+  message += dashDevice.getTimeGraphLine(TGRAPH_ID, "l2", "Betty", line, "white", yLeft);
 
   message += dashDevice.getMapTrackMessage(MAP_ID, "T3", "StatusX", "blue");
 
