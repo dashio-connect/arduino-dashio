@@ -1,7 +1,11 @@
 /*
+ DashJSON.h - Library for simle JSON encoding for the DashIO comms protocol.
+ Created by C. Tuffnell
+ November 17, 2020
+ 
  MIT License
 
- Copyright (c) 2023 Craig Tuffnell, DashIO Connect Limited
+ Copyright (c) 2020 Craig Tuffnell, DashIO Connect Limited
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +26,25 @@
  SOFTWARE.
 */
 
-#ifndef DashSerial_h
-#define DashSerial_h
+#ifndef DashioJSON_h
+#define DashioJSON_h
 
 #include "Arduino.h"
-#include "DashIO.h"
 
-class DashSerial {
-  private:
-    bool printMessages;
-    DashioDevice *dashioDevice;
-    MessageData data;
-    void (*processSerialmessageCallback)(MessageData *MessageData);
+class DashJSON {
+public:
+    String jsonStr = "";
 
-    
+    void start();
+    void addKeyString(const String& key, const String& text, bool last = false);
+    void addKeyFloat(const String& key, float number, bool last = false);
+    void addKeyInt(const String& key, int number, bool last = false);
+    void addKeyBool(const String& key, bool boolean, bool last = false);
+    void addKeyStringAsNumber(const String& key, const String& text, bool last = false);
+    void addKeyStringArray(const String& key, String items[], int numItems, bool last = false);
 
-  public:
-    DashSerial(DashioDevice *_dashioDevice, bool _printMessages = false);
-    void setCallback(void(*processIncomingMessage)(MessageData *messageData));
-    void (*transmitMessage)(const String& outgoingMessage);
-    void setTransmit(void(*sendMessage)(const String& outgoingMessage));
-    
-    void processChar(char chr);
-    void actOnMessage();
-
-    String responseMessage;
+private:
+    void nextChar(bool last);
 };
 
 #endif
-

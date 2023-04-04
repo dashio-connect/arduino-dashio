@@ -22,7 +22,7 @@
  SOFTWARE.
 */
 
-#include "DashSerial.h"
+#include "DashioSerial.h"
 
 DashSerial::DashSerial(DashioDevice *_dashioDevice, bool _printMessages) : data(SERIAL_CONN) {
     dashioDevice = _dashioDevice;

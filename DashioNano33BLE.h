@@ -29,7 +29,7 @@
 
 #include "Arduino.h"
 
-#include "DashIO.h"
+#include "Dashio.h"
 #include <ArduinoBLE.h>
 
 // Create 128 bit UUIDs with a tool such as https://www.uuidgenerator.net/

@@ -32,7 +32,7 @@
 #include <SPI.h>
 #include <arduino-timer.h>
 
-#include "DashIO.h"
+#include "Dashio.h"
 //#include <WiFiNINA.h>
 #include <WiFiNINA_Generic.h> // For mDNS
 #include <ArduinoMqttClient.h>

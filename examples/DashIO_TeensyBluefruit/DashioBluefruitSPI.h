@@ -5,7 +5,7 @@
 #include "Adafruit_BLE.h"
 #include "Adafruit_BluefruitLE_SPI.h"
 #include "bluefruitConfig.h"
-#include "DashIO.h"
+#include "Dashio.h"
 
 #define MINIMUM_FIRMWARE_VERSION "0.6.6" // For LED behaviour
 #define MODE_LED_BEHAVIOUR       "MODE"  // "DISABLE" or "MODE" or "BLEUART" or "HWUART"  or "SPI"  or "MANUAL"

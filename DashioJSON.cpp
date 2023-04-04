@@ -26,7 +26,7 @@
  SOFTWARE.
 */
 
-#include "DashJSON.h"
+#include "DashioJSON.h"
 
 void DashJSON::start() {
     jsonStr = "{";

@@ -29,7 +29,7 @@
 #define DashioProvisionSAMD_h
 
 #include "Arduino.h"
-#include "DashIO.h"
+#include "Dashio.h"
 #include <FlashStorage.h>
 
 typedef struct {

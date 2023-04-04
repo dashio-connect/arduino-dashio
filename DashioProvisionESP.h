@@ -28,7 +28,7 @@
 #define DashioProvisionESP_h
 
 #include "Arduino.h"
-#include "DashIO.h"
+#include "Dashio.h"
 #include <Preferences.h>
 
 struct DeviceData {

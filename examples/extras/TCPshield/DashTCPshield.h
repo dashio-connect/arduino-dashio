@@ -29,7 +29,7 @@
 
 #include "Arduino.h"
 #include <Ethernet.h>
-#include "DashIO.h"
+#include "Dashio.h"
 
 class DashTCPshield {
 private:

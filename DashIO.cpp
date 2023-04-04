@@ -26,8 +26,8 @@
  SOFTWARE.
 */
 
-#include "DashIO.h"
-#include "DashJSON.h"
+#include "Dashio.h"
+#include "DashioJSON.h"
 
 // Control type IDs
 #define CONNECT_ID "CONNECT"

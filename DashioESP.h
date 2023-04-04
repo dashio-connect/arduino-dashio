@@ -41,7 +41,7 @@
     #include <ESPmDNS.h>       // Included in the espressif library
 #endif
 
-#include "DashIO.h"
+#include "Dashio.h"
 
 #define SOFT_AP_PORT 55892
 

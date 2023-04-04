@@ -26,8 +26,8 @@
  SOFTWARE.
 */
 
-#ifndef DashIO_h
-#define DashIO_h
+#ifndef Dashio_h
+#define Dashio_h
 
 #include "Arduino.h"
 #include <limits.h>
