@@ -237,7 +237,6 @@ void DashioTCP::setCallback(void (*processIncomingMessage)(MessageData *messageD
 
 void DashioTCP::setPort(uint16_t _tcpPort) {
     tcpPort = _tcpPort;
-//???    wifiServer = WiFiServer(_tcpPort);
 }
 
 void DashioTCP::begin() {
