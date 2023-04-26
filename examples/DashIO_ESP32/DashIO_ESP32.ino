@@ -114,12 +114,6 @@ String getUTCtime() {
   return dateTime;
 }
 
-char *ip2CharArray(IPAddress ip) {
-  static char a[16];
-  sprintf(a, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
-  return a;
-}
-
 void sendMessage(ConnectionType connectionType, const String& message) {
     if (connectionType == TCP_CONN) {
         tcp_con.sendMessage(message);
