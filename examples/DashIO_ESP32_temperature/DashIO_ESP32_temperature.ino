@@ -31,23 +31,23 @@
 #define GRAPH_UPDATE_SECONDS (60 * 10) // Every 10 mins
 
 const char configC64Str[] PROGMEM =
-"zZbbbqNIEIZfxeKajoDmmLtuutsTDbazmGRGWu0FNm27NRgijCfORnmnfYZ9sikOTnwaRSNlV3OD+lAUVV9V/fazFtFIu/7zWXu6"
-"LTeqVmURp/DUro0rx3R07VFl9ao/MnWtVnUu95batZZMbjVd29RPuYTdMJ7cNfuHtJJFfcPgKKSGCSfbrcpgR0wacuqYyDY8eBBb"
-"oMBzBTIws0wCNyzgYD0vi7oq89YBxNd6aL8M+1G6GyRy/SCrtN5WckDytFq37+RlBfdfVqqWsN+d5qNrK6mWq/o1P8s2betFv5S6"
-"5/gfnrrhGW5ATMSxAalTg6CAWAIxSkzf8R0v5OxC6tZh6qr40NT/0rXP4wmF8sNqGrG4WyX8a9K2RB+5S0joO5gi5lKCbO6biDJm"
-"IIwFMwLbDixOTyJPutQvwChUvYHtv/+EB4kdJKWdxWo6pu0F5/zHk3HTK7Xc1SRXy+Yo5OOEx3C4KKt1WjdGdyPYnhUYQqvkXG1a"
-"T7D7NsuSpwf55vWk9heIzvNyIz/PskkxlQVgqqutbJqph4YxEcwLoMg+bTrd9xAJqYUMz/KJjT3fZt45NPwL0JpB6E7+B2BXjuce"
-"QcNH0NqXDpkZV+4FalfYeRccNR3CgtBHgnHoNosbKMDcQ4yHrvCYa7nMPQdn/bbgfNP/L8HBvLKbfnBH5LZf8PFdt4omw25B7tl+"
-"zsOktw+jfsHu77+0E79XMzqJGY+nDee6ygGYANxT9Tfc2RDJslJZWObbdQF0LQtUcAXsu5MuLl0rtutXE/O4Xn11Gte0rDJZhScC"
-"1t58WxbZ/oLm2/35T22TKi02bQ/Mn7oJ7S1HKiuaOg96LxdUZxCVy95X0tzScrf/zgTcLuUgltmJwdn3Gipx+Qj5Ynxg+oau6QQF"
-"IMbpui1+WUitKyCJ+op8ipNehIfx7adDFbZdEVqhoAhzxpDtGj7yGQwHo9Q1iIe5oKRpQLJTG/ih0K6dY+g3LBm+3qc7CNK4NDIn"
-"I4FdHBjOz5S6dRalM5kfD9n57JzPBQxb+wej9THermlabdqg35PehhhNkvERHMLNUNgY8ZDayA58gShmJmLCpERgYTHRKES5WOzL"
-"2tfzAFAnIrNtXZcFL9JZLrN9L5fF/rVIreVFqTmVEjvwDPuNW+fwV/i0gttIDhidaYTlXBKJplAH/UVlnmsHysp91xOBZSNCMUe2"
-"H3jINywHcdfyGRGuIwh+H5L5O0FqxfUDILUtNezVMxSgmc9aJr+ruZzKevsAdgWY649qofQs3ax0GnF99EeSaK3Qsdb0XsnHXuwW"
-"y1h+h+XLyw8=";
+"zZbbbuM2EIZfJdC1GFCijrkjRdIJ1odUUbILLHqhWLQtRJYCWd44G+Sd+gx9sg4lOfFp0W6RFnsRgxwOx5xvZn7nxRiyoXHx9cV4"
+"vq5WeZNXZZzCp3GBz13LNY2nPGsWvckyjSZvCrX1NC6MZHJtmMaqeS4U7Abx5FbvH9Nalc0VB1PEsAWW9TrPYEctFgnmWsjBPnxQ"
+"R6LQ9yTChNsWhRMeCvCeVmVTV0UbAN7XRmi/GfajdHOWqOWjqtNmXaszWqT1sr1TVDWcx9VzWpyxYq3AuDlMyjQWKp8vmrckbcdy"
+"7FfzVP6+G3x4/tjHXkgtJAiG/BmmKKS2RJxRK3AD148EP5G/vZt/Xn58/r+bxqfxhEEjwOpmyONulYgvSdsc/fM9SqPAJQxxj1Hk"
+"iMBCjHOMCJEch44T2oIdPD/p8j9BpMybFWz//CPayW4nM+PorZZrOX54XITxZKy7plGbhhb5XJsiMU5EDMZZVS/TRjvdjmB7VGV4"
+"Wq2m+aqNBLuH+yx5flTvUQ8a4ATRaVGt1Kf7bFLeqBIwNfVa6Y7qoRFCJfdDqHTAdM8HPqIRsxH27YA6xA8c7h9DIz8BTY9EZ/kf"
+"gJ27vrcHjexBay/tMsPn3glq58T9W3DMcikPowBJLqDbbIFRSISPuIg86XPP9rh3DM7+ZcEFVvBfgoN55Vf94I7odb8Q49tuNZwM"
+"ugW949s5j5LePxr2C35397md+K2ksUnMRXyjOTd1AcAk4L7Jv8OZAy+Z13kWVcV6WQJd2wYpXAD7ztK9yzTK9fLNxdqvV18dHZpV"
+"dabq6JSKtccP8zL74en24PMib/ZuJHVartp2mD53w9p7siKdPuy0Qn8p0VtWbbYBJ3B/rs5ilR04HAXWJOLqCXIkZMf1HZeufg7J"
+"j9NlW/CqVEZXNDrsq3AZJ73wDuLry13ldTwZ2ZFkiAjOkePhAAUcBoIz5mHqEyEZ1U1HN/kKfiHg2/A+6SueDN4c0g0Uyz01Jwdz"
+"QDwSYvdH8twGG6b3qtifrOOBOR4GmLD2/4v3GHHTlaG1jNdLltYA031PSjvgfyLI2yT1BQtjrCmzJBnvAaXCiqRDkIiYg5wwkIgR"
+"biEuLUYlkTaXWkm2Y3B5Nbgcwl8Ctmo227bHKK0ryHMfdadB9+umqUpRpveFyrajUJXbm4NaqfKkVB1KkRP62HkvQRfxZ1C3gq0l"
+"q+O7rzG6DY5FRtd8p1eZKgpjR5lF4PkytB1EGRHICUIfBdh2kfDsgFPpuZKSfw3P+qXgtaL9AfDaFhz0qhxJ0OIXI1Pf8qm6Uc36"
+"EfxKcDef8lluZulqYbKhMEe/JZoZCChvXe9y9dSL6Gweq28wxa+vfwE=";
 
 // Create device
-DashDevice dashDevice(DEVICE_TYPE, configC64Str, 1);
+DashDevice dashDevice(DEVICE_TYPE, configC64Str, 2);
 
 // Create Connections
 DashBLE  ble_con(&dashDevice, true);
@@ -56,23 +56,16 @@ DashWiFi wifi;
 DashProvision dashProvision(&dashDevice);
 
 // Create Control IDs
-const char *CB01_ID = "CB01";
 const char *TEMPTB_ID = "TB01";
 const char *ALARMTB_LOW_ID = "TB02";
 const char *ALARMTB_HIGH_ID = "TB03";
 const char *AEB_LOW_ID = "B01";
 const char *AEB_HIGH_ID = "B02";
 const char *GRAPH_ID = "IDTG";
-const char *LABEL_HIGH_ID = "LBL01";
-const char *LABEL_LOW_ID = "LBL02";
-
-hw_timer_t * timer = NULL; // Hardware timer
 
 OneWire oneWire(13); // Temperature sensor connected to pin 13
 DallasTemperature tempSensor(&oneWire);
 
-String messageToSend((char *)0);
-String alarmMessageToSend = "";
 int graphSecondsCounter = 0;
 float temperatureC;
 float tempSum = 0;
@@ -84,10 +77,6 @@ float maxTemp = 100;
 
 bool oneSecond = false;
 float sampleTempC;
-
-void IRAM_ATTR onTimer() {
-    oneSecond = true;
-}
 
 void sendMessage(ConnectionType connectionType, String message) {
     if (connectionType == BLE_CONN) {
@@ -190,10 +179,13 @@ void processIncomingMessage(MessageData *messageData) {
 }
 
 void setTemperatureEverySecond(float temperature) {
+    String messageToSend = "";
+    
     if (temperature > -100) {
         temperatureC = temperature;
         messageToSend = dashDevice.getTextBoxMessage(TEMPTB_ID, String(temperatureC));
 
+        // Now calculate the average temperature and send every 10 minutes. Dash server will store this.
         tempSum += temperatureC;
         graphSecondsCounter++;
         if (graphSecondsCounter >= GRAPH_UPDATE_SECONDS) {
@@ -204,13 +196,13 @@ void setTemperatureEverySecond(float temperature) {
             if (alarmEnableLow == on) {
                 if (tempFiltered < minTemp) {
                     Notification tempAlarm = {"AL01", "Under Temp", text};
-                    alarmMessageToSend = dashDevice.getAlarmMessage(tempAlarm);
+                    mqtt_con.sendMessage(dashDevice.getAlarmMessage(tempAlarm), alarm_topic);
                 }
             }
             if (alarmEnableHigh == on) {
                 if (tempFiltered > maxTemp) {
                     Notification tempAlarm = {"AL02", "Over Temp", text};
-                    alarmMessageToSend = dashDevice.getAlarmMessage(tempAlarm);
+                    mqtt_con.sendMessage(dashDevice.getAlarmMessage(tempAlarm), alarm_topic);
                 }
             }
 
@@ -224,6 +216,14 @@ void setTemperatureEverySecond(float temperature) {
     messageToSend += getButtonMessages();
     messageToSend += dashDevice.getTextBoxMessage(ALARMTB_LOW_ID, String(minTemp));
     messageToSend += dashDevice.getTextBoxMessage(ALARMTB_HIGH_ID, String(maxTemp));
+    sendMessageAll(messageToSend);
+}
+
+void oneSecondTimerTask(void *parameters) {
+    for(;;) {
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        oneSecond = true;
+    }
 }
 
 void generalSetup() {
@@ -252,13 +252,6 @@ void generalSetup() {
 }
 
 void setup() {
-    messageToSend.reserve(1024);
-
-    timer = timerBegin(0, 80, true); // Use 1st timer of 4. 1 tick takes 1/(80MHZ/80) = 1us so we set divider 80 and count up
-    timerAttachInterrupt(timer, &onTimer, true); //Attach onTimer function to our timer
-    timerAlarmWrite(timer, 1000000, true); // 1 tick is 1us => 1s.
-    timerAlarmEnable(timer);
-        
     Serial.begin(115200);
 
     DeviceData defaultDeviceData = {DEVICE_NAME, WIFI_SSID, WIFI_PASSWORD, MQTT_USER, MQTT_PASSWORD};
@@ -271,11 +264,22 @@ void setup() {
     
     mqtt_con.setup(dashProvision.dashUserName, dashProvision.dashPassword);
     mqtt_con.setCallback(&processIncomingMessage);
-    
+    mqtt_con.addDashStore(timeGraph, GRAPH_ID);
+        
     wifi.attachConnection(&mqtt_con);
     wifi.begin(dashProvision.wifiSSID, dashProvision.wifiPassword);
 
     generalSetup();
+
+    // Setup 1 second timer task for measuring the temperature (overkill)
+    xTaskCreate(
+        oneSecondTimerTask,
+        "One Second",
+        1024, // stack size
+        NULL,
+        1, // priority
+        NULL // task handle
+    );
 
     tempSensor.setWaitForConversion(false);
     tempSensor.begin();
@@ -283,16 +287,6 @@ void setup() {
 }
 
 void loop() {
-    if (messageToSend.length() > 0) {
-        sendMessageAll(messageToSend);
-        messageToSend = "";
-    }
-    
-    if (alarmMessageToSend.length() > 0) {
-        mqtt_con.sendMessage(alarmMessageToSend, alarm_topic);
-        alarmMessageToSend = "";
-    }
-
     ble_con.run();
     wifi.run();
 
