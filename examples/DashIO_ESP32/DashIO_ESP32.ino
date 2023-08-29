@@ -61,11 +61,6 @@ bool buttonFiveValue = on;
 float menuSliderValue = 14;
 
 // Create Control IDs
-// Device Views
-const char *DV01_ID = "DV01";
-const char *DV02_ID = "DV02";
-const char *DV03_ID = "DV03";
-
 // Device View 1 Controls
 const char *LOG_ID = "EL01";
 const char *BUTTON02_ID = "UB02";
