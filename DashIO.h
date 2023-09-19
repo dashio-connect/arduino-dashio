@@ -304,7 +304,7 @@ public:
     String getAlarmMessage(const String& alarmID, const String& title, const String& description);
     String getAlarmMessage(Notification alarm);
     String getButtonMessage(const String& controlID, bool on, const String& iconName = "", const String& text = "");
-    String getTextBoxMessage(const String& controlID, const String& text);
+    String getTextBoxMessage(const String& controlID, const String& text, const String& color = "");
     String getSelectorMessage(const String& controlID, int index);
     String getSelectorMessage(const String& controlID, int index, String* selectionItems, int numItems);
 

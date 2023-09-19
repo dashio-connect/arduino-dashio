@@ -549,9 +549,13 @@ String DashioDevice::getButtonMessage(const String& controlID, bool on, const St
     return message;
 }
 
-String DashioDevice::getTextBoxMessage(const String& controlID, const String& text) {
+String DashioDevice::getTextBoxMessage(const String& controlID, const String& text, const String& color) {
     String message = getControlBaseMessage(TEXT_BOX_ID, controlID);
     message += text;
+    if (color != "") {
+        message += String(DELIM);
+        message += color;
+    }
     message += String(END_DELIM);
     return message;
 }
