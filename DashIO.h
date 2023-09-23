@@ -77,6 +77,7 @@ enum ControlType {
     who,
     ctrl,
     connect,
+    clock,
     status,
     config,
     pushToken,

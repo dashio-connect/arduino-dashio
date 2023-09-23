@@ -36,6 +36,8 @@
 #define STATUS_ID "STATUS"
 #define CONFIG_ID "CFG"
 #define CONFIG_C64 "C64"
+#define CLOCK_ID "CLK"
+// \t deviceID \t CLK \t srv_clk \t 1695347388 \n
 
 #define DEVICE_ID "DVCE"
 #define DEVICE_VIEW_ID "DVVW"
@@ -105,6 +107,9 @@
 #define MAX_STRING_LEN 64
 #define MAX_DEVICE_NAME_LEN 32
 #define MAX_DEVICE_TYPE_LEN 32
+
+// Server types
+#define SERVER_CLK = "srv_clk"
 
 char DASH_SERVER[] = "dash.dashio.io";
 
@@ -189,6 +194,8 @@ bool MessageData::processChar(char chr) {
                     control = ctrl;
                 } else if (readStr == CONNECT_ID) {
                     control = connect;
+                } else if (readStr == CLOCK_ID) {
+                    control = clock;
                 } else if (readStr == STATUS_ID) {
                     control = status;
                 } else if (readStr == CONFIG_ID) {
@@ -921,6 +928,7 @@ String DashioDevice::getControlTypeStr(ControlType controltype) {
         case who: return WHO_ID;
         case ctrl: return CTRL_ID;
         case status: return STATUS_ID;
+        case clock: return CLOCK_ID;
         case config: return CONFIG_ID;
               
         case device: return DEVICE_ID;
