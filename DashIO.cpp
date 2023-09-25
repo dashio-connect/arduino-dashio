@@ -195,7 +195,7 @@ bool MessageData::processChar(char chr) {
                 } else if (readStr == CONNECT_ID) {
                     control = connect;
                 } else if (readStr == CLOCK_ID) {
-                    control = clock;
+                    control = dashClock;
                 } else if (readStr == STATUS_ID) {
                     control = status;
                 } else if (readStr == CONFIG_ID) {
@@ -928,7 +928,7 @@ String DashioDevice::getControlTypeStr(ControlType controltype) {
         case who: return WHO_ID;
         case ctrl: return CTRL_ID;
         case status: return STATUS_ID;
-        case clock: return CLOCK_ID;
+        case dashClock: return CLOCK_ID;
         case config: return CONFIG_ID;
               
         case device: return DEVICE_ID;

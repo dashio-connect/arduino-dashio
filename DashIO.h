@@ -59,6 +59,9 @@ typedef DashioBluno DashBluno;
 class DashioSoftAP;
 typedef DashioSoftAP DashSoftAP;
 
+class DashioLTE;
+typedef DashioLTE DashLTE;
+
 extern char DASH_SERVER[];
 #define DASH_PORT 8883
 
@@ -77,7 +80,7 @@ enum ControlType {
     who,
     ctrl,
     connect,
-    clock,
+    dashClock,
     status,
     config,
     pushToken,
