@@ -27,8 +27,6 @@
 #ifndef DashioNano33BLE_h
 #define DashioNano33BLE_h
 
-#include "Arduino.h"
-
 #include "Dashio.h"
 #include <ArduinoBLE.h>
 

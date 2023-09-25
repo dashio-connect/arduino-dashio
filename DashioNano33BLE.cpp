@@ -46,13 +46,14 @@ MessageData DashioBLE::messageData(BLE_CONN);
 void DashioBLE::onReadValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
     // central wrote new value to characteristic
     int dataLength = characteristic.valueLength();
-    char data[dataLength];
-    int finalLength = characteristic.readValue(data, dataLength);
+    char* data = new char[dataLength];
+    characteristic.readValue(data, dataLength);
     for (int i = 0; i < dataLength; i++) {
         if (messageData.processChar(data[i])) {
             messageData.messageReceived = true;
         }
     }
+    delete[] data;
 }
 
 void DashioBLE::setCallback(void (*processIncomingMessage)(MessageData *connection)) {
@@ -84,13 +85,13 @@ void DashioBLE::begin() {
 
 void DashioBLE::sendMessage(const String& message) {
     if (BLE.connected()) {
-        int maxMessageLength = BLE_MAX_SEND_MESSAGE_LENGTH;
+        unsigned int maxMessageLength = BLE_MAX_SEND_MESSAGE_LENGTH;
         
         if (message.length() <= maxMessageLength) {
             bleCharacteristic.writeValue(message.c_str());
         } else {
             int messageLength = message.length();
-            int numFullStrings = messageLength / maxMessageLength;
+            unsigned int numFullStrings = messageLength / maxMessageLength;
     
             String subStr((char *)0);
             subStr.reserve(maxMessageLength);
