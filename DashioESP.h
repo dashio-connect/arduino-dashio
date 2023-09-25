@@ -143,7 +143,6 @@ public:
 #ifdef ESP32
 class DashioBLE {
 private:
-    bool printMessages;
     bool secureBLE;
     DashioDevice *dashioDevice;
     BLEServer *pServer;
@@ -154,6 +153,7 @@ private:
     void processConfig();
 
 public:
+    static bool printMessages;
     MessageData data;
     void (*processBLEmessageCallback)(MessageData *messageData);
     bool passThrough = false;

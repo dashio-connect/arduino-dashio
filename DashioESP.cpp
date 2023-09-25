@@ -452,13 +452,16 @@ void DashioMQTT::setupLWT() {
     // Setup MQTT Last Will and Testament message (Optional). Default keep alive time is 10s
 
     String willTopic = dashioDevice->getMQTTTopic(username, will_topic);
-    Serial.print(F("LWT topic: "));  
-    Serial.println(willTopic);
-
     String offlineMessage = dashioDevice->getOfflineMessage();
     mqttClient.setWill(willTopic.c_str(), offlineMessage.c_str(), false, MQTT_QOS);
-    Serial.print(F("LWT message: "));
-    Serial.println(offlineMessage);
+
+    if (printMessages) {
+        Serial.print(F("LWT topic: "));
+        Serial.println(willTopic);
+        
+        Serial.print(F("LWT message: "));
+        Serial.println(offlineMessage);
+    }
 }
 
 void DashioMQTT::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
@@ -512,15 +515,19 @@ void DashioMQTT::hostConnect() {
     Serial.print(F("Connecting to MQTT..."));
     state = connecting;
     if (mqttClient.connect(dashioDevice->deviceID.c_str(), username, password, false)) { // skip = false is the default. Used in order to establish and verify TLS connections manually before giving control to the MQTT client
-        Serial.print(F("connected "));
-        Serial.println(String(mqttClient.returnCode()));
+        if (printMessages) {
+            Serial.print(F("connected "));
+            Serial.println(String(mqttClient.returnCode()));
+        }
         state = serverConnected;
     } else {
-        Serial.print(F("Failed - Try again in 10 seconds. E = "));
-        Serial.println(String(mqttClient.lastError()) + "  R = " + mqttClient.returnCode());
-        // Invalid URL or port => E = -3  R = 0
-        // Invalid username or password => E = -10  R = 5
-        // Invalid SSL record => E = -5  R = 6
+        if (printMessages) {
+            Serial.print(F("Failed - Try again in 10 seconds. E = "));
+            Serial.println(String(mqttClient.lastError()) + "  R = " + mqttClient.returnCode());
+            // Invalid URL or port => E = -3  R = 0
+            // Invalid username or password => E = -10  R = 5
+            // Invalid SSL record => E = -5  R = 6
+        }
         state = disconnected;
     }
 }
@@ -620,6 +627,7 @@ void DashioMQTT::end() {
 int DashioBLE::connHandle;
 bool DashioBLE::authenticated;
 bool DashioBLE::authRequestConnect;
+bool DashioBLE::printMessages;
 
 class SecurityBLECallbacks : public BLESecurityCallbacks {
     bool onConfirmPIN(uint32_t pin) {
@@ -644,30 +652,40 @@ class SecurityBLECallbacks : public BLESecurityCallbacks {
 
     void onAuthenticationComplete(ble_gap_conn_desc * desc) {
         if (desc->sec_state.authenticated) {
-            Serial.println(F("BLE Authenticated"));
+            if (DashioBLE::printMessages) {
+                Serial.println(F("BLE Authenticated"));
+            }
             DashioBLE::authenticated = true;
             DashioBLE::authRequestConnect = true;
         } else {
-            Serial.println(F("BLE Authentication FAIL"));
+            if (DashioBLE::printMessages) {
+                Serial.println(F("BLE Authentication FAIL"));
+            }
             DashioBLE::authenticated = false;
         }
-        if (desc->sec_state.encrypted) {
-            Serial.println(F("BLE Encrypted"));
-        }
-        if (desc->sec_state.bonded) {
-            Serial.println(F("BLE Bonded"));
+        if (DashioBLE::printMessages) {
+            if (desc->sec_state.encrypted) {
+                Serial.println(F("BLE Encrypted"));
+            }
+            if (desc->sec_state.bonded) {
+                Serial.println(F("BLE Bonded"));
+            }
         }
     }
 };
 
 class ServerCallbacks : public BLEServerCallbacks {
     void onConnect(NimBLEServer* pServer, ble_gap_conn_desc* desc) {
-        Serial.println("BLE Server Connected");
+        if (DashioBLE::printMessages) {
+            Serial.println("BLE Server Connected");
+        }
         DashioBLE::connHandle = desc->conn_handle;
     }
     
     void onDisconnect(BLEServer* pServer) {
-        Serial.println("BLE Server Disconnected");
+        if (DashioBLE::printMessages) {
+            Serial.println("BLE Server Disconnected");
+        }
         DashioBLE::authenticated = false;
     }
 };
