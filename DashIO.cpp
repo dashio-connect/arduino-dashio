@@ -167,6 +167,7 @@ void MessageData::loadBuffer(const String& message) {
         }
     }
     
+    Serial.print(getConnectionTypeStr() + " ");
     if (avail < messageLength) {
         Serial.println(F("Buffer overflow - can't process message"));
     } else {
@@ -345,20 +346,7 @@ String MessageData::getReceivedMessageForPrint(const String& controlStr) {
     message.reserve(100);
 
     message += F("**** ");
-    switch (connectionType) {
-        case BLE_CONN:
-            message += "BLE";
-            break;
-        case TCP_CONN:
-            message += "TCP";
-            break;
-        case MQTT_CONN:
-            message += "MQTT";
-            break;
-        case SERIAL_CONN:
-            message += "SERIAL";
-            break;
-    }
+    message += getConnectionTypeStr();
     message += F(" Received ****\n");
     message += getMessageGeneric(controlStr);
     return message;
@@ -369,23 +357,24 @@ String MessageData::getTransmittedMessageForPrint(const String& controlStr) {
     message.reserve(100);
 
     message += F("**** ");
-    switch (connectionType) {
-        case BLE_CONN:
-            message += "BLE";
-            break;
-        case TCP_CONN:
-            message += "TCP";
-            break;
-        case MQTT_CONN:
-            message += "MQTT";
-            break;
-        case SERIAL_CONN:
-            message += "SERIAL";
-            break;
-    }
+    message += getConnectionTypeStr();
     message += F(" Sent ****\n");
     message += getMessageGeneric(controlStr);
     return message;
+}
+
+String MessageData::getConnectionTypeStr() {
+    switch (connectionType) {
+        case BLE_CONN:
+            return "BLE";
+        case TCP_CONN:
+            return "TCP";
+        case MQTT_CONN:
+            return "MQTT";
+        case SERIAL_CONN:
+            return "SERIAL";
+    }
+    return "";
 }
 
 /* --------------- */

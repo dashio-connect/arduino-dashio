@@ -285,6 +285,7 @@ private:
     int segmentCount = -1;
     String readStr;
     
+    String getConnectionTypeStr();
     void loadBuffer(const String& message);
 };
 
