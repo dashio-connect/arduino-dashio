@@ -258,26 +258,34 @@ public:
     ConnectionType connectionType;
     bool messageReceived = false;
     String deviceID = ((char *)0);
-
+    
     ControlType control = unknown;
     String idStr = ((char *)0);
     String payloadStr = ((char *)0);
     String payloadStr2 = ((char *)0);
-/*
-    String payloadStr3 = ((char *)0);
-    String payloadStr4 = ((char *)0);
-*/
-
-    MessageData(ConnectionType connType);
+    /*
+     String payloadStr3 = ((char *)0);
+     String payloadStr4 = ((char *)0);
+     */
+    
+    MessageData(ConnectionType connType, int _bufferLength = 0);
     void processMessage(const String& message);
     bool processChar(char chr);
     String getMessageGeneric(const String& controlStr);
     String getReceivedMessageForPrint(const String& controlStr);
     String getTransmittedMessageForPrint(const String& controlStr);
-
+    
+    void checkBuffer();
+    
 private:
+    char* buffer;
+    int bufferWritePtr = 0;
+    int bufferReadPtr = 0;
+    int bufferLength = 0;
     int segmentCount = -1;
     String readStr;
+    
+    void loadBuffer(const String& message);
 };
 
 class DashioDevice {

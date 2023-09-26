@@ -145,7 +145,10 @@ String formatInt(int value) {
     }
 }
 
-MessageData::MessageData(ConnectionType connType) {
+MessageData::MessageData(ConnectionType connType, int _bufferLength) {
+    bufferLength = _bufferLength;
+    buffer = new char [bufferLength];
+    
     deviceID.reserve(MAX_STRING_LEN);
     idStr.reserve(MAX_STRING_LEN);
     payloadStr.reserve(MAX_STRING_LEN);
@@ -153,11 +156,56 @@ MessageData::MessageData(ConnectionType connType) {
     connectionType = connType;
 };
 
+void MessageData::loadBuffer(const String& message) {
+    int messageLength = message.length();
+    int avail = 0;
+    if (bufferLength > 0) {
+        if (bufferWritePtr >= bufferReadPtr) {
+            avail = bufferLength + bufferReadPtr - bufferWritePtr;
+        } else {
+            avail = bufferReadPtr - bufferWritePtr;
+        }
+    }
+    
+    if (avail < messageLength) {
+        Serial.println(F("Buffer overflow - can't process message"));
+    } else {
+        Serial.print(F("Buffering message: "));
+        Serial.println(message);
+
+        for (unsigned int i = 0; i < messageLength; i++) {
+            buffer[bufferWritePtr] = message[i];
+            bufferWritePtr++;
+            if (bufferWritePtr >= bufferLength) {
+                bufferWritePtr -= bufferLength;
+            }
+        }
+    }
+}
+
+void MessageData::checkBuffer() {
+    if (bufferWritePtr != bufferReadPtr) {
+        bool unloadedMessage = false;
+        int count = 0;
+        while (!processChar(buffer[bufferReadPtr++])) {
+            count++;
+            if (count > bufferLength) { // can't find valid message, so quit
+                break;
+            }
+            
+            if (bufferReadPtr >= bufferLength) {
+                bufferReadPtr -= bufferLength;
+            }
+            unloadedMessage = true;
+        }
+        messageReceived = unloadedMessage;
+    }
+}
+
 void MessageData::processMessage(const String& message) {
     if (message.length() > 0) {
         if (messageReceived) {
-            Serial.println(F("Incoming message overflow. Can't process:"));
-            Serial.println(message);
+            loadBuffer(message);
         } else {
             for (unsigned int i = 0; i < message.length(); i++) {
                 char chr = message[i];
