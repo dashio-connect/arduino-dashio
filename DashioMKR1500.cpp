@@ -3,6 +3,7 @@
 #include "dashiomkr1500.h"
 
 #define MQTT_BUFFER_SIZE 2048
+#define INCOMING_MQTT_BUFFER_SIZE 512
 
 const int NB_TIMEOUT_MS    = 30000;
 const int MQTT_QOS         = 2;
@@ -165,7 +166,7 @@ DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool 
     printMessages = _printMessages;
 }
 
-MessageData DashioMQTT::data(MQTT_CONN);
+MessageData DashioMQTT::data(MQTT_CONN, INCOMING_MQTT_BUFFER_SIZE);
 
 void DashioMQTT::messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length) {
     data.processMessage(String(payload)); // The message components are stored within the connection where the messageReceived flag is set
@@ -382,6 +383,8 @@ void DashioMQTT::run() {
                 }
             }
         }
+        
+        data.checkBuffer();
     } else {
         if ((state == serverConnected) or (state == subscribed)) {
             state = disconnected;
