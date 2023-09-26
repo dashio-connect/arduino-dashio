@@ -34,6 +34,7 @@
 #endif
 
 #define MQTT_BUFFER_SIZE 2048
+#define INCOMING_BUFFER_SIZE 512
 
 // MQTT
 const int MQTT_QOS     = 2;
@@ -379,7 +380,7 @@ DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool 
 #endif
 }
 
-MessageData DashioMQTT::data(MQTT_CONN);
+MessageData DashioMQTT::data(MQTT_CONN, INCOMING_BUFFER_SIZE);
 
 void DashioMQTT::messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length) {
     data.processMessage(String(payload)); // The message components are stored within the connection where the messageReceived flag is set
@@ -610,6 +611,8 @@ void DashioMQTT::run() {
                 }
             }
         }
+
+        data.checkBuffer();
     } else {
         if ((state == serverConnected) or (state == subscribed)) {
             state = disconnected;
@@ -705,7 +708,7 @@ class MessageReceivedBLECallback: public BLECharacteristicCallbacks {
          DashioBLE * local_DashioBLE = NULL;
 };
 
-DashioBLE::DashioBLE(DashioDevice *_dashioDevice, bool _printMessages) : data(BLE_CONN) {
+DashioBLE::DashioBLE(DashioDevice *_dashioDevice, bool _printMessages) : data(BLE_CONN, INCOMING_BUFFER_SIZE) {
     dashioDevice = _dashioDevice;
     printMessages = _printMessages;
 }
@@ -752,14 +755,14 @@ void DashioBLE::run() {
         authRequestConnect = false;
         sendMessage(dashioDevice->getConnectMessage());
     }
-
+    
     if (data.messageReceived) {
         data.messageReceived = false;
-
+        
         if (printMessages) {
             Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
         }
-
+        
         if (passThrough) {
             if (processBLEmessageCallback != nullptr) {
                 processBLEmessageCallback(&data);
@@ -794,6 +797,8 @@ void DashioBLE::run() {
             }
         }
     }
+    
+    data.checkBuffer();
 }
 
 void DashioBLE::end() {
