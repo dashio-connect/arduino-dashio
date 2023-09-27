@@ -318,8 +318,10 @@ String MessageData::getMessageGeneric(const String& controlStr) {
     String message((char *)0);
     message.reserve(100);
 
-    message += String(DELIM);
-    message += deviceID;
+    if (!(controlStr == String("WHO"))){
+        message += String(DELIM);
+        message += deviceID;
+    }
     if (controlStr.length() > 0) {
         message += String(DELIM);
         message += controlStr;
