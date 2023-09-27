@@ -429,8 +429,8 @@ void DashioMQTT::end() {
 #if defined ARDUINO_SAMD_NANO_33_IOT || defined ARDUINO_SAMD_MKRWIFI1010
 
 DashioBLE::DashioBLE(DashioDevice *_dashioDevice, bool _printMessages) : bleService(SERVICE_UUID),
-            bleReadCharacteristic(CHARACTERISTIC_UUID, BLEWriteWithoutResponse, BLE_MAX_SEND_MESSAGE_LENGTH, false),
-            bleWriteCharacteristic(CHARACTERISTIC_UUID, BLENotify, BLE_MAX_SEND_MESSAGE_LENGTH, false) {
+            bleReadCharacteristic(CHARACTERISTIC_UUID, BLEWriteWithoutResponse, BLE_MAX_SEND_MESSAGE_LENGTH),
+            bleWriteCharacteristic(CHARACTERISTIC_UUID, BLENotify, BLE_MAX_SEND_MESSAGE_LENGTH) {
                                 
     dashioDevice = _dashioDevice;
     printMessages = _printMessages;
@@ -486,7 +486,7 @@ void DashioBLE::sendMessage(const String& message) {
         int maxMessageLength = BLE_MAX_SEND_MESSAGE_LENGTH;
         
         if (message.length() <= maxMessageLength) {
-            bleWriteCharacteristic.writeValue(message.c_str(), false);
+            bleWriteCharacteristic.writeValue(message.c_str());
         } else {
             int messageLength = message.length();
             int numFullStrings = messageLength / maxMessageLength;
@@ -497,12 +497,12 @@ void DashioBLE::sendMessage(const String& message) {
             int start = 0;
             for (unsigned int i = 0; i < numFullStrings; i++) {
                 subStr = message.substring(start, start + maxMessageLength);
-                bleWriteCharacteristic.writeValue(subStr.c_str(), false);
+                bleWriteCharacteristic.writeValue(subStr.c_str());
                 start += maxMessageLength;
             }
             if (start < messageLength) {
                 subStr = message.substring(start);
-                bleWriteCharacteristic.writeValue(subStr.c_str(), false);
+                bleWriteCharacteristic.writeValue(subStr.c_str());
             }
         }
     
