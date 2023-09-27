@@ -458,7 +458,7 @@ void DashioBLE::onReadValueUpdate(BLEDevice central, BLECharacteristic character
     int dataLength = characteristic.valueLength();
     char value[dataLength + 1];  // one byte more, to save the '\0' character!
     characteristic.readValue(value, dataLength);
-    value[length] = '\0';  // make sure to null-terminate!
+    value[dataLength] = '\0';  // make sure to null-terminate!
     messageData.processMessage(value);
 }
 
