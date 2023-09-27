@@ -147,7 +147,8 @@ private:
     DashioDevice *dashioDevice;
     static MessageData messageData;
     BLEService bleService;
-    BLECharacteristic bleCharacteristic;
+    BLECharacteristic bleReadCharacteristic;
+    BLECharacteristic bleWriteCharacteristic;
 
     static void onBLEConnected(BLEDevice central);
     static void onBLEDisconnected(BLEDevice central);
