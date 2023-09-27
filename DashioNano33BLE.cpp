@@ -29,16 +29,18 @@
 const int BLE_MAX_SEND_MESSAGE_LENGTH = 100;
 
 DashioBLE::DashioBLE(DashioDevice *_dashioDevice, bool _printMessages) : bleService(SERVICE_UUID),
-                                                                         bleCharacteristic(CHARACTERISTIC_UUID, BLERead | BLENotify | BLEWriteWithoutResponse, BLE_MAX_SEND_MESSAGE_LENGTH, false) {
+            bleReadCharacteristic(CHARACTERISTIC_UUID, BLEWriteWithoutResponse, BLE_MAX_SEND_MESSAGE_LENGTH, false),
+            bleWriteCharacteristic(CHARACTERISTIC_UUID, BLENotify, BLE_MAX_SEND_MESSAGE_LENGTH, false) {
 
     dashioDevice = _dashioDevice;
     printMessages = _printMessages;
 
     // Event driven reads.
-    bleCharacteristic.setEventHandler(BLEWritten, onReadValueUpdate);
+    bleReadCharacteristic.setEventHandler(BLEWritten, onReadValueUpdate);
 
     // add the characteristic to the service
-    bleService.addCharacteristic(bleCharacteristic);
+    bleService.addCharacteristic(bleReadCharacteristic);
+    bleService.addCharacteristic(bleWriteCharacteristic);
 }
 
 MessageData DashioBLE::messageData(BLE_CONN);
@@ -46,14 +48,11 @@ MessageData DashioBLE::messageData(BLE_CONN);
 void DashioBLE::onReadValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
     // central wrote new value to characteristic
     int dataLength = characteristic.valueLength();
-    char* data = new char[dataLength];
-    characteristic.readValue(data, dataLength);
-    for (int i = 0; i < dataLength; i++) {
-        if (messageData.processChar(data[i])) {
-            messageData.messageReceived = true;
-        }
-    }
-    delete[] data;
+    char* value = new char[dataLength + 1];  // one byte more, to save the '\0' character!
+    characteristic.readValue(value, dataLength);
+    value[dataLength] = '\0';  // make sure to null-terminate!
+    messageData.processMessage(value);
+    delete[] value;
 }
 
 void DashioBLE::setCallback(void (*processIncomingMessage)(MessageData *connection)) {
@@ -88,7 +87,7 @@ void DashioBLE::sendMessage(const String& message) {
         unsigned int maxMessageLength = BLE_MAX_SEND_MESSAGE_LENGTH;
         
         if (message.length() <= maxMessageLength) {
-            bleCharacteristic.writeValue(message.c_str());
+            bleWriteCharacteristic.writeValue(message.c_str());
         } else {
             int messageLength = message.length();
             unsigned int numFullStrings = messageLength / maxMessageLength;
@@ -99,12 +98,12 @@ void DashioBLE::sendMessage(const String& message) {
             int start = 0;
             for (unsigned int i = 0; i < numFullStrings; i++) {
                 subStr = message.substring(start, start + maxMessageLength);
-                bleCharacteristic.writeValue(subStr.c_str());
+                bleWriteCharacteristic.writeValue(subStr.c_str());
                 start += maxMessageLength;
             }
             if (start < messageLength) {
                 subStr = message.substring(start);
-                bleCharacteristic.writeValue(subStr.c_str());
+                bleWriteCharacteristic.writeValue(subStr.c_str());
             }
         }
     
@@ -168,6 +167,8 @@ void DashioBLE::run() {
                 break;
             }
         }
+        
+        messageData.checkBuffer();
     }
 }
 
