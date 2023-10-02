@@ -802,7 +802,7 @@ void DashioBLE::run() {
 }
 
 void DashioBLE::end() {
-    esp_ble_gatts_stop_service(connHandle);
+    NimBLEDevice::deinit(true);
 }
 
 void DashioBLE::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
