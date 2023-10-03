@@ -307,6 +307,7 @@ public:
 
     String getWhoMessage();
     String getConnectMessage();
+    String getClockMessage();
 
     String getDeviceNameMessage();
     String getWifiUpdateAckMessage();

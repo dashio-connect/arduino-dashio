@@ -496,6 +496,15 @@ String DashioDevice::getConnectMessage() {
     return  message;
 }
 
+String DashioDevice::getClockMessage() {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += CLOCK_ID;
+    message += String(END_DELIM);
+    return  message;
+}
+
 String DashioDevice::getDeviceNameMessage() {
     String message = String(DELIM);
     message += deviceID;
