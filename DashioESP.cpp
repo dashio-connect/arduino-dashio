@@ -218,17 +218,23 @@ void DashioSoftAP::run() {
 // ---------------------------------------- TCP ----------------------------------------
 
 #ifdef ESP32
-DashioTCP::DashioTCP(DashioDevice *_dashioDevice, bool _printMessages, uint16_t _tcpPort) : data(TCP_CONN) {
+DashioTCP::DashioTCP(DashioDevice *_dashioDevice, bool _printMessages, uint16_t _tcpPort, uint8_t _maxTCPclients) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
     wifiServer = WiFiServer(_tcpPort);
+
+    maxTCPclients = _maxTCPclients;
+    tcpClients = new TCPclient[_maxTCPclients];
 }
 #elif ESP8266
-DashioTCP::DashioTCP(DashioDevice *_dashioDevice, bool _printMessages, uint16_t _tcpPort) : wifiServer(_tcpPort), data(TCP_CONN) {
+DashioTCP::DashioTCP(DashioDevice *_dashioDevice, bool _printMessages, uint16_t _tcpPort, uint8_t _maxTCPclients) : wifiServer(_tcpPort) {
     dashioDevice = _dashioDevice;
     tcpPort = _tcpPort;
     printMessages = _printMessages;
+
+    maxTCPclients = _maxTCPclients;
+    tcpClients = new TCPclient[_maxTCPclients];
 }
 #endif
 
@@ -241,27 +247,31 @@ void DashioTCP::setPort(uint16_t _tcpPort) {
 }
 
 void DashioTCP::begin() {
+Serial.print("Max clients: ");//???
+Serial.println(maxTCPclients);//???
     wifiServer.begin(tcpPort);
 }
 
 uint8_t DashioTCP::hasClient() {
-    uint8_t rVal;
-    if (!client) {
-        rVal = 0;
-    }
-    else {
-        rVal = client.connected();
+    uint8_t rVal = 0;
+    for (int i = 0; i < maxTCPclients; i++) {
+        TCPclient *tcpClientPtr = &tcpClients[i];
+        if (tcpClientPtr->client) {
+            rVal = tcpClientPtr->client.connected();
+        }
     }
     return rVal;
 }
 
 void DashioTCP::sendMessage(const String& message) {
-    if (client.connected()) {
-        client.print(message);
-
-        if (printMessages) {
-            Serial.println(F("---- TCP Sent ----"));
-            Serial.println(message);
+    for (int i = 0; i < maxTCPclients; i++) {
+        WiFiClient *clientPtr = &tcpClients[i].client;
+        if (clientPtr->connected()) {
+            clientPtr->print(message);
+            if (printMessages) {
+                Serial.println(F("---- TCP Sent ----"));
+                Serial.println(message);
+            }
         }
     }
 }
@@ -312,54 +322,71 @@ void DashioTCP::processConfig() {
     sendMessage(String('\n'));
 }
 
-void DashioTCP::run() {
-    if (!client) {
-        client = wifiServer.accept();
-        client.setTimeout(2000);
-    } else {
-       if (client.connected()) {
-            while (client.available()>0) {
-                char c = client.read();
-                if (data.processChar(c)) {
-                    if (printMessages) {
-                        Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
+bool DashioTCP::checkTCP(int index) {
+    TCPclient *tcpClientPtr = &tcpClients[index];
+    if (tcpClientPtr->client.connected()) {
+        while (tcpClientPtr->client.available()>0) {
+            char c = tcpClientPtr->client.read();
+            if (tcpClientPtr->data.processChar(c)) {
+                if (printMessages) {
+                    Serial.println(tcpClientPtr->data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(tcpClientPtr->data.control)));
+                }
+                
+                if (passThrough) {
+                    if (processTCPmessageCallback != nullptr) {
+                        processTCPmessageCallback(&tcpClientPtr->data);
                     }
-                    
-                    if (passThrough) {
-                        if (processTCPmessageCallback != nullptr) {
-                            processTCPmessageCallback(&data);
-                        }
-                    } else {
-                        switch (data.control) {
-                        case who:
-                            sendMessage(dashioDevice->getWhoMessage());
-                            break;
-                        case connect:
-                            sendMessage(dashioDevice->getConnectMessage());
-                            break;
-                        case config:
-                            dashioDevice->dashboardID = data.idStr;
-                            if (dashioDevice->configC64Str != NULL) {
-                                processConfig();
-                            } else {
-                                if (processTCPmessageCallback != nullptr) {
-                                    processTCPmessageCallback(&data);
-                                }
-                            }
-                            break;
-                        default:
+                } else {
+                    switch (tcpClientPtr->data.control) {
+                    case who:
+                        sendMessage(dashioDevice->getWhoMessage());
+                        break;
+                    case connect:
+                        sendMessage(dashioDevice->getConnectMessage());
+                        break;
+                    case config:
+                        dashioDevice->dashboardID = tcpClientPtr->data.idStr;
+                        if (dashioDevice->configC64Str != NULL) {
+                            processConfig();
+                        } else {
                             if (processTCPmessageCallback != nullptr) {
-                                processTCPmessageCallback(&data);
+                                processTCPmessageCallback(&tcpClientPtr->data);
                             }
-                            break;
                         }
+                        break;
+                    default:
+                        if (processTCPmessageCallback != nullptr) {
+                            processTCPmessageCallback(&tcpClientPtr->data);
+                        }
+                        break;
                     }
                 }
             }
-        } else {
-            client.stop();
-            client = wifiServer.accept();
-            client.setTimeout(2000);
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void DashioTCP::run() {
+    WiFiClient newClient = wifiServer.accept();
+    if (newClient) {
+        for (int i = 0; i < maxTCPclients; ++i) {
+            if (!tcpClients[i].client) {
+                newClient.setTimeout(2000);
+                tcpClients[i].client = newClient;
+                break;
+            }
+        }
+    }
+
+    for (int i = 0; i < maxTCPclients; i++) {
+        if (!checkTCP(i)) {
+            if (tcpClients[i].client) {
+                tcpClients[i].client.stop(); // This doesn't every get called
+//                tcpClients[i].client = 0;
+            }
         }
     }
     

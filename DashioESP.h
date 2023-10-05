@@ -37,7 +37,6 @@
     #include <ESP8266mDNS.h>   // Included in the 8266 Arduino library
 #elif ESP32
     #include <NimBLEDevice.h>  // ESP32 BLE Arduino library by Neil Kolban. Included in Arduino IDE
-    #include <esp_gatts_api.h> // needed to close ble service 
     #include <ESPmDNS.h>       // Included in the espressif library
 #endif
 
@@ -52,13 +51,20 @@
 
 // ---------------------------------------- TCP ----------------------------------------
 
+struct TCPclient {
+    WiFiClient client;
+    MessageData data = MessageData(TCP_CONN);
+};
+
 class DashioTCP {
 private:
     bool printMessages;
     DashioDevice *dashioDevice;
-    MessageData data;
-    WiFiClient client;
     WiFiServer wifiServer;
+    TCPclient *tcpClients;
+    uint8_t maxTCPclients = 1;
+
+    bool checkTCP(int index);
     void (*processTCPmessageCallback)(MessageData *messageData);
     void processConfig();
 
@@ -67,7 +73,7 @@ public:
     bool passThrough = false;
     uint8_t hasClient();
 
-    DashioTCP(DashioDevice *_dashioDevice, bool _printMessages = false, uint16_t _tcpPort = 5650);
+    DashioTCP(DashioDevice *_dashioDevice, bool _printMessages = false, uint16_t _tcpPort = 5650, uint8_t _maxTCPclients = 1);
     void setCallback(void (*processIncomingMessage)(MessageData *messageData));
     void setPort(uint16_t _tcpPort);
     void begin();
