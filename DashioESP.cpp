@@ -247,8 +247,6 @@ void DashioTCP::setPort(uint16_t _tcpPort) {
 }
 
 void DashioTCP::begin() {
-Serial.print("Max clients: ");//???
-Serial.println(maxTCPclients);//???
     wifiServer.begin(tcpPort);
 }
 
