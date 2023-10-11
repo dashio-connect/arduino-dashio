@@ -103,7 +103,6 @@ private:
     WiFiClientSecure wifiClient;
     MQTTClient mqttClient;
     int mqttConnectCount = 0;
-    bool sendRebootAlarm;
     char *username;
     char *password;
     void (*processMQTTmessageCallback)(MessageData *messageData);
@@ -130,6 +129,7 @@ public:
     bool passThrough = false;
     MQTTstate state = notReady;
     bool esp32_mqtt_blocking = true;
+    bool sendRebootAlarm;
 
     DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm = false, bool _printMessages = false);
     void setup(char *_username, char *_password);
