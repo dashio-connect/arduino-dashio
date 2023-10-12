@@ -291,6 +291,12 @@ void DashioTCP::setupmDNSservice(const String& id) {
 }
     
 void DashioTCP::end() {
+    for (int i = 0; i < maxTCPclients; i++) {
+        if (tcpClients[i].client) {
+            tcpClients[i].client.stop();
+        }
+    }
+
 #ifdef ESP8266
     MDNS.close();
 #endif
