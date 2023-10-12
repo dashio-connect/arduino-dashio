@@ -24,8 +24,8 @@
 
 #include "DashioSerial.h"
 
-DashSerial::DashSerial(DashioDevice *_dashioDevice, bool _printMessages) : data(SERIAL_CONN) {
-    dashioDevice = _dashioDevice;
+DashSerial::DashSerial(DashDevice *_dashDevice, bool _printMessages) : data(SERIAL_CONN) {
+    dashDevice = _dashDevice;
     printMessages = _printMessages;
 }
 
@@ -42,29 +42,29 @@ void DashSerial::actOnMessage() {
 
     switch (data.control) {
         case who:
-            responseMessage = dashioDevice->getWhoMessage();
+            responseMessage = dashDevice->getWhoMessage();
             if (printMessages) {
-                Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(who)));
+                Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(who)));
             }
             if (transmitMessage) {
                 transmitMessage(responseMessage);
             }
             break;
         case connect:
-            responseMessage = dashioDevice->getConnectMessage();
+            responseMessage = dashDevice->getConnectMessage();
             if (printMessages) {
-                Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(connect)));
+                Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(connect)));
             }
             if (transmitMessage) {
                 transmitMessage(responseMessage);
             }
             break;
         case config:
-            if (dashioDevice->configC64Str) {
-                responseMessage = dashioDevice->getC64ConfigMessage();
+            if (dashDevice->configC64Str) {
+                responseMessage = dashDevice->getC64ConfigMessage();
             }
             if (printMessages) {
-                Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(config)));
+                Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(config)));
             }
             if (transmitMessage) {
                 transmitMessage(responseMessage);
@@ -72,7 +72,7 @@ void DashSerial::actOnMessage() {
             break;
         default:
             if (printMessages) {
-                Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
+                Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(data.control)));
             }
             if(processSerialmessageCallback) {
                 processSerialmessageCallback(&data);
@@ -85,4 +85,46 @@ void DashSerial::processChar(char chr) {
     if (data.processChar(chr)) {
         actOnMessage();
     }
+}
+
+void DashSerial::sendControlMessage(const String& controlID, const String& payload) {
+    String message((char *)0);
+    message.reserve(100);
+
+    if (!controlID.isEmpty()) {
+        message = DELIM;
+        message += dashDevice->deviceID;
+    }
+    message += DELIM;
+    message += CTRL;
+    if (!controlID.isEmpty()) {
+        message += DELIM;
+        message += controlID;
+    }
+    if (!payload.isEmpty()) {
+        message += DELIM;
+        message += payload;
+    }
+    message += END_DELIM;
+
+    transmitMessage(message);
+}
+
+void DashSerial::sendStoreConfig(const String &cfgStr, int cfgRev) {
+    String message((char *)0);
+    message.reserve(cfgStr.length() + 100);
+    
+    message = DELIM;
+    message += dashDevice->deviceID;
+    message += DELIM;
+    message += CTRL;
+    message += DELIM;
+    message += RAM;
+    message += DELIM;
+    message += cfgStr;
+    message += DELIM;
+    message += String(cfgRev);
+    message += END_DELIM;
+
+    transmitMessage(message);
 }

@@ -28,23 +28,36 @@
 #include "Arduino.h"
 #include "Dashio.h"
 
+const char CTRL[] = "CTRL";
+const char MODE[] = "MODE";
+const char NORMAL[] = "NML";
+const char HALT[] = "HLT";
+const char CGF[] = "CFG";
+const char BLE[] = "BLE";
+const char TCP[] = "TCP";
+const char MQTT[] = "MQTT";
+const char REBOOT[] = "REBOOT";
+const char SLEEP[] = "SLEEP";
+const char RAM[] = "RAM";
+
 class DashSerial {
-  private:
+private:
     bool printMessages;
-    DashioDevice *dashioDevice;
+    DashDevice *dashDevice;
     MessageData data;
     void (*processSerialmessageCallback)(MessageData *MessageData);
 
-    
-
-  public:
-    DashSerial(DashioDevice *_dashioDevice, bool _printMessages = false);
+public:
+    DashSerial(DashDevice *_dashDevice, bool _printMessages = false);
     void setCallback(void(*processIncomingMessage)(MessageData *messageData));
     void (*transmitMessage)(const String& outgoingMessage);
     void setTransmit(void(*sendMessage)(const String& outgoingMessage));
     
     void processChar(char chr);
     void actOnMessage();
+
+    void sendControlMessage(const String& controlID = "", const String& payload = "");
+    void sendStoreConfig(const String &cfgStr, int cfgRev);
 
     String responseMessage;
 };
