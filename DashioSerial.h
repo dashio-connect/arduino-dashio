@@ -31,14 +31,18 @@
 const char CTRL[] = "CTRL";
 const char MODE[] = "MODE";
 const char NORMAL[] = "NML";
+const char PASS[] = "PSTH";
 const char HALT[] = "HLT";
 const char CGF[] = "CFG";
 const char BLE[] = "BLE";
 const char TCP[] = "TCP";
 const char MQTT[] = "MQTT";
+const char CNCTN[] = "CNCTN";
 const char REBOOT[] = "REBOOT";
 const char SLEEP[] = "SLEEP";
 const char RAM[] = "RAM";
+const char NAME[] = "NAME";
+const char WIFI[] = "WIFI";
 
 class DashSerial {
 private:
@@ -56,8 +60,9 @@ public:
     void processChar(char chr);
     void actOnMessage();
 
-    void sendControlMessage(const String& controlID = "", const String& payload = "");
+    void sendControlMessage(const String& controlID, const String& payload = "");
     void sendStoreConfig(const String &cfgStr, int cfgRev);
+    void sendPing();
 
     String responseMessage;
 };

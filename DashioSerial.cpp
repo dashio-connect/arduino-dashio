@@ -87,6 +87,10 @@ void DashSerial::processChar(char chr) {
     }
 }
 
+void DashSerial::sendPing() {
+    sendControlMessage("");
+}
+
 void DashSerial::sendControlMessage(const String& controlID, const String& payload) {
     String message((char *)0);
     message.reserve(100);
@@ -113,7 +117,7 @@ void DashSerial::sendControlMessage(const String& controlID, const String& paylo
 void DashSerial::sendStoreConfig(const String &cfgStr, int cfgRev) {
     String message((char *)0);
     message.reserve(cfgStr.length() + 100);
-    
+
     message = DELIM;
     message += dashDevice->deviceID;
     message += DELIM;
