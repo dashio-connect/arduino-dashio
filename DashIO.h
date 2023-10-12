@@ -69,6 +69,9 @@ extern char DASH_SERVER[];
 #define INVALID_FLOAT_VALUE 0xFFFFFFFF
 #define INVALID_INT_VALUE INT_MAX
 
+const char END_DELIM = '\n';
+const char DELIM = '\t';
+
 enum ConnectionType {
     TCP_CONN,
     BLE_CONN,

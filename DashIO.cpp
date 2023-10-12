@@ -113,9 +113,6 @@
 
 char DASH_SERVER[] = "dash.dashio.io";
 
-const char END_DELIM = '\n';
-const char DELIM = '\t';
-
 String formatFloat(float value) {
     if (value == INVALID_FLOAT_VALUE) {
         return "nan";
