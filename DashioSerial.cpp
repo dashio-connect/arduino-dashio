@@ -87,11 +87,15 @@ void DashSerial::processChar(char chr) {
     }
 }
 
-void DashSerial::sendPing() {
-    sendControlMessage("");
+void DashSerial::sendCtrlPing() {
+    sendCtrllSetup("");
 }
 
-void DashSerial::sendControlMessage(const String& controlID, const String& payload) {
+void DashSerial::sendCtrllSetup(const String &controlID, int value) {
+    sendCtrllSetup(controlID, String(value));
+}
+
+void DashSerial::sendCtrllSetup(const String &controlID, const String& payload) {
     String message((char *)0);
     message.reserve(100);
 
@@ -114,16 +118,14 @@ void DashSerial::sendControlMessage(const String& controlID, const String& paylo
     transmitMessage(message);
 }
 
-void DashSerial::sendStoreConfig(const String &cfgStr, int cfgRev) {
+void DashSerial::sendConfig(const String &cfgStr, int cfgRev) {
     String message((char *)0);
     message.reserve(cfgStr.length() + 100);
 
     message = DELIM;
     message += dashDevice->deviceID;
     message += DELIM;
-    message += CTRL;
-    message += DELIM;
-    message += RAM;
+    message += CFG;
     message += DELIM;
     message += cfgStr;
     message += DELIM;

@@ -29,6 +29,7 @@
 #include "Dashio.h"
 
 const char CTRL[] = "CTRL";
+const char CFG[] = "CFG";
 const char MODE[] = "MODE";
 const char NORMAL[] = "NML";
 const char PASS[] = "PSTH";
@@ -60,9 +61,10 @@ public:
     void processChar(char chr);
     void actOnMessage();
 
-    void sendControlMessage(const String& controlID, const String& payload = "");
-    void sendStoreConfig(const String &cfgStr, int cfgRev);
-    void sendPing();
+    void sendCtrlPing();
+    void sendCtrllSetup(const String &controlID, int value);
+    void sendCtrllSetup(const String &controlID, const String& payload = "");
+    void sendConfig(const String &cfgStr, int cfgRev);
 
     String responseMessage;
 };

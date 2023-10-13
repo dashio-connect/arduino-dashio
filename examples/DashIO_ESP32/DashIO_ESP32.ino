@@ -329,7 +329,7 @@ void loop() {
                 num = -200 - num;
             }
 
-            // CReate something for TimeGraph control
+            // Create something for TimeGraph control
             messageToSend += dashDevice.getTimeGraphPoint(TGRAPH_ID, "l1", float(num));
             sawNum += 20;
             if (sawNum > 200) {
