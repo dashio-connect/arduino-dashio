@@ -127,6 +127,8 @@ void DashSerial::sendConfig(const String &cfgStr, int cfgRev) {
     message += DELIM;
     message += CFG;
     message += DELIM;
+    message += C64;
+    message += DELIM;
     message += cfgStr;
     message += DELIM;
     message += String(cfgRev);
