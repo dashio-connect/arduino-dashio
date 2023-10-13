@@ -134,3 +134,67 @@ void DashSerial::sendConfig(const String &cfgStr, int cfgRev) {
 
     transmitMessage(message);
 }
+
+void DashSerial::sendName(const String &deviceName) {
+    String message((char *)0);
+    message.reserve(100);
+
+    message = DELIM;
+    message += dashDevice->deviceID;
+    message += DELIM;
+    message += NAME;
+    message += DELIM;
+    message += deviceName;
+    message += END_DELIM;
+
+    transmitMessage(message);
+};
+
+void DashSerial::sendWiFiCredentials(const String &SSID, const String &password) {
+    String message((char *)0);
+    message.reserve(100);
+
+    message = DELIM;
+    message += dashDevice->deviceID;
+    message += DELIM;
+    message += WIFI;
+    message += DELIM;
+    message += SSID;
+    message += DELIM;
+    message += password;
+    message += END_DELIM;
+
+    transmitMessage(message);
+};
+
+void DashSerial::sendTCPport(uint16_t port) {
+    String message((char *)0);
+    message.reserve(100);
+
+    message = DELIM;
+    message += dashDevice->deviceID;
+    message += DELIM;
+    message += TCP;
+    message += DELIM;
+    message += String(port);
+    message += END_DELIM;
+
+    transmitMessage(message);
+};
+
+void DashSerial::sendDashCredentials(const String &username, const String &password) {
+    String message((char *)0);
+    message.reserve(100);
+
+    message = DELIM;
+    message += dashDevice->deviceID;
+    message += DELIM;
+    message += DASHIO;
+    message += DELIM;
+    message += username;
+    message += DELIM;
+    message += password;
+    message += END_DELIM;
+
+    transmitMessage(message);
+};

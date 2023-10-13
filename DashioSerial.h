@@ -44,12 +44,14 @@ const char SLEEP[] = "SLEEP";
 const char RAM[] = "RAM";
 const char NAME[] = "NAME";
 const char WIFI[] = "WIFI";
+const char DASHIO[] = "DASHIO";
 
 class DashSerial {
 private:
     bool printMessages;
     DashDevice *dashDevice;
     MessageData data;
+    String responseMessage;
     void (*processSerialmessageCallback)(MessageData *MessageData);
 
 public:
@@ -65,8 +67,10 @@ public:
     void sendCtrllSetup(const String &controlID, int value);
     void sendCtrllSetup(const String &controlID, const String& payload = "");
     void sendConfig(const String &cfgStr, int cfgRev);
-
-    String responseMessage;
+    void sendName(const String &deviceName);
+    void sendWiFiCredentials(const String &SSID, const String &password);
+    void sendTCPport(uint16_t port);
+    void sendDashCredentials(const String &username, const String &password);
 };
 
 #endif
