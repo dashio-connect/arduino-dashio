@@ -29,12 +29,9 @@ DashSerial::DashSerial(DashDevice *_dashDevice, bool _printMessages) : data(SERI
     printMessages = _printMessages;
 }
 
-void DashSerial::setCallback(void(*processIncomingMessage)(MessageData *messageData)) {
-    processSerialmessageCallback = processIncomingMessage;
-}
-
-void DashSerial::setTransmit(void(*sendMessage)(const String& outgoingMessage)) {
-    transmitMessage = sendMessage;
+void DashSerial::setCallbacksRxTx(void(*processIncomingMessage)(MessageData *messageData), void(*sendMessage)(const String& outgoingMessage)) {
+    processRxMessageCallback = processIncomingMessage;
+    txMessageCallback = sendMessage;
 }
 
 void DashSerial::actOnMessage() {
@@ -46,8 +43,8 @@ void DashSerial::actOnMessage() {
             if (printMessages) {
                 Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(who)));
             }
-            if (transmitMessage) {
-                transmitMessage(responseMessage);
+            if (txMessageCallback) {
+                txMessageCallback(responseMessage);
             }
             break;
         case connect:
@@ -55,8 +52,8 @@ void DashSerial::actOnMessage() {
             if (printMessages) {
                 Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(connect)));
             }
-            if (transmitMessage) {
-                transmitMessage(responseMessage);
+            if (txMessageCallback) {
+                txMessageCallback(responseMessage);
             }
             break;
         case config:
@@ -66,16 +63,16 @@ void DashSerial::actOnMessage() {
             if (printMessages) {
                 Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(config)));
             }
-            if (transmitMessage) {
-                transmitMessage(responseMessage);
+            if (txMessageCallback) {
+                txMessageCallback(responseMessage);
             }
             break;
         default:
             if (printMessages) {
                 Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(data.control)));
             }
-            if(processSerialmessageCallback) {
-                processSerialmessageCallback(&data);
+            if(processRxMessageCallback) {
+                processRxMessageCallback(&data);
             }
             break;
     }
@@ -87,31 +84,31 @@ void DashSerial::processChar(char chr) {
     }
 }
 
-void DashSerial::sendCtrllSetup(const String &controlID) {
-    if (controlID == CTRL) {
-        sendCtrllSetup("", "");
+void DashSerial::sendCtrl(const String &control) {
+    if (control == CTRL) {
+        sendCtrl("", "");
     } else {
-        sendCtrllSetup(controlID, "");
+        sendCtrl(control, "");
     }
 }
 
-void DashSerial::sendCtrllSetup(const String &controlID, int value) {
-    sendCtrllSetup(controlID, String(value));
+void DashSerial::sendCtrl(const String &control, int value) {
+    sendCtrl(control, String(value));
 }
 
-void DashSerial::sendCtrllSetup(const String &controlID, const String& value) {
+void DashSerial::sendCtrl(const String &control, const String& value) {
     String message((char *)0);
     message.reserve(100);
 
-    if (!controlID.isEmpty()) {
+    if (!control.isEmpty()) {
         message = DELIM;
         message += dashDevice->deviceID;
     }
     message += DELIM;
     message += CTRL;
-    if (!controlID.isEmpty()) {
+    if (!control.isEmpty()) {
         message += DELIM;
-        message += controlID;
+        message += control;
     }
     if (!value.isEmpty()) {
         message += DELIM;
@@ -119,7 +116,7 @@ void DashSerial::sendCtrllSetup(const String &controlID, const String& value) {
     }
     message += END_DELIM;
 
-    transmitMessage(message);
+    txMessageCallback(message);
 }
 
 void DashSerial::sendConfig(const String &cfgStr, int cfgRev) {
@@ -138,7 +135,7 @@ void DashSerial::sendConfig(const String &cfgStr, int cfgRev) {
     message += String(cfgRev);
     message += END_DELIM;
 
-    transmitMessage(message);
+    txMessageCallback(message);
 }
 
 void DashSerial::sendName(const String &deviceName) {
@@ -153,7 +150,7 @@ void DashSerial::sendName(const String &deviceName) {
     message += deviceName;
     message += END_DELIM;
 
-    transmitMessage(message);
+    txMessageCallback(message);
 };
 
 void DashSerial::sendWiFiCredentials(const String &SSID, const String &password) {
@@ -170,7 +167,7 @@ void DashSerial::sendWiFiCredentials(const String &SSID, const String &password)
     message += password;
     message += END_DELIM;
 
-    transmitMessage(message);
+    txMessageCallback(message);
 };
 
 void DashSerial::sendTCPport(uint16_t port) {
@@ -185,7 +182,7 @@ void DashSerial::sendTCPport(uint16_t port) {
     message += String(port);
     message += END_DELIM;
 
-    transmitMessage(message);
+    txMessageCallback(message);
 };
 
 void DashSerial::sendDashCredentials(const String &username, const String &password) {
@@ -202,5 +199,5 @@ void DashSerial::sendDashCredentials(const String &username, const String &passw
     message += password;
     message += END_DELIM;
 
-    transmitMessage(message);
+    txMessageCallback(message);
 };

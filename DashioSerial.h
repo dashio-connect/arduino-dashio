@@ -52,20 +52,19 @@ private:
     DashDevice *dashDevice;
     MessageData data;
     String responseMessage;
-    void (*processSerialmessageCallback)(MessageData *MessageData);
-    void (*transmitMessage)(const String& outgoingMessage);
+    void (*processRxMessageCallback)(MessageData *MessageData);
+    void (*txMessageCallback)(const String& outgoingMessage);
 
     void actOnMessage();
 
 public:
     DashSerial(DashDevice *_dashDevice, bool _printMessages = false);
-    void setCallback(void(*processIncomingMessage)(MessageData *messageData));
-    void setTransmit(void(*sendMessage)(const String& outgoingMessage));
+    void setCallbacksRxTx(void(*processIncomingMessage)(MessageData *messageData), void(*sendMessage)(const String& outgoingMessage));
     void processChar(char chr);
 
-    void sendCtrllSetup(const String &controlID);
-    void sendCtrllSetup(const String &controlID, int value);
-    void sendCtrllSetup(const String &controlID, const String& value);
+    void sendCtrl(const String &control);
+    void sendCtrl(const String &control, int value);
+    void sendCtrl(const String &control, const String& value);
     void sendConfig(const String &cfgStr, int cfgRev);
     void sendName(const String &deviceName);
     void sendWiFiCredentials(const String &SSID, const String &password);
