@@ -53,19 +53,19 @@ private:
     MessageData data;
     String responseMessage;
     void (*processSerialmessageCallback)(MessageData *MessageData);
+    void (*transmitMessage)(const String& outgoingMessage);
+
+    void actOnMessage();
 
 public:
     DashSerial(DashDevice *_dashDevice, bool _printMessages = false);
     void setCallback(void(*processIncomingMessage)(MessageData *messageData));
-    void (*transmitMessage)(const String& outgoingMessage);
     void setTransmit(void(*sendMessage)(const String& outgoingMessage));
-    
     void processChar(char chr);
-    void actOnMessage();
 
-    void sendCtrlPing();
+    void sendCtrllSetup(const String &controlID);
     void sendCtrllSetup(const String &controlID, int value);
-    void sendCtrllSetup(const String &controlID, const String& payload = "");
+    void sendCtrllSetup(const String &controlID, const String& value);
     void sendConfig(const String &cfgStr, int cfgRev);
     void sendName(const String &deviceName);
     void sendWiFiCredentials(const String &SSID, const String &password);

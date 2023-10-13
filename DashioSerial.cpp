@@ -87,15 +87,19 @@ void DashSerial::processChar(char chr) {
     }
 }
 
-void DashSerial::sendCtrlPing() {
-    sendCtrllSetup("");
+void DashSerial::sendCtrllSetup(const String &controlID) {
+    if (controlID == CTRL) {
+        sendCtrllSetup("", "");
+    } else {
+        sendCtrllSetup(controlID, "");
+    }
 }
 
 void DashSerial::sendCtrllSetup(const String &controlID, int value) {
     sendCtrllSetup(controlID, String(value));
 }
 
-void DashSerial::sendCtrllSetup(const String &controlID, const String& payload) {
+void DashSerial::sendCtrllSetup(const String &controlID, const String& value) {
     String message((char *)0);
     message.reserve(100);
 
@@ -109,9 +113,9 @@ void DashSerial::sendCtrllSetup(const String &controlID, const String& payload) 
         message += DELIM;
         message += controlID;
     }
-    if (!payload.isEmpty()) {
+    if (!value.isEmpty()) {
         message += DELIM;
-        message += payload;
+        message += value;
     }
     message += END_DELIM;
 
