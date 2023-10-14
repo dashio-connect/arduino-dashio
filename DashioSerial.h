@@ -64,7 +64,7 @@ public:
     void sendCtrl(const String &control);
     void sendCtrl(const String &control, int value);
     void sendCtrl(const String &control, const String& value);
-    void sendCtrlConfig(const String &cfgStr, int cfgRev);
+    void sendCtrl(const String &control, const String &value1, int value2);
     void sendName(const String &deviceName);
     void sendWiFiCredentials(const String &SSID, const String &password);
     void sendTCPport(uint16_t port);

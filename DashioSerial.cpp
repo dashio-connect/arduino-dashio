@@ -119,23 +119,25 @@ void DashSerial::sendCtrl(const String &control, const String& value) {
     txMessageCallback(message);
 }
 
-void DashSerial::sendCtrlConfig(const String &cfgStr, int cfgRev) {
-    String message((char *)0);
-    message.reserve(cfgStr.length() + 100);
+void DashSerial::sendCtrl(const String &control, const String &value1, int value2) {
+    if (control == CFG) {
+        String message((char *)0);
+        message.reserve(value1.length() + 100);
 
-    message = DELIM;
-    message += dashDevice->deviceID;
-    message += DELIM;
-    message += CTRL;
-    message += DELIM;
-    message += CFG;
-    message += DELIM;
-    message += cfgStr;
-    message += DELIM;
-    message += String(cfgRev);
-    message += END_DELIM;
+        message = DELIM;
+        message += dashDevice->deviceID;
+        message += DELIM;
+        message += CTRL;
+        message += DELIM;
+        message += CFG;
+        message += DELIM;
+        message += value1;
+        message += DELIM;
+        message += String(value2);
+        message += END_DELIM;
 
-    txMessageCallback(message);
+        txMessageCallback(message);
+    }
 }
 
 void DashSerial::sendName(const String &deviceName) {
