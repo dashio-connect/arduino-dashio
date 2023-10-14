@@ -35,7 +35,6 @@ const char NORMAL[] = "NML";
 const char PASS[] = "PSTH";
 const char HALT[] = "HLT";
 const char CGF[] = "CFG";
-const char C64[] = "C64";
 const char BLE[] = "BLE";
 const char TCP[] = "TCP";
 const char MQTT[] = "MQTT";
@@ -65,7 +64,7 @@ public:
     void sendCtrl(const String &control);
     void sendCtrl(const String &control, int value);
     void sendCtrl(const String &control, const String& value);
-    void sendConfig(const String &cfgStr, int cfgRev);
+    void sendCtrlConfig(const String &cfgStr, int cfgRev);
     void sendName(const String &deviceName);
     void sendWiFiCredentials(const String &SSID, const String &password);
     void sendTCPport(uint16_t port);

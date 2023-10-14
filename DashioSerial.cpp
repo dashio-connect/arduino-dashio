@@ -119,16 +119,16 @@ void DashSerial::sendCtrl(const String &control, const String& value) {
     txMessageCallback(message);
 }
 
-void DashSerial::sendConfig(const String &cfgStr, int cfgRev) {
+void DashSerial::sendCtrlConfig(const String &cfgStr, int cfgRev) {
     String message((char *)0);
     message.reserve(cfgStr.length() + 100);
 
     message = DELIM;
     message += dashDevice->deviceID;
     message += DELIM;
-    message += CFG;
+    message += CTRL;
     message += DELIM;
-    message += C64;
+    message += CFG;
     message += DELIM;
     message += cfgStr;
     message += DELIM;
