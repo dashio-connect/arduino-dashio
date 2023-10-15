@@ -140,6 +140,27 @@ void DashSerial::sendCtrl(const String &control, const String &value1, int value
     }
 }
 
+void DashSerial::sendCtrl(const String &control, const String &value1, const String value2) {
+    if (control == STE) {
+        String message((char *)0);
+        message.reserve(value1.length() + 100);
+
+        message = DELIM;
+        message += dashDevice->deviceID;
+        message += DELIM;
+        message += CTRL;
+        message += DELIM;
+        message += STE;
+        message += DELIM;
+        message += value1;
+        message += DELIM;
+        message += value2;
+        message += END_DELIM;
+
+        txMessageCallback(message);
+    }
+}
+
 void DashSerial::sendName(const String &deviceName) {
     String message((char *)0);
     message.reserve(100);

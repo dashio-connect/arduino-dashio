@@ -44,6 +44,11 @@ const char SLEEP[] = "SLEEP";
 const char NAME[] = "NAME";
 const char WIFI[] = "WIFI";
 const char DASHIO[] = "DASHIO";
+const char STE[] = "STE";
+const char TGRPH[] = "TGRPH";
+const char MAP[] = "MAP";
+const char LOG[] = "LOG";
+
 
 class DashSerial {
 private:
@@ -65,6 +70,7 @@ public:
     void sendCtrl(const String &control, int value);
     void sendCtrl(const String &control, const String& value);
     void sendCtrl(const String &control, const String &value1, int value2);
+    void sendCtrl(const String &control, const String &value1, const String value2);
     void sendName(const String &deviceName);
     void sendWiFiCredentials(const String &SSID, const String &password);
     void sendTCPport(uint16_t port);
