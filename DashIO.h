@@ -366,6 +366,7 @@ public:
     String getDataStoreEnableMessage(DashStore dashStore);
 
     String getControlTypeStr(ControlType controltype);
+    ControlType getControlType(String controltypeStr);
 
     String getMQTTSubscribeTopic(const String& userName);
     String getMQTTTopic(const String& userName, MQTTTopicType topic);
