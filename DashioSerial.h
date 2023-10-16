@@ -49,6 +49,12 @@ const char TGRPH[] = "TGRPH";
 const char MAP[] = "MAP";
 const char LOG[] = "LOG";
 
+enum ActionType {
+    normal,
+    passthrough,
+    storeEnable,
+    noAction
+};
 
 class DashSerial {
 private:
@@ -60,17 +66,19 @@ private:
     void (*txMessageCallback)(const String& outgoingMessage);
 
     void actOnMessage();
+    String getActionStr(ActionType actionType);
 
 public:
     DashSerial(DashDevice *_dashDevice, bool _printMessages = false);
     void setCallbacksRxTx(void(*processIncomingMessage)(MessageData *messageData), void(*sendMessage)(const String& outgoingMessage));
     void processChar(char chr);
 
-    void sendCtrl(const String &control);
-    void sendCtrl(const String &control, int value);
-    void sendCtrl(const String &control, const String& value);
-    void sendCtrl(const String &control, const String &value1, int value2);
-    void sendCtrl(const String &control, const String &value1, const String value2);
+    void sendCtrl(ControlType controlType);
+    void sendCtrl(ControlType controlType, int value);
+    void sendCtrl(ControlType controlType, ActionType actionType);
+    void sendCtrl(ControlType controlType, const String &value1, int value2);
+    void sendCtrl(ControlType controlType, const String &value1, const String value2);
+    void sendCtrl(ControlType controlType, ActionType actionType, const String value);
     void sendName(const String &deviceName);
     void sendWiFiCredentials(const String &SSID, const String &password);
     void sendTCPport(uint16_t port);

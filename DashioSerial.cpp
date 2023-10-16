@@ -84,43 +84,68 @@ void DashSerial::processChar(char chr) {
     }
 }
 
-void DashSerial::sendCtrl(const String &control) {
-    if (control == CTRL) {
-        sendCtrl("", "");
+String DashSerial::getActionStr(ActionType actionType) {
+    switch (actionType) {
+        case normal: return NORMAL;
+        case passthrough: return PASS;
+        case storeEnable: return STE;
+    }
+    return "";
+}
+
+void DashSerial::sendCtrl(ControlType controlType) {
+    if (controlType == ctrl) {
+        String message((char *)0);
+        message.reserve(100);
+
+        message += DELIM;
+        message += CTRL;
+        message += END_DELIM;
+
+        txMessageCallback(message);
     } else {
-        sendCtrl(control, "");
+        sendCtrl(controlType, noAction);
     }
 }
 
-void DashSerial::sendCtrl(const String &control, int value) {
-    sendCtrl(control, String(value));
-}
-
-void DashSerial::sendCtrl(const String &control, const String& value) {
+void DashSerial::sendCtrl(ControlType controlType, int value) {
     String message((char *)0);
     message.reserve(100);
 
-    if (!control.isEmpty()) {
-        message = DELIM;
-        message += dashDevice->deviceID;
-    }
+    message = DELIM;
+    message += dashDevice->deviceID;
     message += DELIM;
     message += CTRL;
-    if (!control.isEmpty()) {
+    message += DELIM;
+    message += dashDevice->getControlTypeStr(controlType);
+    message += DELIM;
+    message += value;
+    message += END_DELIM;
+
+    txMessageCallback(message);
+}
+
+void DashSerial::sendCtrl(ControlType controlType, ActionType actionType) {
+    String message((char *)0);
+    message.reserve(100);
+
+    message = DELIM;
+    message += dashDevice->deviceID;
+    message += DELIM;
+    message += CTRL;
+    message += DELIM;
+    message += dashDevice->getControlTypeStr(controlType);
+    if (actionType != noAction) {
         message += DELIM;
-        message += control;
-    }
-    if (!value.isEmpty()) {
-        message += DELIM;
-        message += value;
+        message += getActionStr(actionType);
     }
     message += END_DELIM;
 
     txMessageCallback(message);
 }
 
-void DashSerial::sendCtrl(const String &control, const String &value1, int value2) {
-    if (control == CFG) {
+void DashSerial::sendCtrl(ControlType controlType, const String &value1, int value2) {
+    if (controlType == config) {
         String message((char *)0);
         message.reserve(value1.length() + 100);
 
@@ -140,25 +165,42 @@ void DashSerial::sendCtrl(const String &control, const String &value1, int value
     }
 }
 
-void DashSerial::sendCtrl(const String &control, const String &value1, const String value2) {
-    if (control == STE) {
-        String message((char *)0);
-        message.reserve(value1.length() + 100);
+void DashSerial::sendCtrl(ControlType controlType, const String &value1, const String value2) {
+    String message((char *)0);
+    message.reserve(value1.length() + 100);
 
-        message = DELIM;
-        message += dashDevice->deviceID;
-        message += DELIM;
-        message += CTRL;
-        message += DELIM;
-        message += STE;
-        message += DELIM;
-        message += value1;
-        message += DELIM;
-        message += value2;
-        message += END_DELIM;
+    message = DELIM;
+    message += dashDevice->deviceID;
+    message += DELIM;
+    message += CTRL;
+    message += DELIM;
+    message += value1;
+    message += DELIM;
+    message += dashDevice->getControlTypeStr(controlType);
+    message += DELIM;
+    message += value2;
+    message += END_DELIM;
 
-        txMessageCallback(message);
-    }
+    txMessageCallback(message);
+}
+
+void DashSerial::sendCtrl(ControlType controlType, ActionType actionType, const String value) {
+    String message((char *)0);
+    message.reserve(100);
+
+    message = DELIM;
+    message += dashDevice->deviceID;
+    message += DELIM;
+    message += CTRL;
+    message += DELIM;
+    message += getActionStr(actionType);
+    message += DELIM;
+    message += dashDevice->getControlTypeStr(controlType);
+    message += DELIM;
+    message += value;
+    message += END_DELIM;
+
+    txMessageCallback(message);
 }
 
 void DashSerial::sendName(const String &deviceName) {

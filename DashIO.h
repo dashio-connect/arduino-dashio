@@ -87,10 +87,12 @@ enum ControlType {
     status,
     config,
     pushToken,
+
     mqttConn,
     bleConn,
     tcpConn,
     alarmNotify,
+
     device,
     deviceView,
     label,
@@ -109,11 +111,15 @@ enum ControlType {
     mapper,
     colorPicker,
     audioVisual,
+
     deviceName,
     wifiSetup,
     tcpSetup,
     dashioSetup,
     mqttSetup,
+    commsMode,
+    toSleep,
+
     unknown
 };
 
