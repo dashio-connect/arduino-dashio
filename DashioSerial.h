@@ -33,6 +33,7 @@ const char CFG[] = "CFG";
 const char MODE[] = "MODE";
 const char NORMAL[] = "NML";
 const char PASS[] = "PSTH";
+const char ENABLE[] = "EN";
 const char HALT[] = "HLT";
 const char CGF[] = "CFG";
 const char BLE[] = "BLE";
@@ -44,17 +45,10 @@ const char SLEEP[] = "SLEEP";
 const char NAME[] = "NAME";
 const char WIFI[] = "WIFI";
 const char DASHIO[] = "DASHIO";
-const char STE[] = "STE";
+const char STORE_ENABLE[] = "STE";
 const char TGRPH[] = "TGRPH";
 const char MAP[] = "MAP";
 const char LOG[] = "LOG";
-
-enum ActionType {
-    normal,
-    passthrough,
-    storeEnable,
-    noAction
-};
 
 class DashSerial {
 private:
@@ -66,7 +60,6 @@ private:
     void (*txMessageCallback)(const String& outgoingMessage);
 
     void actOnMessage();
-    String getActionStr(ActionType actionType);
 
 public:
     DashSerial(DashDevice *_dashDevice, bool _printMessages = false);
@@ -75,10 +68,9 @@ public:
 
     void sendCtrl(ControlType controlType);
     void sendCtrl(ControlType controlType, int value);
-    void sendCtrl(ControlType controlType, ActionType actionType);
+    void sendCtrl(ControlType controlType, String value);
     void sendCtrl(ControlType controlType, const String &value1, int value2);
     void sendCtrl(ControlType controlType, const String &value1, const String value2);
-    void sendCtrl(ControlType controlType, ActionType actionType, const String value);
     void sendName(const String &deviceName);
     void sendWiFiCredentials(const String &SSID, const String &password);
     void sendTCPport(uint16_t port);

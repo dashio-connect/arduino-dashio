@@ -84,15 +84,6 @@ void DashSerial::processChar(char chr) {
     }
 }
 
-String DashSerial::getActionStr(ActionType actionType) {
-    switch (actionType) {
-        case normal: return NORMAL;
-        case passthrough: return PASS;
-        case storeEnable: return STE;
-    }
-    return "";
-}
-
 void DashSerial::sendCtrl(ControlType controlType) {
     if (controlType == ctrl) {
         String message((char *)0);
@@ -104,7 +95,7 @@ void DashSerial::sendCtrl(ControlType controlType) {
 
         txMessageCallback(message);
     } else {
-        sendCtrl(controlType, noAction);
+        sendCtrl(controlType, "");
     }
 }
 
@@ -125,7 +116,7 @@ void DashSerial::sendCtrl(ControlType controlType, int value) {
     txMessageCallback(message);
 }
 
-void DashSerial::sendCtrl(ControlType controlType, ActionType actionType) {
+void DashSerial::sendCtrl(ControlType controlType, String value) {
     String message((char *)0);
     message.reserve(100);
 
@@ -133,11 +124,16 @@ void DashSerial::sendCtrl(ControlType controlType, ActionType actionType) {
     message += dashDevice->deviceID;
     message += DELIM;
     message += CTRL;
+
     message += DELIM;
-    message += dashDevice->getControlTypeStr(controlType);
-    if (actionType != noAction) {
-        message += DELIM;
-        message += getActionStr(actionType);
+    if (controlType == ctrl) {
+        message += value;
+    } else {
+        message += dashDevice->getControlTypeStr(controlType);
+        if (!value.isEmpty()) {
+            message += DELIM;
+            message += value;
+        }
     }
     message += END_DELIM;
 
@@ -153,6 +149,7 @@ void DashSerial::sendCtrl(ControlType controlType, const String &value1, int val
         message += dashDevice->deviceID;
         message += DELIM;
         message += CTRL;
+
         message += DELIM;
         message += CFG;
         message += DELIM;
@@ -174,30 +171,19 @@ void DashSerial::sendCtrl(ControlType controlType, const String &value1, const S
     message += DELIM;
     message += CTRL;
     message += DELIM;
-    message += value1;
-    message += DELIM;
-    message += dashDevice->getControlTypeStr(controlType);
+
+    if (value1 == STORE_ENABLE) {
+        message += value1;
+        message += DELIM;
+        message += dashDevice->getControlTypeStr(controlType);
+    } else {
+        message += dashDevice->getControlTypeStr(controlType);
+        message += DELIM;
+        message += value1;
+    }
+
     message += DELIM;
     message += value2;
-    message += END_DELIM;
-
-    txMessageCallback(message);
-}
-
-void DashSerial::sendCtrl(ControlType controlType, ActionType actionType, const String value) {
-    String message((char *)0);
-    message.reserve(100);
-
-    message = DELIM;
-    message += dashDevice->deviceID;
-    message += DELIM;
-    message += CTRL;
-    message += DELIM;
-    message += getActionStr(actionType);
-    message += DELIM;
-    message += dashDevice->getControlTypeStr(controlType);
-    message += DELIM;
-    message += value;
     message += END_DELIM;
 
     txMessageCallback(message);
