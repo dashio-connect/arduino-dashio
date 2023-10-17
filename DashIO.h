@@ -118,7 +118,6 @@ enum ControlType {
     dashioSetup,
     mqttSetup,
     commsMode,
-    toSleep,
 
     unknown
 };
