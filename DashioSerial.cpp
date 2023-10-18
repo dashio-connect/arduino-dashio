@@ -130,7 +130,7 @@ void DashSerial::sendCtrl(ControlType controlType, String value) {
         message += value;
     } else {
         message += dashDevice->getControlTypeStr(controlType);
-        if (!value.isEmpty()) {
+        if (value.length() > 0) {
             message += DELIM;
             message += value;
         }
