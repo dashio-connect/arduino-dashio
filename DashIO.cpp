@@ -174,7 +174,7 @@ void MessageData::loadBuffer(const String& message) {
         Serial.print(F("Buffering message: "));
         Serial.println(message);
 
-        for (unsigned int i = 0; i < messageLength; i++) {
+        for (int i = 0; i < messageLength; i++) {
             buffer[bufferWritePtr] = message[i];
             bufferWritePtr++;
             if (bufferWritePtr >= bufferLength) {
