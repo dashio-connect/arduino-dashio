@@ -559,6 +559,33 @@ void DashioMQTT::hostConnect() {
             // Invalid URL or port => E = -3  R = 0
             // Invalid username or password => E = -10  R = 5
             // Invalid SSL record => E = -5  R = 6
+            
+            /* 
+            Error Codes
+             LWMQTT_SUCCESS = 0,
+             LWMQTT_BUFFER_TOO_SHORT = -1,
+             LWMQTT_VARNUM_OVERFLOW = -2,
+             LWMQTT_NETWORK_FAILED_CONNECT = -3,
+             LWMQTT_NETWORK_TIMEOUT = -4,
+             LWMQTT_NETWORK_FAILED_READ = -5,
+             LWMQTT_NETWORK_FAILED_WRITE = -6,
+             LWMQTT_REMAINING_LENGTH_OVERFLOW = -7,
+             LWMQTT_REMAINING_LENGTH_MISMATCH = -8,
+             LWMQTT_MISSING_OR_WRONG_PACKET = -9,
+             LWMQTT_CONNECTION_DENIED = -10,
+             LWMQTT_FAILED_SUBSCRIPTION = -11,
+             LWMQTT_SUBACK_ARRAY_OVERFLOW = -12,
+             LWMQTT_PONG_TIMEOUT = -13,
+
+            Return Codes
+             LWMQTT_CONNECTION_ACCEPTED = 0,
+             LWMQTT_UNACCEPTABLE_PROTOCOL = 1,
+             LWMQTT_IDENTIFIER_REJECTED = 2,
+             LWMQTT_SERVER_UNAVAILABLE = 3,
+             LWMQTT_BAD_USERNAME_OR_PASSWORD = 4,
+             LWMQTT_NOT_AUTHORIZED = 5,
+             LWMQTT_UNKNOWN_RETURN_CODE = 6
+           */
         }
         state = disconnected;
     }

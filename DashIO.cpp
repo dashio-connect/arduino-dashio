@@ -451,6 +451,12 @@ void DashioDevice::setup(uint8_t m_address[6]) {
     deviceID = macStr.c_str();
 }
 
+void DashioDevice::appendDelimitedStr(String *str, const String& addStr) {
+    String message = *str;
+    *str += String(DELIM);
+    *str += addStr;
+}
+
 String DashioDevice::getOnlineMessage() {
     String message = String(DELIM);
     message += deviceID;
@@ -622,13 +628,21 @@ String DashioDevice::getSelectorMessage(const String& controlID, int index) {
     return message;
 }
 
-String DashioDevice::getSelectorMessage(const String& controlID, int index, String* selectionItems, int numItems) {
+String DashioDevice::getSelectorMessage(const String& controlID, int index, String selectionItems[], int numItems) {
     String message = getControlBaseMessage(SELECTOR_ID, controlID);
     message += String(index);
     for (int i = 0; i < numItems; i++) {
         message += String(DELIM);
         message += selectionItems[i];
     }
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getSelectorMessage(const String& controlID, int index, const String& selectionStr) {
+    String message = getControlBaseMessage(SELECTOR_ID, controlID);
+    message += String(index);
+    message += selectionStr;
     message += String(END_DELIM);
     return message;
 }
@@ -647,6 +661,13 @@ String DashioDevice::getSliderMessage(const String& controlID, float value) {
     return message;
 }
 
+String DashioDevice::getSliderMessage(const String& controlID) {
+    String message = getControlBaseMessage(SLIDER_ID, controlID);
+    message += NOT_AVAILABLE;
+    message += String(END_DELIM);
+    return message;
+}
+
 String DashioDevice::getSingleBarMessage(const String& controlID, int value) {
     String message = getControlBaseMessage(BAR_ID, controlID);
     message += formatInt(value);
@@ -657,6 +678,13 @@ String DashioDevice::getSingleBarMessage(const String& controlID, int value) {
 String DashioDevice::getSingleBarMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(BAR_ID, controlID);
     message += formatFloat(value);
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getSingleBarMessage(const String& controlID) {
+    String message = getControlBaseMessage(BAR_ID, controlID);
+    message += NOT_AVAILABLE;
     message += String(END_DELIM);
     return message;
 }
@@ -679,6 +707,15 @@ String DashioDevice::getDoubleBarMessage(const String& controlID, float value1, 
     return message;
 }
 
+String DashioDevice::getDoubleBarMessage(const String& controlID) {
+    String message = getControlBaseMessage(BAR_ID, controlID);
+    message += NOT_AVAILABLE;
+    message += String(DELIM);
+    message += NOT_AVAILABLE;
+    message += String(END_DELIM);
+    return message;
+}
+
 String DashioDevice::getKnobMessage(const String& controlID, int value) {
     String message = getControlBaseMessage(KNOB_ID, controlID);
     message += formatInt(value);
@@ -689,6 +726,13 @@ String DashioDevice::getKnobMessage(const String& controlID, int value) {
 String DashioDevice::getKnobMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(KNOB_ID, controlID);
     message += formatFloat(value);
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getKnobMessage(const String& controlID) {
+    String message = getControlBaseMessage(KNOB_ID, controlID);
+    message += NOT_AVAILABLE;
     message += String(END_DELIM);
     return message;
 }
@@ -707,6 +751,13 @@ String DashioDevice::getKnobDialMessage(const String& controlID, float value) {
     return message;
 }
 
+String DashioDevice::getKnobDialMessage(const String& controlID) {
+    String message = getControlBaseMessage(KNOB_DIAL_ID, controlID);
+    message += NOT_AVAILABLE;
+    message += String(END_DELIM);
+    return message;
+}
+
 String DashioDevice::getDialMessage(const String& controlID, int value) {
     String message = getControlBaseMessage(DIAL_ID, controlID);
     message += formatInt(value);
@@ -717,6 +768,13 @@ String DashioDevice::getDialMessage(const String& controlID, int value) {
 String DashioDevice::getDialMessage(const String& controlID, float value) {
     String message = getControlBaseMessage(DIAL_ID, controlID);
     message += formatFloat(value);
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getDialMessage(const String& controlID) {
+    String message = getControlBaseMessage(DIAL_ID, controlID);
+    message += NOT_AVAILABLE;
     message += String(END_DELIM);
     return message;
 }
@@ -739,6 +797,13 @@ String DashioDevice::getDirectionMessage(const String& controlID, float directio
         message += String(DELIM);
         message += formatFloat(speed);
     }
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getDirectionMessage(const String& controlID) {
+    String message = getControlBaseMessage(DIRECTION_ID, controlID);
+    message += NOT_AVAILABLE;
     message += String(END_DELIM);
     return message;
 }

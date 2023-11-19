@@ -204,7 +204,7 @@ void DashSerial::sendName(const String &deviceName) {
     txMessageCallback(message);
 };
 
-void DashSerial::sendWiFiCredentials(const String &SSID, const String &password) {
+void DashSerial::sendWiFiCredentials(const String &SSID, const String &password, const String &countryCode) {
     String message((char *)0);
     message.reserve(100);
 
@@ -216,6 +216,8 @@ void DashSerial::sendWiFiCredentials(const String &SSID, const String &password)
     message += SSID;
     message += DELIM;
     message += password;
+    message += DELIM;
+    message += countryCode;
     message += END_DELIM;
 
     txMessageCallback(message);

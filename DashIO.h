@@ -26,6 +26,8 @@
  SOFTWARE.
 */
 
+// Notes on String usage: https://www.forward.com.au/pfod/ArduinoProgramming/ArduinoStrings/index.html
+
 #ifndef Dashio_h
 #define Dashio_h
 
@@ -71,6 +73,7 @@ extern char DASH_SERVER[];
 
 const char END_DELIM = '\n';
 const char DELIM = '\t';
+const char NOT_AVAILABLE[] = "NA";
 
 enum ConnectionType {
     TCP_CONN,
@@ -312,6 +315,8 @@ public:
     void setup(const String& deviceIdentifier, const String& _deviceName);
     void setup(uint8_t m_address[6]);
     void setup(uint8_t m_address[6], const String& _deviceName);
+    
+    void appendDelimitedStr(String *str, const String& addStr);
 
     String getWhoMessage();
     String getConnectMessage();
@@ -328,23 +333,31 @@ public:
     String getButtonMessage(const String& controlID, bool on, const String& iconName = "", const String& text = "");
     String getTextBoxMessage(const String& controlID, const String& text, const String& color = "");
     String getSelectorMessage(const String& controlID, int index);
-    String getSelectorMessage(const String& controlID, int index, String* selectionItems, int numItems);
+    String getSelectorMessage(const String& controlID, int index, String selectionItems[], int numItems);
+    String getSelectorMessage(const String& controlID, int index, const String& selectionStr);
 
     String getSliderMessage(const String& controlID, int value);
     String getSliderMessage(const String& controlID, float value);
+    String getSliderMessage(const String& controlID);
     String getSingleBarMessage(const String& controlID, int value);
     String getSingleBarMessage(const String& controlID, float value);
+    String getSingleBarMessage(const String& controlID);
     String getDoubleBarMessage(const String& controlID, int value1, int value2);
     String getDoubleBarMessage(const String& controlID, float value1, float value2);
+    String getDoubleBarMessage(const String& controlID);
 
     String getKnobMessage(const String& controlID, int value);
     String getKnobMessage(const String& controlID, float value);
+    String getKnobMessage(const String& controlID);
     String getKnobDialMessage(const String& controlID, int value);
     String getKnobDialMessage(const String& controlID, float value);
+    String getKnobDialMessage(const String& controlID);
     String getDialMessage(const String& controlID, int value);
     String getDialMessage(const String& controlID, float value);
+    String getDialMessage(const String& controlID);
     String getDirectionMessage(const String& controlID, int direction, float speed = -1);
     String getDirectionMessage(const String& controlID, float direction, float speed = -1);
+    String getDirectionMessage(const String& controlID);
     String getMapWaypointMessage(const String& controlID, const String& trackID, const String& latitude, const String& longitude);
     String getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[] = {}, int numWaypoints = 0);
     String getEventLogMessage(const String& controlID, const String& color, String text[], int numTextRows);
