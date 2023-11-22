@@ -33,12 +33,14 @@
     #define C64_MAX_LENGHT 500
 #endif
 
-#define MQTT_BUFFER_SIZE 2048
-#define INCOMING_BUFFER_SIZE 512
+const int INCOMING_BUFFER_SIZE = 512;
 
 // MQTT
-const int MQTT_QOS     = 2;
+const int MQTT_QOS = 2;
 const int MQTT_RETRY_S = 10; // Retry after 10 seconds
+const int MQTT_CLIENT_BUFFER_SIZE = 2048;
+const int MQTT_SEND_WAIT_MS = 1000;
+const int MQTT_SEND_BUFFER_MIN = 1024;
 
 // BLE
 const int BLE_MAX_SEND_MESSAGE_LENGTH = 185; // 185 for iPhone 6, but can be up to 517
@@ -401,10 +403,24 @@ void DashioTCP::run() {
 
 // ---------------------------------------- MQTT ---------------------------------------
 
-DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool _printMessages) : mqttClient(MQTT_BUFFER_SIZE) {
+DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool _printMessages) : mqttClient(MQTT_CLIENT_BUFFER_SIZE) {
     dashioDevice = _dashioDevice;
     sendRebootAlarm  = _sendRebootAlarm;
     printMessages = _printMessages;
+
+#ifdef ESP32
+    xTaskCreatePinnedToCore(this->checkConnectionTask, "Task1", 10000, this, 0, &mqttConnectTask, 0);
+#endif
+}
+
+DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool _printMessages, int _mqttBufferSize) : mqttClient(MQTT_CLIENT_BUFFER_SIZE) {
+    dashioDevice = _dashioDevice;
+    sendRebootAlarm  = _sendRebootAlarm;
+    printMessages = _printMessages;
+    if (_mqttBufferSize >= MQTT_SEND_BUFFER_MIN) {
+        mqttBuffersize = _mqttBufferSize;
+        mqttSendBuffer.reserve(_mqttBufferSize);
+    }
 
 #ifdef ESP32
     xTaskCreatePinnedToCore(this->checkConnectionTask, "Task1", 10000, this, 0, &mqttConnectTask, 0);
@@ -417,7 +433,20 @@ void DashioMQTT::messageReceivedMQTTCallback(MQTTClient *client, char *topic, ch
     data.processMessage(String(payload)); // The message components are stored within the connection where the messageReceived flag is set
 }
 
-void DashioMQTT::sendMessage(const String& message, MQTTTopicType topic) {
+void DashioMQTT::checkAndSendMQTTbuffer() {
+    if (mqttSendBuffer.length() > 0) {
+        unsigned long timeNow = millis();
+        long timeSinceLastMessage = timeNow - lastSentMessageTime;
+        if (timeSinceLastMessage < 0) {timeSinceLastMessage = MQTT_SEND_WAIT_MS;}
+        if (timeSinceLastMessage >= MQTT_SEND_WAIT_MS) {
+            lastSentMessageTime = timeNow;
+            publishMessage(mqttSendBuffer, data_topic);
+            mqttSendBuffer.clear();
+        }
+    }
+}
+
+void DashioMQTT::publishMessage(const String& message, MQTTTopicType topic) {
     if (mqttClient.connected()) {
         String publishTopic = dashioDevice->getMQTTTopic(username, topic);
         mqttClient.publish(publishTopic.c_str(), message.c_str(), false, MQTT_QOS);
@@ -427,6 +456,17 @@ void DashioMQTT::sendMessage(const String& message, MQTTTopicType topic) {
             Serial.println(publishTopic);
             Serial.println(message);
         }
+    }
+}
+
+void DashioMQTT::sendMessage(const String& message, MQTTTopicType topic) {
+    if (mqttBuffersize >= MQTT_SEND_BUFFER_MIN && topic == data_topic) {
+        if (message.length() < (mqttBuffersize - mqttSendBuffer.length())) {
+            mqttSendBuffer += message;
+            checkAndSendMQTTbuffer();
+        }
+    } else {
+        publishMessage(message, topic);
     }
 }
 
@@ -449,7 +489,7 @@ void DashioMQTT::processConfig() {
 
         message += myChar;
         length++;
-        if (length == (MQTT_BUFFER_SIZE / 2)) {
+        if (length == (MQTT_CLIENT_BUFFER_SIZE / 2)) {
             sendMessage(message);
             message = "";
             length = 0;
@@ -559,33 +599,6 @@ void DashioMQTT::hostConnect() {
             // Invalid URL or port => E = -3  R = 0
             // Invalid username or password => E = -10  R = 5
             // Invalid SSL record => E = -5  R = 6
-            
-            /* 
-            Error Codes
-             LWMQTT_SUCCESS = 0,
-             LWMQTT_BUFFER_TOO_SHORT = -1,
-             LWMQTT_VARNUM_OVERFLOW = -2,
-             LWMQTT_NETWORK_FAILED_CONNECT = -3,
-             LWMQTT_NETWORK_TIMEOUT = -4,
-             LWMQTT_NETWORK_FAILED_READ = -5,
-             LWMQTT_NETWORK_FAILED_WRITE = -6,
-             LWMQTT_REMAINING_LENGTH_OVERFLOW = -7,
-             LWMQTT_REMAINING_LENGTH_MISMATCH = -8,
-             LWMQTT_MISSING_OR_WRONG_PACKET = -9,
-             LWMQTT_CONNECTION_DENIED = -10,
-             LWMQTT_FAILED_SUBSCRIPTION = -11,
-             LWMQTT_SUBACK_ARRAY_OVERFLOW = -12,
-             LWMQTT_PONG_TIMEOUT = -13,
-
-            Return Codes
-             LWMQTT_CONNECTION_ACCEPTED = 0,
-             LWMQTT_UNACCEPTABLE_PROTOCOL = 1,
-             LWMQTT_IDENTIFIER_REJECTED = 2,
-             LWMQTT_SERVER_UNAVAILABLE = 3,
-             LWMQTT_BAD_USERNAME_OR_PASSWORD = 4,
-             LWMQTT_NOT_AUTHORIZED = 5,
-             LWMQTT_UNKNOWN_RETURN_CODE = 6
-           */
         }
         state = disconnected;
     }
@@ -671,6 +684,7 @@ void DashioMQTT::run() {
         }
 
         data.checkBuffer();
+        checkAndSendMQTTbuffer();
     } else {
         if ((state == serverConnected) or (state == subscribed)) {
             state = disconnected;
@@ -694,7 +708,7 @@ class SecurityBLECallbacks : public BLESecurityCallbacks {
     bool onConfirmPIN(uint32_t pin) {
 //        Serial.print(F("Confirm Pin: "));
 //        Serial.println(pin);
-        return true;  
+        return true;
     }
   
     uint32_t onPassKeyRequest() {

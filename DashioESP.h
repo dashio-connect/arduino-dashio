@@ -58,7 +58,6 @@ struct TCPclient {
 
 class DashioTCP {
 private:
-    bool printMessages;
     DashioDevice *dashioDevice;
     WiFiServer wifiServer;
     TCPclient *tcpClients;
@@ -69,6 +68,7 @@ private:
     void processConfig();
 
 public:
+    bool printMessages = false;
     uint16_t tcpPort = 5650;
     bool passThrough = false;
     uint8_t hasClient();
@@ -97,15 +97,19 @@ enum MQTTstate {
 class DashioMQTT {
 private:
     bool reboot = true;
-    bool printMessages;
     DashioDevice *dashioDevice;
     static MessageData data;
     WiFiClientSecure wifiClient;
     MQTTClient mqttClient;
+    unsigned long lastSentMessageTime;
+    String mqttSendBuffer = ((char *)0);
+    int mqttBuffersize = 0;
     int mqttConnectCount = 0;
     char *username;
     char *password;
     void (*processMQTTmessageCallback)(MessageData *messageData);
+    void checkAndSendMQTTbuffer();
+    void publishMessage(const String& message, MQTTTopicType topic);
     void processConfig();
 #ifdef ESP32
     TaskHandle_t mqttConnectTask;
@@ -123,15 +127,17 @@ private:
     int dashStoreSize = 0;
 
 public:
+    bool printMessages = false;
+    bool sendRebootAlarm = false;
     char *mqttHost = DASH_SERVER;
     uint16_t mqttPort = DASH_PORT;
     bool wifiSetInsecure = true;
     bool passThrough = false;
     MQTTstate state = notReady;
     bool esp32_mqtt_blocking = true;
-    bool sendRebootAlarm;
 
     DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm = false, bool _printMessages = false);
+    DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool _printMessages, int _mqttBufferSize);
     void setup(char *_username, char *_password);
     void addDashStore(ControlType controlType, String controlID);
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
