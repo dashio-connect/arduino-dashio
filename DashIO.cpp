@@ -588,6 +588,13 @@ String DashioDevice::getControlBaseMessage(const String& controlType, const Stri
     return message;
 }
 
+String DashioDevice::getButtonMessage(const String& controlID) {
+    String message = getControlBaseMessage(BUTTON_ID, controlID);
+    message += NOT_AVAILABLE;
+    message += String(END_DELIM);
+    return message;
+}
+
 String DashioDevice::getButtonMessage(const String& controlID, bool on, const String& iconName, const String& text) {
     String message = getControlBaseMessage(BUTTON_ID, controlID);
     if (on) {
@@ -617,6 +624,13 @@ String DashioDevice::getTextBoxMessage(const String& controlID, const String& te
         message += String(DELIM);
         message += color;
     }
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getSelectorMessage(const String& controlID) {
+    String message = getControlBaseMessage(SELECTOR_ID, controlID);
+    message += NOT_AVAILABLE;
     message += String(END_DELIM);
     return message;
 }

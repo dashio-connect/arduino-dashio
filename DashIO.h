@@ -330,8 +330,10 @@ public:
 
     String getAlarmMessage(const String& alarmID, const String& title, const String& description);
     String getAlarmMessage(Notification alarm);
+    String getButtonMessage(const String& controlID);
     String getButtonMessage(const String& controlID, bool on, const String& iconName = "", const String& text = "");
     String getTextBoxMessage(const String& controlID, const String& text, const String& color = "");
+    String getSelectorMessage(const String& controlID);
     String getSelectorMessage(const String& controlID, int index);
     String getSelectorMessage(const String& controlID, int index, String selectionItems[], int numItems);
     String getSelectorMessage(const String& controlID, int index, const String& selectionStr);

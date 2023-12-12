@@ -96,7 +96,8 @@ bool DashioLTE::connectToCellNet() {
         Serial.println("Connecting to cellular network");
     }
 
-    if ((nbAccess.begin(pin, apn, username, password, true, true) == NB_READY)) { // last two fields = restartModem, synchronous
+    NB_NetworkStatus_t networkStatus = nbAccess.begin(pin, apn, username, password, true, true); // last two fields = restartModem, synchronous
+    if (networkStatus == NB_READY) {
         cellConnected = true;
 
         if (printMessages) {
@@ -111,7 +112,9 @@ bool DashioLTE::connectToCellNet() {
         return true;
     } else {
         if (printMessages) {
-            Serial.println("Failed to connect - resetting modem");
+            // enum NB_NetworkStatus_t { NB_ERROR, IDLE, CONNECTING, NB_READY, GPRS_READY, TRANSPARENT_CONNECTED, NB_OFF};
+            Serial.print("Failed to connect - resetting modem: Status: ");
+            Serial.println(networkStatus);
         }
         resetCellModem();
     }
