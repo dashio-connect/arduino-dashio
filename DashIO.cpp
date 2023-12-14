@@ -66,6 +66,7 @@
 #define TCP_SETUP_ID "TCP"
 #define DASHIO_SETUP_ID "DASHIO"
 #define MQTT_SETUP_ID "MQTT"
+#define RESET_DEVICE_ID "RST"
 
 // Connection type IDs
 #define MQTT_CONNECTION_ID "MQTT"
@@ -279,6 +280,8 @@ bool MessageData::processChar(char chr) {
                     control = dashioSetup;
                 } else if (readStr == MQTT_SETUP_ID) {
                     control = mqttSetup;
+                } else if (readStr == RESET_DEVICE_ID) {
+                    control = resetDevice;
                 } else {
                     control = unknown;
                     segmentCount == -1;
@@ -554,6 +557,15 @@ String DashioDevice::getMQTTUpdateAckMessage() {
     message += deviceID;
     message += String(DELIM);
     message += MQTT_SETUP_ID;
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getResetDeviceMessage() {
+    String message = String(DELIM);
+    message += deviceID;
+    message += String(DELIM);
+    message += RESET_DEVICE_ID;
     message += String(END_DELIM);
     return message;
 }
@@ -1082,6 +1094,7 @@ String DashioDevice::getControlTypeStr(ControlType controltype) {
         case tcpSetup: return TCP_SETUP_ID;
         case dashioSetup: return DASHIO_SETUP_ID;
         case mqttSetup: return MQTT_SETUP_ID;
+        case resetDevice: return RESET_DEVICE_ID;
 
         case mqttConn: return MQTT_CONNECTION_ID;
         case bleConn: return BLE_CONNECTION_ID;
@@ -1156,6 +1169,8 @@ ControlType DashioDevice::getControlType(String controltypeStr) {
         return dashioSetup;
     } else if (controltypeStr == MQTT_SETUP_ID) {
         return mqttSetup;
+    } else if (controltypeStr == RESET_DEVICE_ID) {
+        return resetDevice;
     } else if (controltypeStr == MQTT_CONNECTION_ID) {
         return mqttConn;
     } else if (controltypeStr == BLE_CONNECTION_ID) {

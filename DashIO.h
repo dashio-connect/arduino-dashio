@@ -121,6 +121,7 @@ enum ControlType {
     dashioSetup,
     mqttSetup,
     commsMode,
+    resetDevice,
 
     unknown
 };
@@ -327,6 +328,7 @@ public:
     String getTCPUpdateAckMessage();
     String getDashioUpdateAckMessage();
     String getMQTTUpdateAckMessage();
+    String getResetDeviceMessage();
 
     String getAlarmMessage(const String& alarmID, const String& title, const String& description);
     String getAlarmMessage(Notification alarm);
