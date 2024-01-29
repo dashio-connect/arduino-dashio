@@ -968,9 +968,9 @@ String DashioDevice::getChartLineFloats(const String& controlID, const String& l
     return message;
 }
 
-String DashioDevice::getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect) {
+String DashioDevice::getTimeGraphLineBaseMessage(const String& _dashboardID, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
-    message += String("BRDCST");
+    message += _dashboardID;
     message += String(DELIM);
     message += lineID;
     message += String(DELIM);
@@ -981,23 +981,17 @@ String DashioDevice::getTimeGraphLine(const String& controlID, const String& lin
     message += color;
     message += String(DELIM);
     message += getYaxisSelectStr(yAxisSelect);
+    return message;
+}
+
+String DashioDevice::getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect) {
+    String message = getTimeGraphLineBaseMessage("BRDCST", controlID, lineID, lineName, lineType, color, yAxisSelect);
     message += String(END_DELIM);
     return message;
 }
 
 String DashioDevice::getTimeGraphLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], float lineData[], int dataLength, bool breakLine) {
-    String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
-    message += dashboardID;
-    message += String(DELIM);
-    message += lineID;
-    message += String(DELIM);
-    message += lineName;
-    message += String(DELIM);
-    message += getLineTypeStr(lineType);
-    message += String(DELIM);
-    message += color;
-    message += String(DELIM);
-    message += getYaxisSelectStr(yAxisSelect);
+    String message = getTimeGraphLineBaseMessage(dashboardID, controlID, lineID, lineName, lineType, color, yAxisSelect);
     if (breakLine && (dataLength > 0)) {
         message += String(DELIM);
         message += times[0];
@@ -1014,6 +1008,43 @@ String DashioDevice::getTimeGraphLineFloats(const String& controlID, const Strin
     return message;
 }
 
+String DashioDevice::getTimeGraphLineFloatsArr(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, time_t times[], float **lineData, int dataLength, int arrSize) {
+    String message = getTimeGraphLineBaseMessage(dashboardID, controlID, lineID, lineName, lineType, color, yAxisSelect);
+    char timeBuf[21];
+    for (int i = 0; i < dataLength; i++) {
+        message += String(DELIM);
+        strftime(timeBuf, 21, "%Y-%m-%dT%H:%M:%SZ", localtime(&times[i]));
+        message += String(timeBuf);
+        message += ",";
+        message += "[";
+        for (int j = 0; j < arrSize; j++) {
+            if (j > 0) {
+                message += ",";
+            }
+            message += formatFloat(lineData[i][j]);
+        }
+        message += "]";
+    }
+    message += String(END_DELIM);
+    return message;      
+}
+
+String DashioDevice::getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
+    String message = getTimeGraphLineBaseMessage(dashboardID, controlID, lineID, lineName, lineType, color, yLeft);
+    for (int i = 0; i < dataLength; i++) {
+        message += String(DELIM);
+        message += times[i];
+        message += ",";
+        if (lineData[i]) {
+            message += "T";
+        } else {
+            message += "F";
+        }
+    }
+    message += String(END_DELIM);
+    return message;
+}
+
 String DashioDevice::getTimeGraphPoint(const String& controlID, const String& lineID, float value) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
     message += lineID;
@@ -1025,8 +1056,6 @@ String DashioDevice::getTimeGraphPoint(const String& controlID, const String& li
 
 String DashioDevice::getTimeGraphPoint(const String& controlID, const String& lineID, String time, float value) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
-    message += dashboardID;
-    message += String(DELIM);
     message += lineID;
     message += String(DELIM);
     message += time;
@@ -1036,27 +1065,36 @@ String DashioDevice::getTimeGraphPoint(const String& controlID, const String& li
     return message;
 }
 
-String DashioDevice::getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
+String DashioDevice::getTimeGraphPointArr(const String& controlID, const String& lineID, float value[], int arrSize) {
     String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
     message += lineID;
     message += String(DELIM);
-    message += lineName;
-    message += String(DELIM);
-    message += getLineTypeStr(lineType);
-    message += String(DELIM);
-    message += color;
-    message += String(DELIM);
-    message += getYaxisSelectStr(yLeft);
-    for (int i = 0; i < dataLength; i++) {
-        message += String(DELIM);
-        message += times[i];
-        message += ",";
-        if (lineData[i]) {
-            message += "T";
-        } else {
-            message += "F";
+    message += "[";
+    for (int i = 0; i < arrSize; i++) {
+        if (i > 0) {
+            message += ",";
         }
+        message += formatFloat(value[i]);
     }
+    message += "]";
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getTimeGraphPointArr(const String& controlID, const String& lineID, String time, float value[], int arrSize) {
+    String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
+    message += lineID;
+    message += String(DELIM);
+    message += time;
+    message += ",";
+    message += "[";
+    for (int i = 0; i < arrSize; i++) {
+        if (i != 0) {
+            message += ",";
+        }
+        message += formatFloat(value[i]);
+    }
+    message += "]";
     message += String(END_DELIM);
     return message;
 }

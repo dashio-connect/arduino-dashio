@@ -33,6 +33,7 @@
 
 #include "Arduino.h"
 #include <limits.h>
+#include <time.h>
 
 class DashioDevice;
 typedef DashioDevice DashDevice;
@@ -332,9 +333,12 @@ public:
 
     String getAlarmMessage(const String& alarmID, const String& title, const String& description);
     String getAlarmMessage(Notification alarm);
+
     String getButtonMessage(const String& controlID);
     String getButtonMessage(const String& controlID, bool on, const String& iconName = "", const String& text = "");
+
     String getTextBoxMessage(const String& controlID, const String& text, const String& color = "");
+
     String getSelectorMessage(const String& controlID);
     String getSelectorMessage(const String& controlID, int index);
     String getSelectorMessage(const String& controlID, int index, String selectionItems[], int numItems);
@@ -356,27 +360,38 @@ public:
     String getKnobDialMessage(const String& controlID, int value);
     String getKnobDialMessage(const String& controlID, float value);
     String getKnobDialMessage(const String& controlID);
+
     String getDialMessage(const String& controlID, int value);
     String getDialMessage(const String& controlID, float value);
     String getDialMessage(const String& controlID);
+
     String getDirectionMessage(const String& controlID, int direction, float speed = -1);
     String getDirectionMessage(const String& controlID, float direction, float speed = -1);
     String getDirectionMessage(const String& controlID);
+
     String getMapWaypointMessage(const String& controlID, const String& trackID, const String& latitude, const String& longitude);
     String getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[] = {}, int numWaypoints = 0);
+
     String getEventLogMessage(const String& controlID, const String& color, String text[], int numTextRows);
     String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int numTextRows);
     String getEventLogMessage(const String& controlID, Event events[], int numEvents);
+
     String getColorMessage(const String& controlID, const String& color);
+
     String getAudioVisualMessage(const String& controlID, const String& url = "");
 
     String getChartLineInts(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, int lineData[], int dataLength);
     String getChartLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, float lineData[], int dataLength);
+
+    String getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect);
     String getTimeGraphLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], float lineData[], int dataLength, bool breakLine = false);
+    String getTimeGraphLineFloatsArr(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, time_t times[], float **lineData, int dataLength, int arrSize);
     String getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength);
+
     String getTimeGraphPoint(const String& controlID, const String& lineID, float value);
     String getTimeGraphPoint(const String& controlID, const String& lineID, String time, float value);
-    String getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect);
+    String getTimeGraphPointArr(const String& controlID, const String& lineID, float value[], int arrSize);
+    String getTimeGraphPointArr(const String& controlID, const String& lineID, String time, float value[], int arrSize);
 
 //  Config messages
     String getC64ConfigBaseMessage();
@@ -397,6 +412,7 @@ private:
     String getControlBaseMessage(const String& messageType, const String& controlID);
     String getLineTypeStr(LineType lineType);
     String getYaxisSelectStr(YAxisSelect yAxisSelect);
+    String getTimeGraphLineBaseMessage(const String& _dashboardID, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect);
     String getIntArray(int idata[], int dataLength);
     String getFloatArray(float fdata[], int dataLength);
 
