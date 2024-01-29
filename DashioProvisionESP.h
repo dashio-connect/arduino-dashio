@@ -51,6 +51,7 @@ public:
     char dashPassword[32];
 
     DashioProvision(DashioDevice *_dashioDevice);
+    void load(void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
     void load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
     void processMessage(MessageData *connection);
 

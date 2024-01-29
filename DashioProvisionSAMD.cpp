@@ -33,6 +33,11 @@ DashioProvision::DashioProvision(DashioDevice *_dashioDevice) {
     dashioDevice = _dashioDevice;
 }
 
+void DashioProvision::load(void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged)) {
+    onProvisionCallback = _onProvisionCallback;
+    load();
+}
+
 void DashioProvision::load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged)) {
     onProvisionCallback = _onProvisionCallback;
     update(defaultDeviceData);

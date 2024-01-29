@@ -564,8 +564,8 @@ void DashioMQTT::onConnected() {
     String subscriberTopic = dashioDevice->getMQTTSubscribeTopic(username);
     mqttClient.subscribe(subscriberTopic.c_str(), MQTT_QOS); // ... and subscribe
 
-    // Send MQTT ONLINE and WHO messages to connection (Optional)
-    // WHO is only required here if using the Dash server and it must be send to the ANNOUNCE topic
+    // Send MQTT ONLINE and WHO messages to connection
+    // WHO is only required here if using the Dash server and it must be sent to the ANNOUNCE topic
     sendMessage(dashioDevice->getOnlineMessage());
     sendMessage(dashioDevice->getWhoMessage(), announce_topic); // Update announce topic with new name
     
