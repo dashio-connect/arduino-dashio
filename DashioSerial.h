@@ -58,6 +58,7 @@ private:
     void (*processRxMessageCallback)(MessageData *MessageData);
     void (*txMessageCallback)(const String& outgoingMessage);
 
+    void processConfig();
     void actOnMessage();
 
 public:
