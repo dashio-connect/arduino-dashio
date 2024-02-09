@@ -80,7 +80,8 @@ enum ConnectionType {
     TCP_CONN,
     BLE_CONN,
     MQTT_CONN,
-    SERIAL_CONN
+    SERIAL_CONN,
+    ALL_CONN
 };
 
 enum ControlType {
@@ -272,6 +273,7 @@ public:
     bool messageReceived = false;
     String deviceID = ((char *)0);
     
+    bool checkPrefix = false;
     ControlType control = unknown;
     String idStr = ((char *)0);
     String payloadStr = ((char *)0);
@@ -284,9 +286,10 @@ public:
     MessageData(ConnectionType connType, int _bufferLength = 0);
     void processMessage(const String& message);
     bool processChar(char chr);
-    String getMessageGeneric(const String& controlStr);
+    String getMessageGeneric(const String& controlStr, bool connectionPrefix = false);
     String getReceivedMessageForPrint(const String& controlStr);
     String getTransmittedMessageForPrint(const String& controlStr);
+    String getConnectionTypeStr();
     
     void checkBuffer();
     
@@ -298,7 +301,6 @@ private:
     int segmentCount = -1;
     String readStr;
     
-    String getConnectionTypeStr();
     void loadBuffer(const String& message);
 };
 
@@ -372,30 +374,30 @@ public:
     String getMapWaypointMessage(const String& controlID, const String& trackID, const String& latitude, const String& longitude);
     String getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[] = {}, int numWaypoints = 0);
 
-    String getEventLogMessage(const String& controlID, const String& color, String text[], int numTextRows);
-    String getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int numTextRows);
-    String getEventLogMessage(const String& controlID, Event events[], int numEvents);
+    void addEventLogMessage(String& message, const String& controlID, const String& color, String text[], int numTextRows);
+    void addEventLogMessage(String& message, const String& controlID, const String& timeStr, const String& color, String text[], int numTextRows);
+    void addEventLogMessage(String& message, const String& controlID, Event events[], int numEvents);
 
     String getColorMessage(const String& controlID, const String& color);
 
     String getAudioVisualMessage(const String& controlID, const String& url = "");
 
-    String getChartLineInts(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, int lineData[], int dataLength);
-    String getChartLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, float lineData[], int dataLength);
+    void addChartLineInts(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, int lineData[], int dataLength);
+    void addChartLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, float lineData[], int dataLength);
 
     String getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect);
-    String getTimeGraphLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], float lineData[], int dataLength, bool breakLine = false);
-    String getTimeGraphLineFloatsArr(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, time_t times[], float **lineData, int dataLength, int arrSize);
-    String getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength);
+    void addTimeGraphLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], float lineData[], int dataLength, bool breakLine = false);
+    void addTimeGraphLineFloatsArr(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, time_t times[], float **lineData, int dataLength, int arrSize);
+    void addTimeGraphLineBools(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength);
 
     String getTimeGraphPoint(const String& controlID, const String& lineID, float value);
     String getTimeGraphPoint(const String& controlID, const String& lineID, String time, float value);
-    String getTimeGraphPointArr(const String& controlID, const String& lineID, float value[], int arrSize);
-    String getTimeGraphPointArr(const String& controlID, const String& lineID, String time, float value[], int arrSize);
+    void addTimeGraphPointArr(String& message, const String& controlID, const String& lineID, float value[], int arrSize);
+    void addTimeGraphPointArr(String& message, const String& controlID, const String& lineID, String time, float value[], int arrSize);
 
 //  Config messages
     String getC64ConfigBaseMessage();
-    String getC64ConfigMessage();
+    String getC64ConfigMessage(); //??? Obsolete - remove in due course
 
     String getOnlineMessage();
     String getOfflineMessage();
@@ -410,14 +412,15 @@ public:
     
 private:
     String getControlBaseMessage(const String& messageType, const String& controlID);
-    String getLineTypeStr(LineType lineType);
-    String getYaxisSelectStr(YAxisSelect yAxisSelect);
-    String getTimeGraphLineBaseMessage(const String& _dashboardID, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect);
-    String getIntArray(int idata[], int dataLength);
-    String getFloatArray(float fdata[], int dataLength);
+    void addControlBaseMessage(String& message, const String& messageType, const String& controlID);
+    void addLineTypeStr(String& message, LineType lineType);
+    void addYaxisSelectStr(String& message, YAxisSelect yAxisSelect);
+    void addTimeGraphLineBaseMessage(String& message, const String& _dashboardID, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect);
+    void addIntArray(String& message, int idata[], int dataLength);
+    void addFloatArray(String& message, float fdata[], int dataLength);
 
-    String getWaypointJSON(Waypoint waypoint);
-    String getEventJSON(Event event);
+    void addWaypointJSON(String& message, Waypoint waypoint);
+    void addEventJSON(String& message, Event event);
 };
 
 #endif

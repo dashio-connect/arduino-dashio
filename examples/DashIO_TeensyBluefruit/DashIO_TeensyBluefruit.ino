@@ -41,23 +41,30 @@ void processStatus() {
     bluefruitBLE.sendMessage(dashDevice.getSingleBarMessage(SINGLE_SLIDER_ID, 25));
     bluefruitBLE.sendMessage(dashDevice.getTextBoxMessage(TEXT_BOX_ID, String(count)));
     int data[5] = {100, 200, 300, 400, 500};
-    bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "black", yLeft, data, 5));
+    String message = "";
+    dashDevice.addChartLineInts(message, SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "black", yLeft, data, 5);
+    bluefruitBLE.sendMessage(message);
 }
 
 void processButton(MessageData *messageData) {
     if (messageData->idStr == TOGGLE_BUTTON_ID) {
         toggle = !toggle;
         
+        String message = "";
         if (toggle) {
             int data[7] = {50, 255, 505, 758, 903, 400, 0};
-            bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L1", "Line Name", bar, "0", yLeft, data, 7));
+            dashDevice.addChartLineInts(message, SIMPLE_GRAPH_ID, "L1", "Line Name", bar, "0", yLeft, data, 7);
+            bluefruitBLE.sendMessage(message);
             int data2[6] = {153, 351, 806, 900, 200, 0};
-            bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L2", "Line Name", segBar, "1", yLeft, data2, 6));
+            dashDevice.addChartLineInts(message, SIMPLE_GRAPH_ID, "L2", "Line Name", segBar, "1", yLeft, data2, 6);
+            bluefruitBLE.sendMessage(message);
         } else {
             float data[7] = {200, 303.3345667, 504.4332, 809.43424545465, 912, 706, 643};
-            bluefruitBLE.sendMessage(dashDevice.getChartLineFloats(SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "4", yLeft, data, 7));
+            dashDevice.addChartLineFloats(message, SIMPLE_GRAPH_ID, "L1", "Line Name", peakBar, "4", yLeft, data, 7);
+            bluefruitBLE.sendMessage(message);
             int data2[0] = {};
-            bluefruitBLE.sendMessage(dashDevice.getChartLineInts(SIMPLE_GRAPH_ID, "L2", "Line Name", peakBar, "1", yLeft, data2, 0));
+            dashDevice.addChartLineInts(message, SIMPLE_GRAPH_ID, "L2", "Line Name", peakBar, "1", yLeft, data2, 0);
+            bluefruitBLE.sendMessage(message);
         }
         
         bluefruitBLE.sendMessage(dashDevice.getButtonMessage(messageData->idStr, toggle, "weather"));

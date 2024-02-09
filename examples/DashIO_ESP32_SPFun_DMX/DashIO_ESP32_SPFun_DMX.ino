@@ -41,6 +41,10 @@ const char *AUTO_BUTTON = "B1";
 const char *DBO_BUTTON = "B2";
 const char *ALL_ON_BUTTON = "B3";
 
+HardwareSerial dmxSerial(2);
+uint8_t enPin = 21; // Enable pin for DMX shield (Free pin on Thing Plus or Feather pinout)
+uint16_t numChannels = 7; // Number of DMX channels, can be up tp 512
+
 SparkFunDMX dmx;
 bool tick = false;
 int angle = 0;
@@ -128,16 +132,17 @@ void sendColorHex(int red, int green, int blue) {
 }
 
 void writeDMXcolor(int red, int green, int blue) {   
+Serial.println("DMX: " + String(red));
     // Update DMX channels to new brightness
     
     // This is just an example of a DMX device that uses 7 channels. We are just using R, G, & B in this example.
-    dmx.write(1, 255);   // Master dimmer
-    dmx.write(2, red);   // red
-    dmx.write(3, green); // green
-    dmx.write(4, blue);  // blue
-    dmx.write(5, 0);     // White
-    dmx.write(6, 0);     // Strobe
-    dmx.write(7, 0);     // Change colous
+    dmx.writeByte(255, 1);   // Master dimmer
+    dmx.writeByte(red, 2);   // red
+    dmx.writeByte(green, 3); // green
+    dmx.writeByte(blue, 4);  // blue
+    dmx.writeByte(0, 5);     // White
+    dmx.writeByte(0, 6);     // Strobe
+    dmx.writeByte(0, 7);     // Change colous
 
     dmx.update();
 }
@@ -180,6 +185,10 @@ void timerTask(void *parameters) {
 
 void setup() {
     Serial.begin(115200);
+
+    dmxSerial.begin(DMX_BAUD, DMX_FORMAT); // Begin DMX serial port
+    dmx.begin(dmxSerial, enPin, numChannels);
+    dmx.setComDir(DMX_WRITE_DIR); // Set communicaiton direction
 
     dashDevice.setup(wifi.macAddress(), DEVICE_NAME); // Get unique deviceID
     tcp_con.setCallback(&processIncomingMessage);

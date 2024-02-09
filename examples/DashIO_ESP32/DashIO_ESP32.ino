@@ -150,15 +150,15 @@ void processStatus(ConnectionType connectionType) {
   message += dashDevice.getAudioVisualMessage(AV_ID, F("http://192.168.68.170/mjpeg/1")); // URL for av feed (e.g. ESP32 Camera)
 
   int data1[] = {300, 270, 390, 410, 400};
-  message += dashDevice.getChartLineInts(CHART_ID, "L1", "Line One", line, "3", yLeft, data1, sizeof(data1)/sizeof(int));
+  dashDevice.addChartLineInts(message, CHART_ID, "L1", "Line One", line, "3", yLeft, data1, sizeof(data1)/sizeof(int));
   int data2[] = {160, 280, 400, 410, 420};
-  message += dashDevice.getChartLineInts(CHART_ID, "L2", "Line Two", line, "4", yLeft, data2, sizeof(data2)/sizeof(int));
+  dashDevice.addChartLineInts(message, CHART_ID, "L2", "Line Two", line, "4", yLeft, data2, sizeof(data2)/sizeof(int));
   int data3[] = {170, 290, 410, 400, 390};
-  message += dashDevice.getChartLineInts(CHART_ID, "L3", "Line Three", line, "5", yLeft, data3, sizeof(data3)/sizeof(int));
+  dashDevice.addChartLineInts(message, CHART_ID, "L3", "Line Three", line, "5", yLeft, data3, sizeof(data3)/sizeof(int));
   int data4[] = {180, 270, 390, 410, 430};
-  message += dashDevice.getChartLineInts(CHART_ID, "L4", "Line Four", line, "6", yLeft, data4, sizeof(data4)/sizeof(int));
+  dashDevice.addChartLineInts(message, CHART_ID, "L4", "Line Four", line, "6", yLeft, data4, sizeof(data4)/sizeof(int));
   int data5[] = {200, 250, 260, 265, 240};
-  message += dashDevice.getChartLineInts(CHART_ID, "L5", "Line Five", line, "8", yLeft, data5, sizeof(data5)/sizeof(int));
+  dashDevice.addChartLineInts(message, CHART_ID, "L5", "Line Five", line, "8", yLeft, data5, sizeof(data5)/sizeof(int));
     
   message += dashDevice.getTimeGraphLine(TGRAPH_ID, "l1", "Roger", line, "purple", yLeft);
   message += dashDevice.getTimeGraphLine(TGRAPH_ID, "l2", "Betty", line, "white", yLeft);
@@ -182,7 +182,8 @@ void processButton(MessageData *messageData) {
         mqtt_con.sendAlarmMessage(message);
     } else if (messageData->idStr == BUTTON02_ID) {
         String textArr[] = {"one", "two"};
-        String message = dashDevice.getEventLogMessage(LOG_ID, getUTCtime(), "red", textArr, 2);
+        String message = "";
+        dashDevice.addEventLogMessage(message, LOG_ID, getUTCtime(), "red", textArr, 2);
         sendMessageAll(message); // Send to all to make sure it get captured by the dash server.
     }
 }
@@ -341,7 +342,7 @@ void loop() {
             String lines[2];
             lines[0] = "Event Log Test";
             lines[1] = String(count);
-            messageToSend += dashDevice.getEventLogMessage(LOG_ID, getUTCtime(), "blue", lines, 2);
+            dashDevice.addEventLogMessage(messageToSend, LOG_ID, getUTCtime(), "blue", lines, 2);
             
             // Create something for the Map control
             float lat = -43.559880 + (float)rNum / 10000;

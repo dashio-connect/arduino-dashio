@@ -322,10 +322,8 @@ void DashioTCP::processConfig() {
             length = 0;
         }
     }
-    if (message.length() > 0) {
-        sendMessage(message);
-    }
-    sendMessage(String('\n'));
+    message += String(END_DELIM);
+    sendMessage(message);
 }
 
 bool DashioTCP::checkTCP(int index) {
@@ -495,10 +493,8 @@ void DashioMQTT::processConfig() {
             length = 0;
         }
     }
-    if (message.length() > 0) {
-        sendMessage(message);
-    }
-    sendMessage(String('\n'));
+    message += String(END_DELIM);
+    sendMessage(message);
 }
 
 void DashioMQTT::addDashStore(ControlType controlType, String controlID) {
@@ -564,8 +560,8 @@ void DashioMQTT::onConnected() {
     String subscriberTopic = dashioDevice->getMQTTSubscribeTopic(username);
     mqttClient.subscribe(subscriberTopic.c_str(), MQTT_QOS); // ... and subscribe
 
-    // Send MQTT ONLINE and WHO messages to connection
-    // WHO is only required here if using the Dash server and it must be sent to the ANNOUNCE topic
+    // Send MQTT ONLINE and WHO messages to connection (Optional)
+    // WHO is only required here if using the Dash server and it must be send to the ANNOUNCE topic
     sendMessage(dashioDevice->getOnlineMessage());
     sendMessage(dashioDevice->getWhoMessage(), announce_topic); // Update announce topic with new name
     
@@ -821,7 +817,28 @@ void DashioBLE::sendMessage(const String& message) {
         }
     }
 }
+
+void DashioBLE::processConfig() {
+    sendMessage(dashioDevice->getC64ConfigBaseMessage());
     
+    int c64Length = strlen_P(dashioDevice->configC64Str);
+    int length = 0;
+    String message = "";
+    for (int k = 0; k < c64Length; k++) {
+        char myChar = pgm_read_byte_near(dashioDevice->configC64Str + k);
+
+        message += myChar;
+        length++;
+        if (length == C64_MAX_LENGHT) {
+            sendMessage(message);
+            message = "";
+            length = 0;
+        }
+    }
+    message += String(END_DELIM);
+    sendMessage(message);
+}
+
 void DashioBLE::run() {
     if (authRequestConnect) {
         authRequestConnect = false;
@@ -854,7 +871,7 @@ void DashioBLE::run() {
                 case config:
                     dashioDevice->dashboardID = data.idStr;
                     if (dashioDevice->configC64Str != NULL) {
-                        sendMessage(dashioDevice->getC64ConfigMessage());
+                        processConfig();
                     } else {
                         if (processBLEmessageCallback != nullptr) {
                             processBLEmessageCallback(&data);

@@ -225,7 +225,16 @@ bool MessageData::processChar(char chr) {
         if ((readStr.length() > 0) || (segmentCount == 1)) { // segmentCount == 1 allows for empty second field ??? maybe should be 2 for empty third field now that we've added deviceID at the front
             switch (segmentCount) {
             case 0:
-                if (readStr == WHO_ID) {
+                if (checkPrefix && readStr == BLE_CONNECTION_ID) {
+                    connectionType = BLE_CONN;
+                    segmentCount = -1;
+                } else if (checkPrefix && readStr == TCP_CONNECTION_ID) {
+                    connectionType = TCP_CONN;
+                    segmentCount = -1;
+                } else if (checkPrefix && readStr == MQTT_CONNECTION_ID) {
+                    connectionType = MQTT_CONN;
+                    segmentCount = -1;
+                } else if (readStr == WHO_ID) {
                     deviceID = "---";
                     control = who;
                 } else {
@@ -303,7 +312,7 @@ bool MessageData::processChar(char chr) {
             if (segmentCount >= 0) {
                 segmentCount++;
                 if (chr == END_DELIM) { // End of message, so process message
-                  messageEnd = true;
+                    messageEnd = true;
                     segmentCount = -1; // Wait for next start of message
                 }
             }
@@ -317,10 +326,15 @@ bool MessageData::processChar(char chr) {
     return messageEnd;
 }
 
-String MessageData::getMessageGeneric(const String& controlStr) {
+String MessageData::getMessageGeneric(const String& controlStr, bool connectionPrefix) {
     String message((char *)0);
     message.reserve(100);
-
+    
+    if (connectionPrefix) {
+        message += String(DELIM);
+        message += getConnectionTypeStr();
+    }
+    
     if (!(controlStr == String("WHO"))){
         message += String(DELIM);
         message += deviceID;
@@ -378,6 +392,8 @@ String MessageData::getConnectionTypeStr() {
             return "MQTT";
         case SERIAL_CONN:
             return "SERIAL";
+        case ALL_CONN:
+            return "ALL";
     }
     return "";
 }
@@ -590,14 +606,19 @@ String DashioDevice::getAlarmMessage(Notification alarm) {
 }
 
 String DashioDevice::getControlBaseMessage(const String& controlType, const String& controlID) {
-    String message = String(DELIM);
+    String message = "";
+    addControlBaseMessage(message, controlType, controlID);
+    return message;
+}
+
+void DashioDevice::addControlBaseMessage(String& message, const String& controlType, const String& controlID) {
+    message += String(DELIM);
     message += deviceID;
     message += String(DELIM);
     message += controlType;
     message += String(DELIM);
     message += controlID;
     message += String(DELIM);
-    return message;
 }
 
 String DashioDevice::getButtonMessage(const String& controlID) {
@@ -720,7 +741,7 @@ String DashioDevice::getDoubleBarMessage(const String& controlID, int value1, in
     int barValues[2];
     barValues[0] = value1;
     barValues[1] = value2;
-    message += getIntArray(barValues, 2);
+    addIntArray(message, barValues, 2);
     return message;
 }
 
@@ -729,7 +750,7 @@ String DashioDevice::getDoubleBarMessage(const String& controlID, float value1, 
     float barValues[2];
     barValues[0] = value1;
     barValues[1] = value2;
-    message += getFloatArray(barValues, 2);
+    addFloatArray(message, barValues, 2);
     return message;
 }
 
@@ -857,7 +878,7 @@ String DashioDevice::getMapTrackMessage(const String& controlID, const String& t
     
     for (int i = 0; i < numWaypoints; i++) {
         message += String(DELIM);
-        message += getWaypointJSON(waypoints[i]);
+        addWaypointJSON(message, waypoints[i]);
     }
     
     message += String(END_DELIM);
@@ -878,8 +899,8 @@ String DashioDevice::getAudioVisualMessage(const String& controlID, const String
     return message;
 }
 
-String DashioDevice::getEventLogMessage(const String& controlID, const String& timeStr, const String& color, String text[], int numTextRows) {
-    String message = getControlBaseMessage(EVENT_LOG_ID, controlID);
+void DashioDevice::addEventLogMessage(String& message, const String& controlID, const String& timeStr, const String& color, String text[], int numTextRows) {
+    addControlBaseMessage(message, EVENT_LOG_ID, controlID);
     message += timeStr;
     message += String(DELIM);
     message += color;
@@ -888,26 +909,24 @@ String DashioDevice::getEventLogMessage(const String& controlID, const String& t
         message += text[i];
     }
     message += String(END_DELIM);
-    return message;
 }
 
-String DashioDevice::getEventLogMessage(const String& controlID, const String& color, String text[], int numTextRows) {
-    return getEventLogMessage(controlID, "", color, text, numTextRows);
+void DashioDevice::addEventLogMessage(String& message, const String& controlID, const String& color, String text[], int numTextRows) {
+    return addEventLogMessage(message, controlID, "", color, text, numTextRows);
 }
 
-String DashioDevice::getEventLogMessage(const String& controlID, Event events[], int numEvents) {
-    String message = getControlBaseMessage(EVENT_LOG_ID, controlID);
+void DashioDevice::addEventLogMessage(String& message, const String& controlID, Event events[], int numEvents) {
+    addControlBaseMessage(message, EVENT_LOG_ID, controlID);
     message += dashboardID;
     message += String(DELIM);
 
     for (int i = 0; i < numEvents; i++) {
-        message += getEventJSON(events[i]);
+        addEventJSON(message, events[i]);
         if (i < numEvents - 1) { // because getControlBaseMessage ends in a DELIM
             message += String(DELIM);
         }
     }
     message += String(END_DELIM);
-    return message;
 }
 
 String DashioDevice::getC64ConfigBaseMessage() {
@@ -930,68 +949,66 @@ String DashioDevice::getC64ConfigMessage() {
     return message;
 }
 
-String DashioDevice::getChartLineInts(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, int lineData[], int dataLength) {
-    String message = getControlBaseMessage(CHART_ID, controlID);
+void DashioDevice::addChartLineInts(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, int lineData[], int dataLength) {
+    addControlBaseMessage(message, CHART_ID, controlID);
     message += lineID;
     message += String(DELIM);
     message += lineName;
     message += String(DELIM);
-    message += getLineTypeStr(lineType);
+    addLineTypeStr(message, lineType);
     message += String(DELIM);
     message += color;
     message += String(DELIM);
-    message += getYaxisSelectStr(yAxisSelect);
+    addYaxisSelectStr(message, yAxisSelect);
     for (int i = 0; i < dataLength; i++) {
         message += String(DELIM);
         message += formatInt(lineData[i]);
     }
     message += String(END_DELIM);
-    return message;
 }
 
-String DashioDevice::getChartLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, float lineData[], int dataLength) {
-    String message = getControlBaseMessage(CHART_ID, controlID);
+void DashioDevice::addChartLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, float lineData[], int dataLength) {
+    addControlBaseMessage(message, CHART_ID, controlID);
     message += lineID;
     message += String(DELIM);
     message += lineName;
     message += String(DELIM);
-    message += getLineTypeStr(lineType);
+    addLineTypeStr(message, lineType);
     message += String(DELIM);
     message += color;
     message += String(DELIM);
-    message += getYaxisSelectStr(yAxisSelect);
+    addYaxisSelectStr(message, yAxisSelect);
     for (int i = 0; i < dataLength; i++) {
         message += String(DELIM);
         message += formatFloat(lineData[i]);
     }
     message += String(END_DELIM);
-    return message;
 }
 
-String DashioDevice::getTimeGraphLineBaseMessage(const String& _dashboardID, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect) {
-    String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
+void DashioDevice::addTimeGraphLineBaseMessage(String& message, const String& _dashboardID, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect) {
+    addControlBaseMessage(message, TIME_GRAPH_ID, controlID);
     message += _dashboardID;
     message += String(DELIM);
     message += lineID;
     message += String(DELIM);
     message += lineName;
     message += String(DELIM);
-    message += getLineTypeStr(lineType);
+    addLineTypeStr(message, lineType);
     message += String(DELIM);
     message += color;
     message += String(DELIM);
-    message += getYaxisSelectStr(yAxisSelect);
-    return message;
+    addYaxisSelectStr(message, yAxisSelect);
 }
 
 String DashioDevice::getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect) {
-    String message = getTimeGraphLineBaseMessage("BRDCST", controlID, lineID, lineName, lineType, color, yAxisSelect);
+    String message = "";
+    addTimeGraphLineBaseMessage(message, "BRDCST", controlID, lineID, lineName, lineType, color, yAxisSelect);
     message += String(END_DELIM);
     return message;
 }
 
-String DashioDevice::getTimeGraphLineFloats(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], float lineData[], int dataLength, bool breakLine) {
-    String message = getTimeGraphLineBaseMessage(dashboardID, controlID, lineID, lineName, lineType, color, yAxisSelect);
+void DashioDevice::addTimeGraphLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], float lineData[], int dataLength, bool breakLine) {
+    addTimeGraphLineBaseMessage(message, dashboardID, controlID, lineID, lineName, lineType, color, yAxisSelect);
     if (breakLine && (dataLength > 0)) {
         message += String(DELIM);
         message += times[0];
@@ -1005,11 +1022,10 @@ String DashioDevice::getTimeGraphLineFloats(const String& controlID, const Strin
         message += formatFloat(lineData[i]);
     }
     message += String(END_DELIM);
-    return message;
 }
 
-String DashioDevice::getTimeGraphLineFloatsArr(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, time_t times[], float **lineData, int dataLength, int arrSize) {
-    String message = getTimeGraphLineBaseMessage(dashboardID, controlID, lineID, lineName, lineType, color, yAxisSelect);
+void DashioDevice::addTimeGraphLineFloatsArr(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, time_t times[], float **lineData, int dataLength, int arrSize) {
+    addTimeGraphLineBaseMessage(message, dashboardID, controlID, lineID, lineName, lineType, color, yAxisSelect);
     char timeBuf[21];
     for (int i = 0; i < dataLength; i++) {
         message += String(DELIM);
@@ -1026,11 +1042,10 @@ String DashioDevice::getTimeGraphLineFloatsArr(const String& controlID, const St
         message += "]";
     }
     message += String(END_DELIM);
-    return message;      
 }
 
-String DashioDevice::getTimeGraphLineBools(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
-    String message = getTimeGraphLineBaseMessage(dashboardID, controlID, lineID, lineName, lineType, color, yLeft);
+void DashioDevice::addTimeGraphLineBools(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength) {
+    addTimeGraphLineBaseMessage(message, dashboardID, controlID, lineID, lineName, lineType, color, yLeft);
     for (int i = 0; i < dataLength; i++) {
         message += String(DELIM);
         message += times[i];
@@ -1042,7 +1057,6 @@ String DashioDevice::getTimeGraphLineBools(const String& controlID, const String
         }
     }
     message += String(END_DELIM);
-    return message;
 }
 
 String DashioDevice::getTimeGraphPoint(const String& controlID, const String& lineID, float value) {
@@ -1065,8 +1079,8 @@ String DashioDevice::getTimeGraphPoint(const String& controlID, const String& li
     return message;
 }
 
-String DashioDevice::getTimeGraphPointArr(const String& controlID, const String& lineID, float value[], int arrSize) {
-    String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
+void DashioDevice::addTimeGraphPointArr(String& message, const String& controlID, const String& lineID, float value[], int arrSize) {
+    addControlBaseMessage(message, TIME_GRAPH_ID, controlID);
     message += lineID;
     message += String(DELIM);
     message += "[";
@@ -1078,11 +1092,10 @@ String DashioDevice::getTimeGraphPointArr(const String& controlID, const String&
     }
     message += "]";
     message += String(END_DELIM);
-    return message;
 }
 
-String DashioDevice::getTimeGraphPointArr(const String& controlID, const String& lineID, String time, float value[], int arrSize) {
-    String message = getControlBaseMessage(TIME_GRAPH_ID, controlID);
+void DashioDevice::addTimeGraphPointArr(String& message, const String& controlID, const String& lineID, String time, float value[], int arrSize) {
+    addControlBaseMessage(message, TIME_GRAPH_ID, controlID);
     message += lineID;
     message += String(DELIM);
     message += time;
@@ -1096,7 +1109,6 @@ String DashioDevice::getTimeGraphPointArr(const String& controlID, const String&
     }
     message += "]";
     message += String(END_DELIM);
-    return message;
 }
 
 String DashioDevice::getControlTypeStr(ControlType controltype) {
@@ -1250,57 +1262,61 @@ String DashioDevice::getMQTTTopic(const String& userName, MQTTTopicType topic) {
     return userName + "/" + deviceID + "/" + tip;
 }
 
-String DashioDevice::getLineTypeStr(LineType lineType) {
+void DashioDevice::addLineTypeStr(String& message, LineType lineType) {
     switch (lineType) {
         case line:
-            return LINE_ID;
+            message += LINE_ID;
+            break;
         case bar:
-            return BAR_GRAPH_ID;
+            message += BAR_GRAPH_ID;
+            break;
         case segBar:
-            return SEGMENTED_BAR_ID;
+            message += SEGMENTED_BAR_ID;
+            break;
         case peakBar:
-            return PEAK_BAR_ID;
+            message +=  PEAK_BAR_ID;
+            break;
         case bln:
-            return BOOL_ID;
+            message +=  BOOL_ID;
+            break;
         default:
-            return LINE_ID;
+            message +=  LINE_ID;
+            break;
     }
 }
 
-String DashioDevice::getYaxisSelectStr(YAxisSelect yAxisSelect) {
+void DashioDevice::addYaxisSelectStr(String& message, YAxisSelect yAxisSelect) {
     switch (yAxisSelect) {
         case yLeft:
-            return LEFT_ID;
+            message +=  LEFT_ID;
+            break;
         default:
-            return RIGHT_ID;
+            message +=  RIGHT_ID;
+            break;
     }
 }
 
-String DashioDevice::getIntArray(int idata[], int dataLength) {
-    String writeStr = "";
+void DashioDevice::addIntArray(String& message, int idata[], int dataLength) {
     for (int i = 0; i < dataLength; i++) {
         if (i > 0) {
-            writeStr += String(DELIM);
+            message += String(DELIM);
         }
-        writeStr += formatInt(idata[i]);
+        message += formatInt(idata[i]);
     }
-    writeStr += String(END_DELIM);
-    return writeStr;
+    message += String(END_DELIM);
 }
 
-String DashioDevice::getFloatArray(float fdata[], int dataLength) {
-    String writeStr = "";
+void DashioDevice::addFloatArray(String& message, float fdata[], int dataLength) {
     for (int i = 0; i < dataLength; i++) {
         if (i > 0) {
-            writeStr += String(DELIM);
+            message += String(DELIM);
         }
-        writeStr += formatFloat(fdata[i]);
+        message += formatFloat(fdata[i]);
     }
-    writeStr += String(END_DELIM);
-    return writeStr;
+    message += String(END_DELIM);
 }
 
-String DashioDevice::getWaypointJSON(Waypoint waypoint) {
+void DashioDevice::addWaypointJSON(String& message, Waypoint waypoint) {
     DashJSON json;
     json.start();
     if (waypoint.time.length() > 0) {
@@ -1323,14 +1339,14 @@ String DashioDevice::getWaypointJSON(Waypoint waypoint) {
     }
     json.addKeyString(F("latitude"), waypoint.latitude);
     json.addKeyString(F("longitude"), waypoint.longitude, true);
-    return json.jsonStr;
+    message += json.jsonStr;
 }
 
-String DashioDevice::getEventJSON(Event event) {
+void DashioDevice::addEventJSON(String& message, Event event) {
     DashJSON json;
     json.start();
     json.addKeyString(F("time"), event.time);
     json.addKeyString(F("color"), event.color);
     json.addKeyStringArray(F("lines"), event.lines, event.numLines, true);
-    return json.jsonStr;
+    message += json.jsonStr;
 }

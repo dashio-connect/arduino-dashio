@@ -79,11 +79,11 @@ void processStatus(ConnectionType connectionType) {
     String message = dashDevice.getButtonMessage(BUTTON_ID, toggle);
     message += dashDevice.getSingleBarMessage(SLIDER_ID, 25);
     int data[] = {100, 200, 300, 400, 500};
-    message += dashDevice.getChartLineInts(CHART_ID, "L1", "Line 1", peakBar, "purple", yLeft, data, sizeof(data)/sizeof(int));
+    dashDevice.addChartLineInts(message, CHART_ID, "L1", "Line 1", peakBar, "purple", yLeft, data, sizeof(data)/sizeof(int));
     sendMessage(connectionType, message);
     
     int data2[] = {100, 200, 300, 250, 225, 280, 350, 500, 550, 525, 500};
-    message = dashDevice.getChartLineInts(CHART_ID, "L2", "Line 2", line, "aqua", yLeft, data2, sizeof(data2)/sizeof(int));
+    dashDevice.addChartLineInts(message, CHART_ID, "L2", "Line 2", line, "aqua", yLeft, data2, sizeof(data2)/sizeof(int));
     sendMessage(connectionType, message);
 }
 
@@ -92,16 +92,18 @@ void processButton(MessageData *messageData) {
         if (toggle == off) {
             toggle = on;
             int data[] = {50, 255, 505, 758, 903, 400, 0};
-            String message = dashDevice.getChartLineInts(CHART_ID, "L1", "Line 1 a", bar, "green", yLeft, data, sizeof(data)/sizeof(int));
+            String message = "";
+            dashDevice.addChartLineInts(message, CHART_ID, "L1", "Line 1 a", bar, "green", yLeft, data, sizeof(data)/sizeof(int));
             int data2[] = {153, 351, 806, 900, 200, 0};
-            message += dashDevice.getChartLineInts(CHART_ID, "L2", "Line 2 a", segBar, "yellow", yLeft, data2, sizeof(data2)/sizeof(int));
+            dashDevice.addChartLineInts(message, CHART_ID, "L2", "Line 2 a", segBar, "yellow", yLeft, data2, sizeof(data2)/sizeof(int));
             sendMessage(messageData->connectionType, message);
         } else if (toggle == on) {
             toggle = off;
             float data[] = {200, 303.334, 504.433, 809.434, 912, 706, 643};
-            String message = dashDevice.getChartLineFloats(CHART_ID, "L1", "Line 1 b", peakBar, "orange", yLeft, data, sizeof(data)/sizeof(float));
+            String message = "";
+            dashDevice.addChartLineFloats(message, CHART_ID, "L1", "Line 1 b", peakBar, "orange", yLeft, data, sizeof(data)/sizeof(float));
             int data2[] = {};
-            message += dashDevice.getChartLineInts(CHART_ID, "L2", "Line 2 b", peakBar, "blue", yLeft, data2, sizeof(data2)/sizeof(int));
+            dashDevice.addChartLineInts(message, CHART_ID, "L2", "Line 2 b", peakBar, "blue", yLeft, data2, sizeof(data2)/sizeof(int));
             sendMessage(messageData->connectionType, message);
         }
         

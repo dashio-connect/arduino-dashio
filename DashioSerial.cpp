@@ -29,6 +29,7 @@
 DashSerial::DashSerial(DashDevice *_dashDevice, bool _printMessages) : data(SERIAL_CONN) {
     dashDevice = _dashDevice;
     printMessages = _printMessages;
+    data.checkPrefix = true;
 }
 
 void DashSerial::setCallbacksRxTx(void(*processIncomingMessage)(MessageData *messageData), void(*sendMessage)(const String& outgoingMessage)) {
@@ -112,9 +113,9 @@ void DashSerial::sendCtrl(ControlType controlType) {
         String message((char *)0);
         message.reserve(100);
 
-        message += DELIM;
+        message += String(DELIM);
         message += CTRL;
-        message += END_DELIM;
+        message += String(END_DELIM);
 
         if (txMessageCallback != nullptr) {
             txMessageCallback(message);
@@ -128,15 +129,15 @@ void DashSerial::sendCtrl(ControlType controlType, int value) {
     String message((char *)0);
     message.reserve(100);
 
-    message = DELIM;
+    message = String(DELIM);
     message += dashDevice->deviceID;
-    message += DELIM;
+    message += String(DELIM);
     message += CTRL;
-    message += DELIM;
+    message += String(DELIM);
     message += dashDevice->getControlTypeStr(controlType);
-    message += DELIM;
+    message += String(DELIM);
     message += value;
-    message += END_DELIM;
+    message += String(END_DELIM);
 
     if (txMessageCallback != nullptr) {
         txMessageCallback(message);
@@ -147,22 +148,22 @@ void DashSerial::sendCtrl(ControlType controlType, String value) {
     String message((char *)0);
     message.reserve(100);
 
-    message = DELIM;
+    message = String(DELIM);
     message += dashDevice->deviceID;
-    message += DELIM;
+    message += String(DELIM);
     message += CTRL;
 
-    message += DELIM;
+    message += String(DELIM);
     if (controlType == ctrl) {
         message += value;
     } else {
         message += dashDevice->getControlTypeStr(controlType);
         if (value.length() > 0) {
-            message += DELIM;
+            message += String(DELIM);
             message += value;
         }
     }
-    message += END_DELIM;
+    message += String(END_DELIM);
 
     if (txMessageCallback != nullptr) {
         txMessageCallback(message);
@@ -174,18 +175,18 @@ void DashSerial::sendCtrl(ControlType controlType, const String &value1, int val
         String message((char *)0);
         message.reserve(value1.length() + 100);
 
-        message = DELIM;
+        message = String(DELIM);
         message += dashDevice->deviceID;
-        message += DELIM;
+        message += String(DELIM);
         message += CTRL;
 
-        message += DELIM;
+        message += String(DELIM);
         message += CFG;
-        message += DELIM;
+        message += String(DELIM);
         message += value1;
-        message += DELIM;
+        message += String(DELIM);
         message += String(value2);
-        message += END_DELIM;
+        message += String(END_DELIM);
 
         if (txMessageCallback != nullptr) {
             txMessageCallback(message);
@@ -197,25 +198,25 @@ void DashSerial::sendCtrl(ControlType controlType, const String &value1, const S
     String message((char *)0);
     message.reserve(value1.length() + 100);
 
-    message = DELIM;
+    message = String(DELIM);
     message += dashDevice->deviceID;
-    message += DELIM;
+    message += String(DELIM);
     message += CTRL;
-    message += DELIM;
+    message += String(DELIM);
 
     if (value1 == STORE_ENABLE) {
         message += value1;
-        message += DELIM;
+        message += String(DELIM);
         message += dashDevice->getControlTypeStr(controlType);
     } else {
         message += dashDevice->getControlTypeStr(controlType);
-        message += DELIM;
+        message += String(DELIM);
         message += value1;
     }
 
-    message += DELIM;
+    message += String(DELIM);
     message += value2;
-    message += END_DELIM;
+    message += String(END_DELIM);
 
     if (txMessageCallback != nullptr) {
         txMessageCallback(message);
@@ -226,13 +227,13 @@ void DashSerial::sendName(const String &deviceName) {
     String message((char *)0);
     message.reserve(100);
 
-    message = DELIM;
+    message = String(DELIM);
     message += dashDevice->deviceID;
-    message += DELIM;
+    message += String(DELIM);
     message += NAME;
-    message += DELIM;
+    message += String(DELIM);
     message += deviceName;
-    message += END_DELIM;
+    message += String(END_DELIM);
 
     if (txMessageCallback != nullptr) {
         txMessageCallback(message);
@@ -243,17 +244,17 @@ void DashSerial::sendWiFiCredentials(const String &SSID, const String &password,
     String message((char *)0);
     message.reserve(100);
 
-    message = DELIM;
+    message = String(DELIM);
     message += dashDevice->deviceID;
-    message += DELIM;
+    message += String(DELIM);
     message += WIFI;
-    message += DELIM;
+    message += String(DELIM);
     message += SSID;
-    message += DELIM;
+    message += String(DELIM);
     message += password;
-    message += DELIM;
+    message += String(DELIM);
     message += countryCode;
-    message += END_DELIM;
+    message += String(END_DELIM);
 
     if (txMessageCallback != nullptr) {
         txMessageCallback(message);
@@ -264,13 +265,13 @@ void DashSerial::sendTCPport(uint16_t port) {
     String message((char *)0);
     message.reserve(100);
 
-    message = DELIM;
+    message = String(DELIM);
     message += dashDevice->deviceID;
-    message += DELIM;
+    message += String(DELIM);
     message += TCP;
-    message += DELIM;
+    message += String(DELIM);
     message += String(port);
-    message += END_DELIM;
+    message += String(END_DELIM);
 
     if (txMessageCallback != nullptr) {
         txMessageCallback(message);
@@ -281,15 +282,15 @@ void DashSerial::sendDashCredentials(const String &username, const String &passw
     String message((char *)0);
     message.reserve(100);
 
-    message = DELIM;
+    message = String(DELIM);
     message += dashDevice->deviceID;
-    message += DELIM;
+    message += String(DELIM);
     message += DASHIO;
-    message += DELIM;
+    message += String(DELIM);
     message += username;
-    message += DELIM;
+    message += String(DELIM);
     message += password;
-    message += END_DELIM;
+    message += String(END_DELIM);
 
     if (txMessageCallback != nullptr) {
         txMessageCallback(message);

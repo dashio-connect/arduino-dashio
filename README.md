@@ -21,4 +21,9 @@ The **Dash** app is free and available for both Apple and Android devices. Use i
 
 <img src="https://dashio.io/wp-content/uploads/2020/12/IMG_4203.jpeg" width="600" />
 
+## Release Notes
 
+### 1.1.0 (9 February 2024)
+
+- String handling has been improved, particularly where long strings are created from array of data. For example, the method getTimeGraphLineFloats has been raplaced with addTimeGraphLineFloats which appends the graph line text to an existing string.
+- Other minor improvements.
