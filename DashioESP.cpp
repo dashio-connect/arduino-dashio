@@ -944,7 +944,11 @@ void DashioBLE::advertise(){
 }
 
 bool DashioBLE::isConnected(){
-    return (pServer->getConnectedCount() > 0);
+    if (pServer != nullptr) {
+        return (pServer->getConnectedCount() > 0);
+    } else {
+        return false;
+    }
 }
 
 

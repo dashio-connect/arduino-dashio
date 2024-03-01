@@ -154,82 +154,6 @@ enum MQTTTopicType {
     will_topic
 };
 
-enum TitlePosition {
-    titleOff,
-    titleTop,
-    titleBottom
-};
-
-enum LabelStyle {
-    basic,
-    border,
-    group
-};
-
-enum KnobPresentationStyle {
-    knobNormal,
-    knobPan
-};
-
-enum DialNumberPosition {
-    numberOff,
-    numberLeft,
-    numberRight,
-    numberCenter,
-};
-
-enum DialPresentationStyle {
-    dialPie,
-    dialPieInverted,
-    dialBar
-};
-
-enum DirectionPresentationStyle {
-    dirNSEW,
-    dirDeg,
-    dirDegPS
-};
-
-enum TextFormat {
-    numFmt,
-    dateTimeFmt,
-    dateTimeLongFmt,
-    intvlFmt,
-    noFmt
-};
-
-enum KeyboardType {
-    hexKbd,
-    allKbd,
-    numKbd,
-    intKbd,
-    dateKbd,
-    timeKbd,
-    dateTimeKbd,
-    intvlKbd,
-    noKbd
-};
-
-enum TextAlign {
-    textLeft,
-    textCenter,
-    textRight
-};
-
-enum BarStyle {
-    segmentedBar,
-    solidBar
-};
-
-enum XAxisLabelsStyle {
-    labelsOnLines,
-    labelsBetweenLines
-};
-
-enum ColorPickerStyle {
-    wheel,
-    spectrum
-};
 
 struct Rect {
     float  xPositionRatio;        // Position of the left side of the control as a ratio of the screen width (0 to 1)
@@ -372,6 +296,7 @@ public:
     String getDirectionMessage(const String& controlID);
 
     String getMapWaypointMessage(const String& controlID, const String& trackID, const String& latitude, const String& longitude);
+    String getMapWaypointMessage(const String& controlID, const String& trackID, float latitude, float longitude);
     String getMapTrackMessage(const String& controlID, const String& trackID, const String& text, const String& colour, Waypoint waypoints[] = {}, int numWaypoints = 0);
 
     void addEventLogMessage(String& message, const String& controlID, const String& color, String text[], int numTextRows);
@@ -386,7 +311,8 @@ public:
     void addChartLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, float lineData[], int dataLength);
 
     String getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect);
-    void addTimeGraphLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], float lineData[], int dataLength, bool breakLine = false);
+    void addTimeGraphLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], float lineData[], int dataLength);
+    void addTimeGraphLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, long times[], float lineData[], int dataLength, bool breakLine = false);
     void addTimeGraphLineFloatsArr(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, time_t times[], float **lineData, int dataLength, int arrSize);
     void addTimeGraphLineBools(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength);
 
