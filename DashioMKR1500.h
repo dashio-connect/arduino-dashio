@@ -88,7 +88,7 @@ public:
 
     DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm = false, bool _printMessages = false);
     void setup(const char *_username, const char *_password);
-    void addDashStore(ControlType controlType, String controlID);
+    void addDashStore(ControlType controlType, String controlID = "");
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
     void sendAlarmMessage(const String& message);
     bool checkConnection();

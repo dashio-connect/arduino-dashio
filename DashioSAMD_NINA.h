@@ -105,7 +105,7 @@ public:
 
     DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool _printMessages = false);
     void setup(char *_username, char *_password);
-    void addDashStore(ControlType controlType, String controlID);
+    void addDashStore(ControlType controlType, String controlID = "");
     void sendMessage(const String& message, MQTTTopicType topic = data_topic);
     void sendAlarmMessage(const String& message);
     void sendWhoAnnounce();

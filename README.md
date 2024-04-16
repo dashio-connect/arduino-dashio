@@ -23,10 +23,15 @@ The **Dash** app is free and available for both Apple and Android devices. Use i
 
 ## Release Notes
 
+### 1.1.2 (16 April 2024)
+
+- Fixed bug in MQTT input buffer.
+- Added features for future Dash app release (TextBox caption, Dash server Store & Forward for intermittently connected IoT devices).
+
 ### 1.1.1 (1 March 2024)
 
-- Improved String handling for TimeGraph control graph lines
-- Other minor improvements and fixes
+- Improved String handling for TimeGraph control graph lines.
+- Other minor improvements and fixes.
 
 ### 1.1.0 (9 February 2024)
 

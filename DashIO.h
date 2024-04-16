@@ -92,6 +92,7 @@ enum ControlType {
     status,
     config,
     pushToken,
+    storeAndForward,
 
     mqttConn,
     bleConn,
@@ -264,6 +265,7 @@ public:
     String getButtonMessage(const String& controlID, bool on, const String& iconName = "", const String& text = "");
 
     String getTextBoxMessage(const String& controlID, const String& text, const String& color = "");
+    String getTextBoxCaptionMessage(const String& controlID, const String& text, const String& color = "");
 
     String getSelectorMessage(const String& controlID);
     String getSelectorMessage(const String& controlID, int index);

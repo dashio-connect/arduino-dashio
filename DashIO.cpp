@@ -51,6 +51,7 @@
 #define KNOB_ID "KNOB"
 #define KNOB_DIAL_ID "KBDL"
 #define TEXT_BOX_ID "TEXT"
+#define TEXT_CAPTION_ID "TXTC"
 #define SELECTOR_ID "SLCTR"
 #define CHART_ID "CHRT"
 #define TIME_GRAPH_ID "TGRPH"
@@ -78,6 +79,7 @@
 
 // Store Enable
 #define STORE_ENABLE_ID "STE"
+#define STORE_AND_FORWARD_ID "SAF"
 
 // Comms Controls
 #define COMMS_MODE_ID "MODE"
@@ -162,51 +164,59 @@ void MessageData::loadBuffer(const String& message) {
     int avail = 0;
     if (bufferLength > 0) {
         if (bufferWritePtr >= bufferReadPtr) {
-            avail = bufferLength + bufferReadPtr - bufferWritePtr;
+            avail = bufferLength - (bufferWritePtr - bufferReadPtr);
         } else {
             avail = bufferReadPtr - bufferWritePtr;
         }
     }
     
-    Serial.print(getConnectionTypeStr() + " ");
     if (avail < messageLength) {
-        Serial.println(F("Buffer overflow - can't process message"));
-    } else {
-        Serial.print(F("Buffering message: "));
+        Serial.print(getConnectionTypeStr() + " ");
+        Serial.print(F("Buffer overflow - can't process message: "));
         Serial.println(message);
-
+    } else {
         for (int i = 0; i < messageLength; i++) {
             buffer[bufferWritePtr] = message[i];
             bufferWritePtr++;
             if (bufferWritePtr >= bufferLength) {
-                bufferWritePtr -= bufferLength;
+                bufferWritePtr = 0;
             }
         }
     }
 }
 
 void MessageData::checkBuffer() {
-    if (bufferWritePtr != bufferReadPtr) {
-        bool unloadedMessage = false;
-        int count = 0;
-        while (!processChar(buffer[bufferReadPtr++])) {
-            count++;
-            if (count > bufferLength) { // can't find valid message, so quit
-                break;
+    if (!messageReceived) { // wait until last message processed
+        if (bufferWritePtr != bufferReadPtr) {
+            bool unloadedMessage = false;
+            int count = 0;
+            while (bufferReadPtr != bufferWritePtr) { // read pointer has caught up to write pointer, therefore, must be the end
+                if (count++ > bufferLength) { // can't find valid message, so quit
+                    unloadedMessage = false;
+                    break;
+                }
+
+                char chr = buffer[bufferReadPtr];
+
+                bufferReadPtr++;
+                if (bufferReadPtr >= bufferLength) {
+                    bufferReadPtr = 0;
+                }
+
+                if (processChar(chr)) {
+                    unloadedMessage = true;
+                    break;
+                }
             }
-            
-            if (bufferReadPtr >= bufferLength) {
-                bufferReadPtr -= bufferLength;
-            }
-            unloadedMessage = true;
+
+            messageReceived = unloadedMessage;
         }
-        messageReceived = unloadedMessage;
     }
 }
 
 void MessageData::processMessage(const String& message) {
     if (message.length() > 0) {
-        if (messageReceived) {
+        if (bufferLength > 0) { // Storing to buffer allows for concatenated dash messages
             loadBuffer(message);
         } else {
             for (unsigned int i = 0; i < message.length(); i++) {
@@ -647,6 +657,17 @@ String DashioDevice::getButtonMessage(const String& controlID, bool on, const St
 
 String DashioDevice::getTextBoxMessage(const String& controlID, const String& text, const String& color) {
     String message = getControlBaseMessage(TEXT_BOX_ID, controlID);
+    message += text;
+    if (color != "") {
+        message += String(DELIM);
+        message += color;
+    }
+    message += String(END_DELIM);
+    return message;
+}
+
+String DashioDevice::getTextBoxCaptionMessage(const String& controlID, const String& text, const String& color) {
+    String message = getControlBaseMessage(TEXT_CAPTION_ID, controlID);
     message += text;
     if (color != "") {
         message += String(DELIM);
@@ -1143,6 +1164,7 @@ String DashioDevice::getControlTypeStr(ControlType controltype) {
         case status: return STATUS_ID;
         case dashClock: return CLOCK_ID;
         case config: return CONFIG_ID;
+        case storeAndForward: return STORE_AND_FORWARD_ID;
               
         case device: return DEVICE_ID;
         case deviceView: return DEVICE_VIEW_ID;
