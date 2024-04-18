@@ -425,7 +425,6 @@ DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool 
 #endif
 }
 
-MessageData DashioMQTT::incomingBufferSize = INCOMING_BUFFER_SIZE
 MessageData DashioMQTT::data(MQTT_CONN, INCOMING_BUFFER_SIZE);
 
 void DashioMQTT::messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length) {
