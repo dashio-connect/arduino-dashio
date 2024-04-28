@@ -223,6 +223,42 @@ void DashSerial::sendCtrl(ControlType controlType, const String &value1, const S
     }
 }
 
+void DashSerial::sendClockRequest() {
+    String message((char *)0);
+    message.reserve(100);
+    
+    message = String(DELIM);
+    message += dashDevice->deviceID;
+    message += String(DELIM);
+    message += DASH_CLOCK;
+    message += String(END_DELIM);
+    
+    if (txMessageCallback != nullptr) {
+        txMessageCallback(message);
+    }
+}
+    
+void DashSerial::sendAlarm(const String& controlID, const String& title, const String& description) {
+    String message((char *)0);
+    message.reserve(100);
+
+    message = String(DELIM);
+    message += dashDevice->deviceID;
+    message += String(DELIM);
+    message += ALARM;
+    message += String(DELIM);
+    message += controlID;
+    message += String(DELIM);
+    message += title;
+    message += String(DELIM);
+    message += description;
+    message += String(END_DELIM);
+
+    if (txMessageCallback != nullptr) {
+        txMessageCallback(message);
+    }
+}
+
 void DashSerial::sendName(const String &deviceName) {
     String message((char *)0);
     message.reserve(100);

@@ -155,6 +155,13 @@ enum MQTTTopicType {
     will_topic
 };
 
+enum StatusCode {
+    noError,
+    wifiConnected,
+    wifiTimeout,
+    mqttConnected,
+    mqttConnectFail
+};
 
 struct Rect {
     float  xPositionRatio;        // Position of the left side of the control as a ratio of the screen width (0 to 1)
@@ -247,6 +254,9 @@ public:
     
     void appendDelimitedStr(String *str, const String& addStr);
 
+    void (*statusCallback)(StatusCode statusCode); // Used for Dash Comms Module project
+    void onStatusCallback(StatusCode statusCode);
+
     String getWhoMessage();
     String getConnectMessage();
     String getClockMessage();
@@ -314,7 +324,7 @@ public:
 
     String getTimeGraphLine(const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect);
     void addTimeGraphLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, String times[], float lineData[], int dataLength);
-    void addTimeGraphLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, long times[], float lineData[], int dataLength, bool breakLine = false);
+    void addTimeGraphLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, time_t times[], float lineData[], int dataLength, bool breakLine = false);
     void addTimeGraphLineFloatsArr(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, time_t times[], float **lineData, int dataLength, int arrSize);
     void addTimeGraphLineBools(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, String times[], bool lineData[], int dataLength);
 

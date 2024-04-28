@@ -40,6 +40,7 @@ const char TCP[] = "TCP";
 const char MQTT[] = "MQTT";
 const char CNCTN[] = "CNCTN";
 const char REBOOT[] = "REBOOT";
+const char COMMS_STATUS[] = "STS";
 const char SLEEP[] = "SLEEP";
 const char NAME[] = "NAME";
 const char WIFI[] = "WIFI";
@@ -48,6 +49,8 @@ const char STORE_ENABLE[] = "STE";
 const char TGRPH[] = "TGRPH";
 const char MAP[] = "MAP";
 const char LOG[] = "LOG";
+const char DASH_CLOCK[] = "CLK";
+const char ALARM[] = "ALM";
 
 class DashSerial {
 private:
@@ -71,6 +74,10 @@ public:
     void sendCtrl(ControlType controlType, String value);
     void sendCtrl(ControlType controlType, const String &value1, int value2);
     void sendCtrl(ControlType controlType, const String &value1, const String value2);
+    
+    void sendClockRequest();
+    void sendAlarm(const String& controlID, const String& title, const String& description);
+    
     void sendName(const String &deviceName);
     void sendWiFiCredentials(const String &SSID, const String &password, const String &countryCode = "");
     void sendTCPport(uint16_t port);

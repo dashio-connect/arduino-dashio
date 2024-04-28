@@ -303,7 +303,7 @@ bool MessageData::processChar(char chr) {
                     control = resetDevice;
                 } else {
                     control = unknown;
-                    segmentCount == -1;
+                    segmentCount = -1;
                 }
                 break;
             case 2:
@@ -473,6 +473,12 @@ void DashioDevice::setup(uint8_t m_address[6]) {
     macStr += buffer;
 
     deviceID = macStr.c_str();
+}
+
+void DashioDevice::onStatusCallback(StatusCode statusCode) {
+    if (statusCallback != nullptr) {
+        statusCallback(statusCode);
+    }
 }
 
 void DashioDevice::appendDelimitedStr(String *str, const String& addStr) {
@@ -1048,12 +1054,12 @@ void DashioDevice::addTimeGraphLineFloats(String& message, const String& control
     message += String(END_DELIM);
 }
 
-void DashioDevice::addTimeGraphLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, long times[], float lineData[], int dataLength, bool breakLine) {
+void DashioDevice::addTimeGraphLineFloats(String& message, const String& controlID, const String& lineID, const String& lineName, LineType lineType, const String& color, YAxisSelect yAxisSelect, time_t times[], float lineData[], int dataLength, bool breakLine) {
     addTimeGraphLineBaseMessage(message, dashboardID, controlID, lineID, lineName, lineType, color, yAxisSelect);
     char timeBuf[21];
     if (breakLine && (dataLength > 0)) {
         message += String(DELIM);
-        long breakTime = times[0] - 1; // - 1 second for break point time
+        time_t breakTime = times[0] - 1; // - 1 second for break point time
         strftime(timeBuf, 21, "%Y-%m-%dT%H:%M:%SZ", localtime(&breakTime));
         message += String(timeBuf);
         message += ",";
@@ -1254,7 +1260,7 @@ ControlType DashioDevice::getControlType(String controltypeStr) {
     } else if (controltypeStr == COLOR_ID) {
         return colorPicker;
     } else if (controltypeStr == AV_ID) {
-        return audioVisual; 
+        return audioVisual;
     } else if (controltypeStr == DEVICE_NAME_ID) {
         return deviceName;
     } else if (controltypeStr == WIFI_SETUP_ID) {

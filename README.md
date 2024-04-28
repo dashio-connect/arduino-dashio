@@ -23,6 +23,11 @@ The **Dash** app is free and available for both Apple and Android devices. Use i
 
 ## Release Notes
 
+### 1.1.3 (28 April 2024)
+
+- StatusCode enum & onStatusCallback() added to provide information on connection status changes (only used in ESP32 at this stage).
+- Bug fixes (removed spurious incomingBufferSize & improve function addTimeGraphLineFloats)
+
 ### 1.1.2 (16 April 2024)
 
 - Fixed bug in MQTT input buffer.

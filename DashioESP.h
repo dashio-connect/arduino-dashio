@@ -58,7 +58,6 @@ struct TCPclient {
 
 class DashioTCP {
 private:
-    DashioDevice *dashioDevice;
     WiFiServer wifiServer;
     TCPclient *tcpClients;
     uint8_t maxTCPclients = 1;
@@ -68,6 +67,7 @@ private:
     void processConfig();
 
 public:
+    DashioDevice *dashioDevice;
     bool printMessages = false;
     uint16_t tcpPort = 5650;
     bool passThrough = false;
@@ -97,7 +97,6 @@ enum MQTTstate {
 class DashioMQTT {
 private:
     bool reboot = true;
-    DashioDevice *dashioDevice;
     static MessageData data;
     WiFiClientSecure wifiClient;
     MQTTClient mqttClient;
@@ -127,6 +126,7 @@ private:
     int dashStoreSize = 0;
 
 public:
+    DashioDevice *dashioDevice;
     bool printMessages = false;
     bool sendRebootAlarm = false;
     char *mqttHost = DASH_SERVER;
@@ -156,7 +156,6 @@ public:
 class DashioBLE {
 private:
     bool secureBLE;
-    DashioDevice *dashioDevice;
     BLEServer *pServer;
     BLECharacteristic *pCharacteristic;
     BLEAdvertising *pAdvertising;
@@ -165,6 +164,7 @@ private:
     void processConfig();
 
 public:
+    DashioDevice *dashioDevice;
     static bool printMessages;
     MessageData data;
     void (*processBLEmessageCallback)(MessageData *messageData);

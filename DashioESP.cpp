@@ -112,6 +112,8 @@ void DashioWiFi::run() {
             }
 
             if (wifiConnectCount > WIFI_TIMEOUT_S) { // If too many fails, restart the ESP32. Sometimes ESP32's WiFi gets tied up in a knot.
+                mqttConnection->dashioDevice->onStatusCallback(wifiTimeout);
+
                 ESP.restart();
             }
         } else {
@@ -124,6 +126,8 @@ void DashioWiFi::run() {
                 if (wifiConnectCallback != NULL) {
                     wifiConnectCallback();
                 }
+
+                mqttConnection->dashioDevice->onStatusCallback(wifiConnected);
 
                 if (tcpConnection != NULL) {
                     tcpConnection->begin();
@@ -577,6 +581,8 @@ void DashioMQTT::onConnected() {
             sendAlarmMessage(dashioDevice->getAlarmMessage("ALX", "System Reboot", dashioDevice->name));
         }
     }
+    
+    dashioDevice->statusCallback(mqttConnected);
 }
 
 void DashioMQTT::hostConnect() {
@@ -609,6 +615,8 @@ void DashioMQTT::checkConnection() {
             }
             if (mqttConnectCount >= MQTT_RETRY_S) {
                 mqttConnectCount = 0;
+
+                dashioDevice->onStatusCallback(mqttConnectFail);
             } else {
                 mqttConnectCount++;
             }
