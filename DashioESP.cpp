@@ -582,7 +582,7 @@ void DashioMQTT::onConnected() {
         }
     }
     
-    dashioDevice->statusCallback(mqttConnected);
+    dashioDevice->onStatusCallback(mqttConnected);
 }
 
 void DashioMQTT::hostConnect() {

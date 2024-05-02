@@ -254,7 +254,7 @@ public:
     
     void appendDelimitedStr(String *str, const String& addStr);
 
-    void (*statusCallback)(StatusCode statusCode); // Used for Dash Comms Module project
+    void (*statusCallback)(StatusCode statusCode) = nullptr; // Used for Dash Comms Module project
     void onStatusCallback(StatusCode statusCode);
 
     String getWhoMessage();
