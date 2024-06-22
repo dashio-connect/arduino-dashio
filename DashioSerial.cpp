@@ -61,29 +61,24 @@ void DashSerial::processConfig() {
 void DashSerial::actOnMessage() {
     //acts on whatever message is currently stored within data
 
+    if (printMessages) {
+        Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(data.control)));
+    }
+
     switch (data.control) {
         case who:
             responseMessage = dashDevice->getWhoMessage();
-            if (printMessages) {
-                Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(who)));
-            }
             if (txMessageCallback != nullptr) {
                 txMessageCallback(responseMessage);
             }
             break;
         case connect:
             responseMessage = dashDevice->getConnectMessage();
-            if (printMessages) {
-                Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(connect)));
-            }
             if (txMessageCallback != nullptr) {
                 txMessageCallback(responseMessage);
             }
             break;
         case config:
-            if (printMessages) {
-                Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(config)));
-            }
             if (txMessageCallback != nullptr) {
                 if (dashDevice->configC64Str != nullptr) {
                     processConfig();
@@ -92,9 +87,6 @@ void DashSerial::actOnMessage() {
             }
             break;
         default:
-            if (printMessages) {
-                Serial.println(data.getReceivedMessageForPrint(dashDevice->getControlTypeStr(data.control)));
-            }
             if(processRxMessageCallback != nullptr) {
                 processRxMessageCallback(&data);
             }
@@ -194,7 +186,7 @@ void DashSerial::sendCtrl(ControlType controlType, const String &value1, int val
     }
 }
 
-void DashSerial::sendCtrl(ControlType controlType, const String &value1, const String value2) {
+void DashSerial::sendCtrl(ControlType controlType, const String &value1, const String &value2) {
     String message((char *)0);
     message.reserve(value1.length() + 100);
 
