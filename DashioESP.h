@@ -36,6 +36,7 @@
     #include <ESP8266WiFi.h>   // Included in the 8266 Arduino library
     #include <ESP8266mDNS.h>   // Included in the 8266 Arduino library
 #elif ESP32
+    #include <WiFi.h>
     #include <NimBLEDevice.h>  // ESP32 BLE Arduino library by Neil Kolban. Included in Arduino IDE
     #include <ESPmDNS.h>       // Included in the espressif library
 #endif

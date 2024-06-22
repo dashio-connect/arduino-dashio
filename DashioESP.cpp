@@ -165,7 +165,11 @@ void DashioWiFi::end() {
 }
 
 String DashioWiFi::macAddress() {
+#ifdef ESP32
+    return Network.macAddress();
+#elif ESP8266
     return WiFi.macAddress();
+#endif
 }
 
 String DashioWiFi::ipAddress() {
