@@ -421,7 +421,7 @@ DashioDevice::DashioDevice(const String& _deviceType, const char *_configC64Str,
 
 void DashioDevice::setup(const String& deviceIdentifier) {
     if (name == "") {
-        name = F("DashIO Device");
+        name = F(DEFAULT_DEVICE_NAME);
     }
     deviceID = deviceIdentifier;
 }

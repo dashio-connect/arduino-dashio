@@ -72,6 +72,8 @@ extern char DASH_SERVER[];
 #define INVALID_FLOAT_VALUE 0xFFFFFFFF
 #define INVALID_INT_VALUE INT_MAX
 
+#define DEFAULT_DEVICE_NAME "DashIO Device"
+
 const char END_DELIM = '\n';
 const char DELIM = '\t';
 const char NOT_AVAILABLE[] = "NA";

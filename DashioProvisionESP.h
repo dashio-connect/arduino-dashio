@@ -53,13 +53,13 @@ public:
     DashioProvision(DashioDevice *_dashioDevice);
     void load(void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
     void load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
+    void save();
     void processMessage(MessageData *connection);
 
 private:
     void (*onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged);
 
     void load();
-    void save();
     void update(DeviceData *deviceData);
 };
 

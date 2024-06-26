@@ -108,6 +108,9 @@ void DashioProvision::load() {
     deviceDataRead.saved = preferences.getChar("stored", 'N');
     String str = preferences.getString("deviceName", "");
     str.toCharArray(deviceDataRead.deviceName, 32);
+    if (str.length() > 0) {
+        dashioDevice->name = str;
+    }
 
     str = preferences.getString("wifiSSID", "");
     str.toCharArray(deviceDataRead.wifiSSID, 32);

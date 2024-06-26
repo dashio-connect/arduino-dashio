@@ -166,7 +166,11 @@ void DashioWiFi::end() {
 
 String DashioWiFi::macAddress() {
 #ifdef ESP32
-    return Network.macAddress();
+    #if ESP_IDF_VERSION_MAJOR >= 5
+        return Network.macAddress();
+    #else
+        return WiFi.macAddress();
+    #endif
 #elif ESP8266
     return WiFi.macAddress();
 #endif
