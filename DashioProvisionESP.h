@@ -37,6 +37,7 @@ struct DeviceData {
     char wifiPassword[63];
     char dashUserName[32];
     char dashPassword[32];
+    uint16_t tcpPort = DEFAULT_TCP_PORT;
     char saved;
 };
 
@@ -49,12 +50,14 @@ public:
     char wifiPassword[63];
     char dashUserName[32];
     char dashPassword[32];
+    uint16_t tcpPort = DEFAULT_TCP_PORT;
 
     DashioProvision(DashioDevice *_dashioDevice);
     void load(void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
     void load(DeviceData *defaultDeviceData, void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
     void save();
     void processMessage(MessageData *connection);
+    void setTCPport(const String &portStr);
 
 private:
     void (*onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged);

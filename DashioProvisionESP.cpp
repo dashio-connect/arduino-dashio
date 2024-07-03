@@ -78,6 +78,19 @@ void DashioProvision::processMessage(MessageData *messageData) {
             onProvisionCallback(messageData->connectionType, dashioDevice->getDashioUpdateAckMessage(), true);
         }
         break;
+    case tcpSetup:
+            setTCPport(messageData->idStr);
+        break;
+    }
+}
+
+void DashioProvision::setTCPport(const String &portStr) {
+    int newTCPport = portStr.toInt();
+    if (newTCPport > 1000) {
+        tcpPort = newTCPport;
+        save();
+        Serial.print(F("TCP port changed to"));
+        Serial.println(tcpPort);
     }
 }
 
@@ -87,6 +100,7 @@ void DashioProvision::update(DeviceData *deviceData) {
     strcpy(wifiPassword, deviceData->wifiPassword);
     strcpy(dashUserName, deviceData->dashUserName);
     strcpy(dashPassword, deviceData->dashPassword);
+    tcpPort = deviceData->tcpPort;
 }
 
 void DashioProvision::save() {
@@ -99,6 +113,7 @@ void DashioProvision::save() {
     preferences.putString("wifiPassword", String(wifiPassword));
     preferences.putString("dashUserName", String(dashUserName));
     preferences.putString("dashPassword", String(dashPassword));
+    preferences.putInt("tcpPort", tcpPort);
     preferences.end();
 }
 
@@ -123,6 +138,8 @@ void DashioProvision::load() {
     
     str = preferences.getString("dashPassword", "");
     str.toCharArray(deviceDataRead.dashPassword, 32);
+    
+    deviceDataRead.tcpPort = preferences.getInt("tcpPort", DEFAULT_TCP_PORT);
     preferences.end();
 
     if (deviceDataRead.saved != 'Y') {
@@ -143,6 +160,8 @@ void DashioProvision::load() {
     Serial.println(dashUserName);
     Serial.print(F("Dash password: "));
     Serial.println(dashPassword);
+    Serial.print(F("TCP port: "));
+    Serial.println(deviceDataRead.tcpPort);
 }
 
 #endif

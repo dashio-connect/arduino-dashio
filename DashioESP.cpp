@@ -49,6 +49,10 @@ const int BLE_MAX_SEND_MESSAGE_LENGTH = 185; // 185 for iPhone 6, but can be up 
 
 bool DashioWiFi::oneSecond = false;
 
+DashioWiFi::DashioWiFi(DashioDevice *_dashioDevice) {
+    dashioDevice = _dashioDevice;
+}
+
 // Timer Interrupt
 bool DashioWiFi::onTimerCallback(void *argument) {
     oneSecond = true;
@@ -112,7 +116,13 @@ void DashioWiFi::run() {
             }
 
             if (wifiConnectCount > WIFI_TIMEOUT_S) { // If too many fails, restart the ESP32. Sometimes ESP32's WiFi gets tied up in a knot.
-                mqttConnection->dashioDevice->onStatusCallback(wifiTimeout);
+                if (dashioDevice != nullptr) {
+                    dashioDevice->onStatusCallback(wifiDisconnected);
+                } else if (mqttConnection != nullptr) {
+                    mqttConnection->dashioDevice->onStatusCallback(wifiDisconnected);
+                } else if (tcpConnection != nullptr) {
+                    tcpConnection->dashioDevice->onStatusCallback(wifiDisconnected);
+                }
 
                 ESP.restart();
             }
@@ -123,11 +133,17 @@ void DashioWiFi::run() {
                 Serial.print("Connected with IP: ");
                 Serial.println(WiFi.localIP());
 
-                if (wifiConnectCallback != NULL) {
+                if (wifiConnectCallback != NULL) { // Deprtecated
                     wifiConnectCallback();
                 }
 
-                mqttConnection->dashioDevice->onStatusCallback(wifiConnected);
+                if (dashioDevice != nullptr) {
+                    dashioDevice->onStatusCallback(wifiConnected);
+                } else if (mqttConnection != nullptr) {
+                    mqttConnection->dashioDevice->onStatusCallback(wifiConnected);
+                } else if (tcpConnection != nullptr) {
+                    tcpConnection->dashioDevice->onStatusCallback(wifiConnected);
+                }
 
                 if (tcpConnection != NULL) {
                     tcpConnection->begin();
@@ -624,7 +640,7 @@ void DashioMQTT::checkConnection() {
             if (mqttConnectCount >= MQTT_RETRY_S) {
                 mqttConnectCount = 0;
 
-                dashioDevice->onStatusCallback(mqttConnectFail);
+                dashioDevice->onStatusCallback(mqttDisconnected);
             } else {
                 mqttConnectCount++;
             }

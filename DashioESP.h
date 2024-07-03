@@ -191,21 +191,24 @@ public:
 
 class DashioWiFi {
 private:
+    DashioDevice *dashioDevice;
     Timer<> timer;
     static bool oneSecond;
     int wifiConnectCount = 1;
-    void (*wifiConnectCallback)(void);
+    void (*wifiConnectCallback)(void); // Deprecated
     DashioTCP *tcpConnection;
     DashioMQTT *mqttConnection;
 
     static bool onTimerCallback(void *argument);
 
 public:
+    DashioWiFi(DashioDevice *_dashioDevice = nullptr);
+
     void attachConnection(DashioTCP *_tcpConnection);
     void attachConnection(DashioMQTT *_mqttConnection);
     void detachTcp();
     void detachMqtt();
-    void setOnConnectCallback(void (*connectCallback)(void));
+    void setOnConnectCallback(void (*connectCallback)(void)); // Deprecated
     void begin(char *ssid, char *password);
     void run();
     void end();

@@ -67,6 +67,7 @@ typedef DashioLTE DashLTE;
 
 extern char DASH_SERVER[];
 #define DASH_PORT 8883
+#define DEFAULT_TCP_PORT 5650
 
 #define SMALLEST_FLOAT_VALUE 0.1e-10
 #define INVALID_FLOAT_VALUE 0xFFFFFFFF
@@ -125,7 +126,7 @@ enum ControlType {
     tcpSetup,
     dashioSetup,
     mqttSetup,
-    commsMode,
+    initModule,
     resetDevice,
 
     unknown
@@ -160,9 +161,9 @@ enum MQTTTopicType {
 enum StatusCode {
     noError,
     wifiConnected,
-    wifiTimeout,
+    wifiDisconnected,
     mqttConnected,
-    mqttConnectFail
+    mqttDisconnected,
 };
 
 struct Rect {

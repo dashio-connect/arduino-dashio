@@ -71,17 +71,12 @@ public:
 
     void sendCtrl(ControlType controlType);
     void sendCtrl(ControlType controlType, int value);
-    void sendCtrl(ControlType controlType, String value);
+    void sendCtrl(ControlType controlType, const String &value);
     void sendCtrl(ControlType controlType, const String &value1, int value2);
     void sendCtrl(ControlType controlType, const String &value1, const String &value2);
     
     void sendClockRequest();
     void sendAlarm(const String& controlID, const String& title, const String& description);
-    
-    void sendName(const String &deviceName);
-    void sendWiFiCredentials(const String &SSID, const String &password, const String &countryCode = "");
-    void sendTCPport(uint16_t port);
-    void sendDashCredentials(const String &username, const String &password);
 };
 
 #endif

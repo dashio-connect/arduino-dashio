@@ -23,6 +23,10 @@ The **Dash** app is free and available for both Apple and Android devices. Use i
 
 ## Release Notes
 
+### 1.1.5 (3 July 2024)
+- Improve behaviour of onStatusCallback for ESP devices.
+- Improvements to DashioSerial in preparation for release of the Dash Comms Module hardware.
+
 ### 1.1.4 (22 June 2024)
 - Fix issues when Espressif modified their library for new hardware variants. For ESP32, now need to include WiFi.h and change how macAddress is obtained.
 

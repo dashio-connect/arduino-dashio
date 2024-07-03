@@ -136,7 +136,7 @@ void DashSerial::sendCtrl(ControlType controlType, int value) {
     }
 }
 
-void DashSerial::sendCtrl(ControlType controlType, String value) {
+void DashSerial::sendCtrl(ControlType controlType, const String &value) {
     String message((char *)0);
     message.reserve(100);
 
@@ -251,76 +251,3 @@ void DashSerial::sendAlarm(const String& controlID, const String& title, const S
     }
 }
 
-void DashSerial::sendName(const String &deviceName) {
-    String message((char *)0);
-    message.reserve(100);
-
-    message = String(DELIM);
-    message += dashDevice->deviceID;
-    message += String(DELIM);
-    message += NAME;
-    message += String(DELIM);
-    message += deviceName;
-    message += String(END_DELIM);
-
-    if (txMessageCallback != nullptr) {
-        txMessageCallback(message);
-    }
-};
-
-void DashSerial::sendWiFiCredentials(const String &SSID, const String &password, const String &countryCode) {
-    String message((char *)0);
-    message.reserve(100);
-
-    message = String(DELIM);
-    message += dashDevice->deviceID;
-    message += String(DELIM);
-    message += WIFI;
-    message += String(DELIM);
-    message += SSID;
-    message += String(DELIM);
-    message += password;
-    message += String(DELIM);
-    message += countryCode;
-    message += String(END_DELIM);
-
-    if (txMessageCallback != nullptr) {
-        txMessageCallback(message);
-    }
-};
-
-void DashSerial::sendTCPport(uint16_t port) {
-    String message((char *)0);
-    message.reserve(100);
-
-    message = String(DELIM);
-    message += dashDevice->deviceID;
-    message += String(DELIM);
-    message += TCP;
-    message += String(DELIM);
-    message += String(port);
-    message += String(END_DELIM);
-
-    if (txMessageCallback != nullptr) {
-        txMessageCallback(message);
-    }
-};
-
-void DashSerial::sendDashCredentials(const String &username, const String &password) {
-    String message((char *)0);
-    message.reserve(100);
-
-    message = String(DELIM);
-    message += dashDevice->deviceID;
-    message += String(DELIM);
-    message += DASHIO;
-    message += String(DELIM);
-    message += username;
-    message += String(DELIM);
-    message += password;
-    message += String(END_DELIM);
-
-    if (txMessageCallback != nullptr) {
-        txMessageCallback(message);
-    }
-};

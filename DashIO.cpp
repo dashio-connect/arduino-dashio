@@ -82,7 +82,7 @@
 #define STORE_AND_FORWARD_ID "SAF"
 
 // Comms Controls
-#define COMMS_MODE_ID "MODE"
+#define INIT_MODULE_ID "INIT"
 
 // Button control states
 #define BUTTON_ON "ON"
@@ -1204,7 +1204,7 @@ String DashioDevice::getControlTypeStr(ControlType controltype) {
               
         case alarmNotify: return ALARM_ID;
 
-        case commsMode: return COMMS_MODE_ID;
+        case initModule: return INIT_MODULE_ID;
 
         case pushToken: return "";
         case unknown: return "";
@@ -1281,8 +1281,8 @@ ControlType DashioDevice::getControlType(String controltypeStr) {
         return tcpConn;
     } else if (controltypeStr == ALARM_ID) {
         return alarmNotify;
-    } else if (controltypeStr == COMMS_MODE_ID) {
-        return commsMode;
+    } else if (controltypeStr == INIT_MODULE_ID) {
+        return initModule;
     }
     return unknown;
 }
