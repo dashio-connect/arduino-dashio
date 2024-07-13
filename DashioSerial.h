@@ -32,7 +32,7 @@ const char CTRL[] = "CTRL";
 const char CFG[] = "CFG";
 const char MODE[] = "MODE";
 const char NORMAL[] = "NML";
-const char PASS[] = "PSTH";
+const char PASSTHROUGH[] = "PSTH";
 const char ENABLE[] = "EN";
 const char HALT[] = "HLT";
 const char BLE[] = "BLE";
@@ -51,6 +51,7 @@ const char MAP[] = "MAP";
 const char LOG[] = "LOG";
 const char DASH_CLOCK[] = "CLK";
 const char ALARM[] = "ALM";
+const char LED[] = "LED";
 
 class DashSerial {
 private:
