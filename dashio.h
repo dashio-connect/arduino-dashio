@@ -1,5 +1,5 @@
 /*
- DashIO.h - Library for the DashIO comms protocol.
+ Dashio.h - Library for the DashIO comms protocol.
  Created by C. Tuffnell
  November 17, 2020
  
