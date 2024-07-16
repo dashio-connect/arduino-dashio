@@ -195,7 +195,7 @@ private:
     Timer<> timer;
     static bool oneSecond;
     int wifiConnectCount = 1;
-    void (*wifiConnectCallback)(void); // Deprecated
+    void (*wifiConnectCallback)(void) = nullptr; // Deprecated
     DashioTCP *tcpConnection;
     DashioMQTT *mqttConnection;
 

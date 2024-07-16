@@ -133,7 +133,7 @@ void DashioWiFi::run() {
                 Serial.print("Connected with IP: ");
                 Serial.println(WiFi.localIP());
 
-                if (wifiConnectCallback != NULL) { // Deprtecated
+                if (wifiConnectCallback != nullptr) { // Deprtecated
                     wifiConnectCallback();
                 }
 
@@ -610,17 +610,22 @@ void DashioMQTT::onConnected() {
 }
 
 void DashioMQTT::hostConnect() {
-    Serial.print(F("Connecting to MQTT..."));
+    Serial.print(F("Connecting MQTT..."));
     state = connecting;
+
+/* In case deviceID.c_str() gives trouble
+    int idLen = dashioDevice->deviceID.length() + 1;
+    char clientID[idLen];
+    dashioDevice->deviceID.toCharArray(clientID, idLen);
+*/
     if (mqttClient.connect(dashioDevice->deviceID.c_str(), username, password, false)) { // skip = false is the default. Used in order to establish and verify TLS connections manually before giving control to the MQTT client
         if (printMessages) {
-            Serial.print(F("connected "));
-            Serial.println(String(mqttClient.returnCode()));
+            Serial.println(F("connected"));
         }
         state = serverConnected;
     } else {
         if (printMessages) {
-            Serial.print(F("Failed - Try again in 10 seconds. E = "));
+            Serial.print(F("failed - Try again in 10 seconds. E = "));
             Serial.println(String(mqttClient.lastError()) + "  R = " + mqttClient.returnCode());
             // Invalid URL or port => E = -3  R = 0
             // Invalid username or password => E = -10  R = 5
