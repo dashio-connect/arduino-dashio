@@ -32,11 +32,11 @@
 #include <Preferences.h>
 
 struct DeviceData {
-    char deviceName[32];
-    char wifiSSID[32];
-    char wifiPassword[63];
-    char dashUserName[32];
-    char dashPassword[32];
+    char deviceName[32 + 1];
+    char wifiSSID[32 + 1];
+    char wifiPassword[63 + 1];
+    char dashUserName[32 + 1];
+    char dashPassword[32 + 1];
     uint16_t tcpPort = DEFAULT_TCP_PORT;
     char saved;
 };
@@ -46,10 +46,10 @@ public:
     DashioDevice *dashioDevice;
     Preferences preferences;
 
-    char wifiSSID[32];
-    char wifiPassword[63];
-    char dashUserName[32];
-    char dashPassword[32];
+    char wifiSSID[32 + 1] = "\0";
+    char wifiPassword[63 + 1] = "\0";
+    char dashUserName[32 + 1] = "\0";
+    char dashPassword[32 + 1] = "\0";
     uint16_t tcpPort = DEFAULT_TCP_PORT;
 
     DashioProvision(DashioDevice *_dashioDevice);
