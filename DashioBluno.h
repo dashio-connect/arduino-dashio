@@ -32,9 +32,9 @@
 
 class DashioBluno {
 private:
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     MessageData messageData;
-    void (*processBLEmessageCallback)(MessageData *messageData);
+    void (*processBLEmessageCallback)(MessageData *messageData) = nullptr;
     void processConfig();
 
     void bleNotifyValue(const String& message);

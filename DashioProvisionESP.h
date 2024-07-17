@@ -43,7 +43,7 @@ struct DeviceData {
 
 class DashioProvision {
 public:
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     Preferences preferences;
 
     char wifiSSID[32 + 1] = "\0";
@@ -60,7 +60,7 @@ public:
     void setTCPport(const String &portStr);
 
 private:
-    void (*onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged);
+    void (*onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged) = nullptr;
 
     void load();
     void update(DeviceData *deviceData);

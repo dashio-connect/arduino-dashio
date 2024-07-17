@@ -56,11 +56,11 @@ const char LED[] = "LED";
 class DashSerial {
 private:
     bool printMessages;
-    DashDevice *dashDevice;
+    DashDevice *dashDevice = nullptr;
     MessageData data;
     String responseMessage;
-    void (*processRxMessageCallback)(MessageData *MessageData);
-    void (*txMessageCallback)(const String& outgoingMessage);
+    void (*processRxMessageCallback)(MessageData *MessageData) = nullptr;
+    void (*txMessageCallback)(const String& outgoingMessage) = nullptr;
 
     void processConfig();
     void actOnMessage();

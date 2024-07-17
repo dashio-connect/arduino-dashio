@@ -32,7 +32,7 @@ private:
     void resetCellModem();
     static bool onTimerCallback(void *argument);
     
-    DashioMQTT *mqttConnection;
+    DashioMQTT *mqttConnection = nullptr;
 
 public:
     bool cellConnected = false;
@@ -68,7 +68,7 @@ private:
     bool sendRebootAlarm;
     const char *username;
     const char *password;
-    void (*processMQTTmessageCallback)(MessageData *messageData);
+    void (*processMQTTmessageCallback)(MessageData *messageData) = nullptr;
     void processConfig();
 
     static void messageReceivedMQTTCallback(MQTTClient *client, char *topic, char *payload, int payload_length);
@@ -76,11 +76,11 @@ private:
     void hostConnect();
     void setupLWT();
 
-    DashStore *dashStore;
+    DashStore *dashStore = nullptr;
     int dashStoreSize = 0;
 
 public:
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     char *mqttHost = DASH_SERVER;
     uint16_t mqttPort = DASH_PORT;
     bool passThrough = false;

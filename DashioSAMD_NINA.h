@@ -57,7 +57,7 @@
 class DashioTCP {
 private:
     bool printMessages;
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     MessageData messageData;
     uint16_t tcpPort = 5650;
     WiFiClient client;
@@ -66,7 +66,7 @@ private:
     WiFiUDP udp;
     MDNS mdns;
 
-    void (*processTCPmessageCallback)(MessageData *connection);
+    void (*processTCPmessageCallback)(MessageData *connection) = nullptr;
 
 public:
     DashioTCP(DashioDevice *_dashioDevice, bool _printMessages = false, uint16_t _tcpPort = 5650);
@@ -83,7 +83,7 @@ class DashioMQTT {
 private:
     bool reboot = true;
     bool printMessages;
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     static MessageData messageData;
     static WiFiSSLClient wifiClient;
     static MqttClient mqttClient;
@@ -91,9 +91,9 @@ private:
     bool sendRebootAlarm;
     char *username;
     char *password;
-    void (*processMQTTmessageCallback)(MessageData *connection);
+    void (*processMQTTmessageCallback)(MessageData *connection) = nullptr;
 
-    DashStore *dashStore;
+    DashStore *dashStore = nullptr;
     int dashStoreSize = 0;
 
     static void messageReceivedMQTTCallback(int messageSize);
@@ -123,8 +123,8 @@ private:
     static bool oneSecond;
     int status = WL_IDLE_STATUS;
     IPAddress ipAddr = {0, 0, 0, 0};
-    DashioTCP *tcpConnection;
-    DashioMQTT *mqttConnection;
+    DashioTCP *tcpConnection = nullptr;
+    DashioMQTT *mqttConnection = nullptr;
 
     static bool onTimerCallback(void *argument);
 
@@ -144,7 +144,7 @@ public:
 class DashioBLE {
 private:
     bool printMessages;
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     static MessageData messageData;
     BLEService bleService;
     BLEStringCharacteristic bleReadCharacteristic;
@@ -155,7 +155,7 @@ private:
     static void onReadValueUpdate(BLEDevice central, BLECharacteristic characteristic);
 
 public:
-    void (*processBLEmessageCallback)(MessageData *connection);
+    void (*processBLEmessageCallback)(MessageData *connection) = nullptr;
 
     DashioBLE(DashioDevice *_dashioDevice, bool _printMessages = false);
     void sendMessage(const String& message);

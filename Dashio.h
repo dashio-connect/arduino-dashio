@@ -229,7 +229,7 @@ public:
     void checkBuffer();
     
 private:
-    char* buffer;
+    char* buffer = nullptr;
     int bufferWritePtr = 0;
     int bufferReadPtr = 0;
     int bufferLength = 0;
@@ -246,10 +246,10 @@ public:
     String type = ((char *)0);
     String name = ((char *)0);
     String dashboardID = "BRDCST";
-    const char *configC64Str = NULL;
+    const char *configC64Str = nullptr;
     unsigned int cfgRevision = 0;
     
-    DashioDevice(const String& _deviceType, const char *_configC64Str = NULL, unsigned int cfgRevision = 0);
+    DashioDevice(const String& _deviceType, const char *_configC64Str = nullptr, unsigned int cfgRevision = 0);
     void setup(const String& deviceIdentifier);
     void setup(const String& deviceIdentifier, const String& _deviceName);
     void setup(uint8_t m_address[6]);

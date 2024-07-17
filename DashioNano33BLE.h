@@ -37,7 +37,7 @@
 class DashioBLE {
 private:
     bool printMessages;
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     static MessageData messageData;
     BLEService bleService;
     BLEStringCharacteristic bleReadCharacteristic;
@@ -49,7 +49,7 @@ private:
     void processConfig();
 
 public:
-    void (*processBLEmessageCallback)(MessageData *connection);
+    void (*processBLEmessageCallback)(MessageData *connection) = nullptr;
 
     DashioBLE(DashioDevice *_dashioDevice, bool _printMessages = false);
     void sendMessage(const String& message);

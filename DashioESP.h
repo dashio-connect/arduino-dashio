@@ -60,15 +60,15 @@ struct TCPclient {
 class DashioTCP {
 private:
     WiFiServer wifiServer;
-    TCPclient *tcpClients;
+    TCPclient *tcpClients = nullptr;
     uint8_t maxTCPclients = 1;
 
     bool checkTCP(int index);
-    void (*processTCPmessageCallback)(MessageData *messageData);
+    void (*processTCPmessageCallback)(MessageData *messageData) = nullptr;
     void processConfig();
 
 public:
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     bool printMessages = false;
     uint16_t tcpPort = 5650;
     bool passThrough = false;
@@ -105,9 +105,9 @@ private:
     String mqttSendBuffer = ((char *)0);
     int mqttBuffersize = 0;
     int mqttConnectCount = 0;
-    char *username;
-    char *password;
-    void (*processMQTTmessageCallback)(MessageData *messageData);
+    char *username = nullptr;
+    char *password = nullptr;
+    void (*processMQTTmessageCallback)(MessageData *messageData) = nullptr;
     void checkAndSendMQTTbuffer();
     void publishMessage(const String& message, MQTTTopicType topic);
     void processConfig();
@@ -123,11 +123,11 @@ private:
     static void checkConnectionTask(void * parameter);
 #endif
 
-    DashStore *dashStore;
+    DashStore *dashStore = nullptr;
     int dashStoreSize = 0;
 
 public:
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     bool printMessages = false;
     bool sendRebootAlarm = false;
     char *mqttHost = DASH_SERVER;
@@ -157,18 +157,18 @@ public:
 class DashioBLE {
 private:
     bool secureBLE;
-    BLEServer *pServer;
-    BLECharacteristic *pCharacteristic;
-    BLEAdvertising *pAdvertising;
+    BLEServer *pServer = nullptr;
+    BLECharacteristic *pCharacteristic = nullptr;
+    BLEAdvertising *pAdvertising = nullptr;
 
     void bleNotifyValue(const String& message);
     void processConfig();
 
 public:
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     static bool printMessages;
     MessageData data;
-    void (*processBLEmessageCallback)(MessageData *messageData);
+    void (*processBLEmessageCallback)(MessageData *messageData) = nullptr;
     bool passThrough = false;
 
     static int connHandle;
@@ -191,13 +191,13 @@ public:
 
 class DashioWiFi {
 private:
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     Timer<> timer;
     static bool oneSecond;
     int wifiConnectCount = 1;
     void (*wifiConnectCallback)(void) = nullptr; // Deprecated
-    DashioTCP *tcpConnection;
-    DashioMQTT *mqttConnection;
+    DashioTCP *tcpConnection = nullptr;
+    DashioMQTT *mqttConnection = nullptr;
 
     static bool onTimerCallback(void *argument);
 
@@ -220,7 +220,7 @@ public:
 
 class DashioSoftAP {
 private:
-    DashioTCP *tcpConnection;
+    DashioTCP *tcpConnection = nullptr;
     uint16_t originalTCPport = 5000;
 
 public:

@@ -33,22 +33,22 @@
 #include <FlashStorage.h>
 
 typedef struct {
-    char deviceName[32];
-    char wifiSSID[32];
-    char wifiPassword[63];
-    char dashUserName[32];
-    char dashPassword[32];
+    char deviceName[32 + 1];
+    char wifiSSID[32 + 1];
+    char wifiPassword[63 + 1];
+    char dashUserName[32 + 1];
+    char dashPassword[32 + 1];
     char saved;
 } DeviceData;
 
 class DashioProvision {
 public:
-    DashioDevice *dashioDevice;
+    DashioDevice *dashioDevice = nullptr;
     
-    char wifiSSID[32];
-    char wifiPassword[63];
-    char dashUserName[32];
-    char dashPassword[32];
+    char wifiSSID[32 + 1] = "\0";
+    char wifiPassword[63 + 1] = "\0";
+    char dashUserName[32 + 1] = "\0";
+    char dashPassword[32 + 1] = "\0";
 
     DashioProvision(DashioDevice *_dashioDevice);
     void load(void (*_onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged));
@@ -56,7 +56,7 @@ public:
     void processMessage(MessageData *messageData);
 
 private:
-    void (*onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged);
+    void (*onProvisionCallback)(ConnectionType connectionType, const String& message, bool commsChanged) = nullptr;
 
     void save();
     void load();
