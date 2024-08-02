@@ -259,6 +259,7 @@ public:
     
     void appendDelimitedStr(String *str, const String& addStr);
 
+    void setStatusCallback(void (*_statusCallback)(StatusCode statusCode));
     void (*statusCallback)(StatusCode statusCode) = nullptr; // Only used for ESP32
     void onStatusCallback(StatusCode statusCode);
 

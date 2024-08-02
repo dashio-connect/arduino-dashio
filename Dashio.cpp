@@ -496,6 +496,10 @@ void DashioDevice::setup(uint8_t m_address[6]) {
     deviceID = macStr.c_str();
 }
 
+void DashioDevice::setStatusCallback(void (*_statusCallback)(StatusCode statusCode)) {
+    statusCallback = _statusCallback;
+}
+
 void DashioDevice::onStatusCallback(StatusCode statusCode) {
     if (statusCallback != nullptr) {
         statusCallback(statusCode);
