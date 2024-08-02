@@ -159,8 +159,13 @@ MessageData::MessageData(ConnectionType connType, int _bufferLength) {
     connectionType = connType;
 };
 
-void MessageData::loadBuffer(const String& message) {
-    int messageLength = message.length();
+void MessageData::loadBuffer(const String& message, uint16_t _connectionHandle) {
+    // Connection Handle is stored as the first bytes (of PREFIX_LEN) in the buffer message
+    uint prefixLen = sizeof(uint16_t);
+    char connectionHandleChrs[prefixLen];
+    memcpy(connectionHandleChrs, &_connectionHandle, prefixLen);
+
+    int messageLength = message.length() + prefixLen;
     int avail = 0;
     if (bufferLength > 0) {
         if (bufferWritePtr >= bufferReadPtr) {
@@ -171,12 +176,20 @@ void MessageData::loadBuffer(const String& message) {
     }
     
     if (avail < messageLength) {
+#ifdef ESP32
+        ESP_LOGI(DTAG, "%s Buffer overflow - can't process message: : %s", getConnectionTypeStr(), message);
+#else
         Serial.print(getConnectionTypeStr() + " ");
         Serial.print(F("Buffer overflow - can't process message: "));
         Serial.println(message);
+#endif
     } else {
         for (int i = 0; i < messageLength; i++) {
-            buffer[bufferWritePtr] = message[i];
+            if (i < prefixLen) {
+                buffer[bufferWritePtr] = connectionHandleChrs[i];
+            } else {
+                buffer[bufferWritePtr] = message[i - prefixLen];
+            }
             bufferWritePtr++;
             if (bufferWritePtr >= bufferLength) {
                 bufferWritePtr = 0;
@@ -188,6 +201,8 @@ void MessageData::loadBuffer(const String& message) {
 void MessageData::checkBuffer() {
     if (!messageReceived) { // wait until last message processed
         if (bufferWritePtr != bufferReadPtr) {
+            uint prefixLen = sizeof(uint16_t);
+            char prefixChrs[prefixLen];
             bool unloadedMessage = false;
             int count = 0;
             while (bufferReadPtr != bufferWritePtr) { // read pointer has caught up to write pointer, therefore, must be the end
@@ -203,9 +218,14 @@ void MessageData::checkBuffer() {
                     bufferReadPtr = 0;
                 }
 
-                if (processChar(chr)) {
-                    unloadedMessage = true;
-                    break;
+                if (count <= prefixLen) {
+                    prefixChrs[count - 1] = chr; // Retrieve Connection Handle bytes
+                } else {
+                    if (processChar(chr)) {
+                        memcpy(&connectionHandle, prefixChrs, prefixLen);
+                        unloadedMessage = true;
+                        break;
+                    }
                 }
             }
 
@@ -214,14 +234,15 @@ void MessageData::checkBuffer() {
     }
 }
 
-void MessageData::processMessage(const String& message) {
+void MessageData::processMessage(const String& message, uint16_t _connectionHandle) {
     if (message.length() > 0) {
         if (bufferLength > 0) { // Storing to buffer allows for concatenated dash messages
-            loadBuffer(message);
+            loadBuffer(message, _connectionHandle);
         } else {
             for (unsigned int i = 0; i < message.length(); i++) {
                 char chr = message[i];
                 if (processChar(chr)) {
+                    connectionHandle = _connectionHandle;
                     messageReceived = true;
                 }
             }

@@ -23,6 +23,10 @@ The **Dash** app is free and available for both Apple and Android devices. Use i
 
 ## Release Notes
 
+### 1.1.6 (2 August 2024)
+- ESP32 can now accept multiple BLE connections.
+- DashioWiFi.setOnConnectCallback(void (\*connectCallback)(void)) function deprecated. Please directly set the DashioDevice function pointer \*statusCallback(StatusCode statusCode) instead.
+
 ### 1.1.5 (3 July 2024)
 - Improve behaviour of onStatusCallback for ESP devices.
 - Improvements to DashioSerial in preparation for release of the Dash Comms Module hardware.

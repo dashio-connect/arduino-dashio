@@ -78,6 +78,7 @@ extern char DASH_SERVER[];
 const char END_DELIM = '\n';
 const char DELIM = '\t';
 const char NOT_AVAILABLE[] = "NA";
+const char DTAG[] = "DASHIO";
 
 enum ConnectionType {
     TCP_CONN,
@@ -213,13 +214,14 @@ public:
     String idStr = ((char *)0);
     String payloadStr = ((char *)0);
     String payloadStr2 = ((char *)0);
+    uint16_t connectionHandle = 0;
     /*
      String payloadStr3 = ((char *)0);
      String payloadStr4 = ((char *)0);
      */
     
     MessageData(ConnectionType connType, int _bufferLength = 0);
-    void processMessage(const String& message);
+    void processMessage(const String& message, uint16_t _connectionHandle = 0);
     bool processChar(char chr);
     String getMessageGeneric(const String& controlStr, bool connectionPrefix = false);
     String getReceivedMessageForPrint(const String& controlStr);
@@ -236,7 +238,7 @@ private:
     int segmentCount = -1;
     String readStr;
     
-    void loadBuffer(const String& message);
+    void loadBuffer(const String& message, uint16_t _connectionHandle);
 };
 
 class DashioDevice {
@@ -257,7 +259,7 @@ public:
     
     void appendDelimitedStr(String *str, const String& addStr);
 
-    void (*statusCallback)(StatusCode statusCode) = nullptr; // Used for Dash Comms Module project
+    void (*statusCallback)(StatusCode statusCode) = nullptr; // Only used for ESP32
     void onStatusCallback(StatusCode statusCode);
 
     String getWhoMessage();

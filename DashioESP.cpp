@@ -51,20 +51,34 @@ bool DashioWiFi::oneSecond = false;
 
 DashioWiFi::DashioWiFi(DashioDevice *_dashioDevice) {
     dashioDevice = _dashioDevice;
+    
+#ifdef ESP32
+    xTaskCreatePinnedToCore(this->wifiOneSecondTask, "OneSecTask", 2048, this, 0, &wifiOneSecTaskHandle, 0);
+#elif ESP8266
+    timer.every(1000, onTimerCallback); // 1000ms
+#endif
 }
 
-// Timer Interrupt
-bool DashioWiFi::onTimerCallback(void *argument) {
+#ifdef ESP32
+void DashioWiFi::wifiOneSecondTask(void *parameter) {
+    for(;;) {
+        oneSecond = true;
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+}
+#elif ESP8266
+bool DashioWiFi::onTimerCallback(void *argument) { // Timer Interrupt
     oneSecond = true;
     return true; // to repeat the timer action - false to stop
 }
+#endif
 
 void DashioWiFi::attachConnection(DashioTCP *_tcpConnection) {
     tcpConnection = _tcpConnection;
 }
 
 void DashioWiFi::detachTcp() {
-    tcpConnection = NULL;
+    tcpConnection = nullptr;
 }
 
 void DashioWiFi::attachConnection(DashioMQTT *_mqttConnection) {
@@ -72,7 +86,7 @@ void DashioWiFi::attachConnection(DashioMQTT *_mqttConnection) {
 }
 
 void DashioWiFi::detachMqtt() {
-    mqttConnection = NULL;
+    mqttConnection = nullptr;
 }
 
 void DashioWiFi::setOnConnectCallback(void (*connectCallback)(void)) {
@@ -87,18 +101,18 @@ void DashioWiFi::begin(char *ssid, char *password) {
     delay(1000);
     WiFi.begin(ssid, password);
     wifiConnectCount = 1;
-
-    timer.every(1000, onTimerCallback); // 1000ms
 }
 
 void DashioWiFi::run() {
+#ifdef ESP8266
     timer.tick();
+#endif
     
-    if (mqttConnection != NULL) {
+    if (mqttConnection != nullptr) {
         mqttConnection->run();
     }
     
-    if (tcpConnection != NULL) {
+    if (tcpConnection != nullptr) {
         tcpConnection->run();
     }
 
@@ -111,16 +125,16 @@ void DashioWiFi::run() {
             Serial.print(F("Connecting to Wi-Fi "));
             Serial.println(String(wifiConnectCount));
 
-            if (mqttConnection != NULL) {
+            if (mqttConnection != nullptr) {
                 mqttConnection->state = notReady;
             }
 
             if (wifiConnectCount > WIFI_TIMEOUT_S) { // If too many fails, restart the ESP32. Sometimes ESP32's WiFi gets tied up in a knot.
                 if (dashioDevice != nullptr) {
                     dashioDevice->onStatusCallback(wifiDisconnected);
-                } else if (mqttConnection != nullptr) {
+                } else if (mqttConnection != nullptr) { // TODO??? can remove in future
                     mqttConnection->dashioDevice->onStatusCallback(wifiDisconnected);
-                } else if (tcpConnection != nullptr) {
+                } else if (tcpConnection != nullptr) { // TODO??? can remove in future
                     tcpConnection->dashioDevice->onStatusCallback(wifiDisconnected);
                 }
 
@@ -139,22 +153,22 @@ void DashioWiFi::run() {
 
                 if (dashioDevice != nullptr) {
                     dashioDevice->onStatusCallback(wifiConnected);
-                } else if (mqttConnection != nullptr) {
+                } else if (mqttConnection != nullptr) { // TODO??? can remove in future
                     mqttConnection->dashioDevice->onStatusCallback(wifiConnected);
-                } else if (tcpConnection != nullptr) {
+                } else if (tcpConnection != nullptr) { // TODO??? can remove in future
                     tcpConnection->dashioDevice->onStatusCallback(wifiConnected);
                 }
 
-                if (tcpConnection != NULL) {
+                if (tcpConnection != nullptr) {
                     tcpConnection->begin();
-                    tcpConnection->setupmDNSservice(WiFi.macAddress());
+                    tcpConnection->setupmDNSservice(macAddress());
                 }
                 
-                if (mqttConnection != NULL) {
+                if (mqttConnection != nullptr) {
                     mqttConnection->begin();
                 }
             }
-            if (mqttConnection != NULL) {
+            if (mqttConnection != nullptr) {
 #ifdef ESP32
                 if (mqttConnection->esp32_mqtt_blocking) {
                     mqttConnection->checkConnection();
@@ -169,11 +183,11 @@ void DashioWiFi::run() {
 }
 
 void DashioWiFi::end() {
-    if (tcpConnection != NULL) {
+    if (tcpConnection != nullptr) {
         tcpConnection->end();
     }
     
-    if (mqttConnection != NULL) {
+    if (mqttConnection != nullptr) {
         mqttConnection->end();
     }
 
@@ -182,11 +196,11 @@ void DashioWiFi::end() {
 
 String DashioWiFi::macAddress() {
 #ifdef ESP32
-    #if ESP_IDF_VERSION_MAJOR >= 5
-        return Network.macAddress();
-    #else
-        return WiFi.macAddress();
-    #endif
+  #if ESP_IDF_VERSION_MAJOR >= 5
+    return Network.macAddress();
+  #else
+    return WiFi.macAddress();
+  #endif
 #elif ESP8266
     return WiFi.macAddress();
 #endif
@@ -217,7 +231,7 @@ bool DashioSoftAP::begin(const String& password) {
 
         Serial.print(F("AP IP address: "));
         Serial.println(WiFi.softAPIP());
-        if (tcpConnection != NULL) {
+        if (tcpConnection != nullptr) {
             originalTCPport = tcpConnection->tcpPort;
             tcpConnection->setPort(SOFT_AP_PORT);
             tcpConnection->begin();
@@ -240,7 +254,7 @@ bool DashioSoftAP::isConnected() {
 }
 
 void DashioSoftAP::run() {
-    if (tcpConnection != NULL) {
+    if (tcpConnection != nullptr) {
         tcpConnection->run();
     }
 }
@@ -291,9 +305,9 @@ uint8_t DashioTCP::hasClient() {
     return rVal;
 }
 
-void DashioTCP::sendMessage(const String& message) {
-    for (int i = 0; i < maxTCPclients; i++) {
-        WiFiClient *clientPtr = &tcpClients[i].client;
+void DashioTCP::sendMessage(const String& message, uint8_t index) {
+    if (index < maxTCPclients) {
+        WiFiClient *clientPtr = &tcpClients[index].client;
         if (clientPtr->connected()) {
             clientPtr->print(message);
             if (printMessages) {
@@ -301,6 +315,12 @@ void DashioTCP::sendMessage(const String& message) {
                 Serial.println(message);
             }
         }
+    }
+}
+
+void DashioTCP::sendMessage(const String& message) {
+    for (int i = 0; i < maxTCPclients; i++) {
+        sendMessage(message, i);
     }
 }
 
@@ -333,8 +353,8 @@ void DashioTCP::end() {
     MDNS.end();
 }
 
-void DashioTCP::processConfig() {
-    sendMessage(dashioDevice->getC64ConfigBaseMessage());
+void DashioTCP::processConfig(uint16_t index) {
+    sendMessage(dashioDevice->getC64ConfigBaseMessage(), index);
     
     int c64Length = strlen_P(dashioDevice->configC64Str);
     int length = 0;
@@ -345,13 +365,13 @@ void DashioTCP::processConfig() {
         message += myChar;
         length++;
         if (length == C64_MAX_LENGHT) {
-            sendMessage(message);
+            sendMessage(message, index);
             message = "";
             length = 0;
         }
     }
     message += String(END_DELIM);
-    sendMessage(message);
+    sendMessage(message, index);
 }
 
 bool DashioTCP::checkTCP(int index) {
@@ -360,38 +380,34 @@ bool DashioTCP::checkTCP(int index) {
         while (tcpClientPtr->client.available()>0) {
             char c = tcpClientPtr->client.read();
             if (tcpClientPtr->data.processChar(c)) {
+                tcpClientPtr->data.connectionHandle = index; // So we have a reference to the index in the MessageData
+
                 if (printMessages) {
                     Serial.println(tcpClientPtr->data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(tcpClientPtr->data.control)));
                 }
                 
-                if (passThrough) {
-                    if (processTCPmessageCallback != nullptr) {
-                        processTCPmessageCallback(&tcpClientPtr->data);
-                    }
-                } else {
-                    switch (tcpClientPtr->data.control) {
-                    case who:
-                        sendMessage(dashioDevice->getWhoMessage());
-                        break;
-                    case connect:
-                        sendMessage(dashioDevice->getConnectMessage());
-                        break;
-                    case config:
-                        dashioDevice->dashboardID = tcpClientPtr->data.idStr;
-                        if (dashioDevice->configC64Str != NULL) {
-                            processConfig();
-                        } else {
-                            if (processTCPmessageCallback != nullptr) {
-                                processTCPmessageCallback(&tcpClientPtr->data);
-                            }
-                        }
-                        break;
-                    default:
+                switch (tcpClientPtr->data.control) {
+                case who:
+                    sendMessage(dashioDevice->getWhoMessage(), index);
+                    break;
+                case connect:
+                    sendMessage(dashioDevice->getConnectMessage(), index);
+                    break;
+                case config:
+                    dashioDevice->dashboardID = tcpClientPtr->data.idStr;
+                    if (dashioDevice->configC64Str != nullptr) {
+                        processConfig(index);
+                    } else {
                         if (processTCPmessageCallback != nullptr) {
                             processTCPmessageCallback(&tcpClientPtr->data);
                         }
-                        break;
                     }
+                    break;
+                default:
+                    if (processTCPmessageCallback != nullptr) {
+                        processTCPmessageCallback(&tcpClientPtr->data);
+                    }
+                    break;
                 }
             }
         }
@@ -435,7 +451,7 @@ DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool 
     printMessages = _printMessages;
 
 #ifdef ESP32
-    xTaskCreatePinnedToCore(this->checkConnectionTask, "Task1", 10000, this, 0, &mqttConnectTask, 0);
+    xTaskCreatePinnedToCore(this->checkConnectionTask, "CheckConnTask", 10000, this, 0, &mqttConnectTaskHandle, 0);
 #endif
 }
 
@@ -449,7 +465,7 @@ DashioMQTT::DashioMQTT(DashioDevice *_dashioDevice, bool _sendRebootAlarm, bool 
     }
 
 #ifdef ESP32
-    xTaskCreatePinnedToCore(this->checkConnectionTask, "Task1", 10000, this, 0, &mqttConnectTask, 0);
+    xTaskCreatePinnedToCore(this->checkConnectionTask, "TasCheckConnTaskk1", 10000, this, 0, &mqttConnectTaskHandle, 0);
 #endif
 }
 
@@ -659,7 +675,7 @@ void DashioMQTT::checkConnection() {
 void DashioMQTT::checkConnectionTask(void * parameter) {
     DashioMQTT *mqttConn = (DashioMQTT *) parameter;
     for(;;) {
-        if (mqttConn != NULL) {
+        if (mqttConn != nullptr) {
             if (!mqttConn->esp32_mqtt_blocking) {
                 mqttConn->checkConnection();
             }
@@ -685,34 +701,28 @@ void DashioMQTT::run() {
                 Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
             }
 
-            if (passThrough) {
-                if (processMQTTmessageCallback != nullptr) {
-                    processMQTTmessageCallback(&data);
-                }
-            } else {
-                switch (data.control) {
-                    case who:
-                        sendMessage(dashioDevice->getWhoMessage());
-                        break;
-                    case connect:
-                        sendMessage(dashioDevice->getConnectMessage());
-                        break;
-                    case config:
-                        dashioDevice->dashboardID = data.idStr;
-                        if (dashioDevice->configC64Str != NULL) {
-                            processConfig();
-                        } else {
-                            if (processMQTTmessageCallback != nullptr) {
-                                processMQTTmessageCallback(&data);
-                            }
-                        }
-                        break;
-                    default:
+            switch (data.control) {
+                case who:
+                    sendMessage(dashioDevice->getWhoMessage());
+                    break;
+                case connect:
+                    sendMessage(dashioDevice->getConnectMessage());
+                    break;
+                case config:
+                    dashioDevice->dashboardID = data.idStr;
+                    if (dashioDevice->configC64Str != nullptr) {
+                        processConfig();
+                    } else {
                         if (processMQTTmessageCallback != nullptr) {
                             processMQTTmessageCallback(&data);
                         }
-                        break;
-                }
+                    }
+                    break;
+                default:
+                    if (processMQTTmessageCallback != nullptr) {
+                        processMQTTmessageCallback(&data);
+                    }
+                    break;
             }
         }
 
@@ -732,90 +742,80 @@ void DashioMQTT::end() {
 
 // ---------------------------------------- BLE ----------------------------------------
 #ifdef ESP32
-int DashioBLE::connHandle;
-bool DashioBLE::authenticated;
-bool DashioBLE::authRequestConnect;
-bool DashioBLE::printMessages;
+BLEclientHolder *DashioBLE::bleClients = nullptr;
+uint8_t DashioBLE::maxBLEclients = 1;
+bool DashioBLE::printMessages = false;
+uint32_t DashioBLE::passKey = 0;
 
-class SecurityBLECallbacks : public BLESecurityCallbacks {
-    bool onConfirmPIN(uint32_t pin) {
-//        Serial.print(F("Confirm Pin: "));
-//        Serial.println(pin);
-        return true;
+class ServerCallbacks: public NimBLEServerCallbacks {
+public:
+    ServerCallbacks(DashioBLE * local_DashioBLE): local_DashioBLE(local_DashioBLE) { }
+    DashioBLE *local_DashioBLE = nullptr;
+
+    void onConnect(NimBLEServer* pServer, ble_gap_conn_desc *desc) {
+        ESP_LOGI(DTAG, "BLE Client Connected, handle: %d", desc->conn_handle);
+        if (!local_DashioBLE->setConnectionActive(desc->conn_handle)) {
+            ESP_LOGI(DTAG, "No connections left for handle: %d", desc->conn_handle);
+        }
+
+        if (pServer->getConnectedCount() < local_DashioBLE->maxBLEclients) {
+            NimBLEDevice::startAdvertising(); // Keep advertising for more connections
+        }
     }
-  
+
+    void onDisconnect(NimBLEServer* pServer, ble_gap_conn_desc *desc) {
+        ESP_LOGI(DTAG, "BLE Client Disconnected, handle: %d", desc->conn_handle);
+        local_DashioBLE->setConnectionInactive(desc->conn_handle);
+    }
+
+    // Security callback functions
     uint32_t onPassKeyRequest() {
-//        Serial.println(F("onPassKeyRequest"));
-        return 0;
-    }
+        ESP_LOGI(DTAG,"Server Passkey Request: %d", local_DashioBLE->passKey);
+        return local_DashioBLE->passKey;
+    };
 
-    void onPassKeyNotify(uint32_t pass_key) {
-//        Serial.println(F("onPassKeyNotify"));
-    }
-
-    bool onSecurityRequest() {
-//        Serial.println(F("onSecurityRequest"));
-        return true;
-    }
-
-    void onAuthenticationComplete(ble_gap_conn_desc * desc) {
+    void onAuthenticationComplete(ble_gap_conn_desc *desc) {
         if (desc->sec_state.authenticated) {
-            if (DashioBLE::printMessages) {
-                Serial.println(F("BLE Authenticated"));
-            }
-            DashioBLE::authenticated = true;
-            DashioBLE::authRequestConnect = true;
+            ESP_LOGI(DTAG, "BLE Authenticated");
         } else {
-            if (DashioBLE::printMessages) {
-                Serial.println(F("BLE Authentication FAIL"));
-            }
-            DashioBLE::authenticated = false;
+            ESP_LOGI(DTAG, "BLE Authentication FAIL");
+            local_DashioBLE->setConnectionAuthState(desc->conn_handle, BLE_AUTH_FAIL);
         }
-        if (DashioBLE::printMessages) {
-            if (desc->sec_state.encrypted) {
-                Serial.println(F("BLE Encrypted"));
-            }
-            if (desc->sec_state.bonded) {
-                Serial.println(F("BLE Bonded"));
-            }
+        if (desc->sec_state.encrypted) {
+            ESP_LOGI(DTAG, "BLE Encrypted");
+        }
+        if (desc->sec_state.bonded) {
+            ESP_LOGI(DTAG, "BLE Bonded");
+            local_DashioBLE->setConnectionAuthState(desc->conn_handle, BLE_AUTH_REQ_CONN);
         }
     }
 };
 
-class ServerCallbacks : public BLEServerCallbacks {
-    void onConnect(NimBLEServer* pServer, ble_gap_conn_desc* desc) {
-        if (DashioBLE::printMessages) {
-            Serial.println("BLE Server Connected");
-        }
-        DashioBLE::connHandle = desc->conn_handle;
-    }
-    
-    void onDisconnect(BLEServer* pServer) {
-        if (DashioBLE::printMessages) {
-            Serial.println("BLE Server Disconnected");
-        }
-        DashioBLE::authenticated = false;
-    }
-};
+class CharacteristicCallbacks: public NimBLECharacteristicCallbacks {
+public:
+    CharacteristicCallbacks(DashioBLE * local_DashioBLE): local_DashioBLE(local_DashioBLE) { }
+    DashioBLE *local_DashioBLE = nullptr;
 
-// BLE callback for when a message is received
-class MessageReceivedBLECallback: public BLECharacteristicCallbacks {
-     public:
-         MessageReceivedBLECallback(DashioBLE * local_DashioBLE):
-            local_DashioBLE(local_DashioBLE) {}
-        
-         void onWrite(BLECharacteristic *pCharacteristic) {
-             std::string payload = pCharacteristic->getValue();
-             local_DashioBLE->data.processMessage(payload.c_str()); // The message components are stored within the connection where the messageReceived flag is set
-         }
-    
-     public:
-         DashioBLE * local_DashioBLE = NULL;
+    void onWrite(NimBLECharacteristic *pCharacteristic, ble_gap_conn_desc *desc) { // BLE callback for when a message is received
+        std::string payload = pCharacteristic->getValue();
+        local_DashioBLE->data.processMessage(payload.c_str(), desc->conn_handle); /// The message components are stored within the connection where the messageReceived flag is set
+    }
 };
 
 DashioBLE::DashioBLE(DashioDevice *_dashioDevice, bool _printMessages) : data(BLE_CONN, INCOMING_BUFFER_SIZE) {
     dashioDevice = _dashioDevice;
     printMessages = _printMessages;
+    maxBLEclients = 1;
+    
+    initialiseClientHolders();
+}
+
+DashioBLE::DashioBLE(DashioDevice *_dashioDevice, bool _printMessages, uint8_t _maxBLEclients) : data(BLE_CONN, INCOMING_BUFFER_SIZE) {
+    dashioDevice = _dashioDevice;
+    printMessages = _printMessages;
+    maxBLEclients = _maxBLEclients;
+    
+    initialiseClientHolders();
 }
 
 void DashioBLE::bleNotifyValue(const String& message) {
@@ -824,7 +824,7 @@ void DashioBLE::bleNotifyValue(const String& message) {
 }
 
 void DashioBLE::sendMessage(const String& message) {
-    if (pServer->getConnectedCount() > 0) {
+    if (isConnected()) {
         int maxMessageLength = NimBLEDevice::getMTU() - 3;
         
         if (message.length() <= maxMessageLength) {
@@ -877,9 +877,14 @@ void DashioBLE::processConfig() {
 }
 
 void DashioBLE::run() {
-    if (authRequestConnect) {
-        authRequestConnect = false;
-        sendMessage(dashioDevice->getConnectMessage());
+    if (secureBLE && (bleClients != nullptr)) {
+        for (int i = 0; i < maxBLEclients; i++) {
+            if (bleClients[i].authState == BLE_AUTH_REQ_CONN) {
+                bleClients[i].authState = BLE_AUTHENTICATED;
+                sendMessage(dashioDevice->getConnectMessage()); /// This wil go to all BLE clients as Arduino NimBLE doesn't yet allow messagein individual clients
+                break; // Remove break when NimBLE can send to specific client/connectionHandle
+            }
+        }
     }
     
     if (data.messageReceived) {
@@ -889,38 +894,43 @@ void DashioBLE::run() {
             Serial.println(data.getReceivedMessageForPrint(dashioDevice->getControlTypeStr(data.control)));
         }
         
-        if (passThrough) {
-            if (processBLEmessageCallback != nullptr) {
-                processBLEmessageCallback(&data);
-            }
-        } else {
-            switch (data.control) {
-                case who:
-                    sendMessage(dashioDevice->getWhoMessage());
-                    break;
-                case connect:
-                    if (secureBLE && !authenticated) {
-                        NimBLEDevice::startSecurity(connHandle);
-                    } else {
-                        sendMessage(dashioDevice->getConnectMessage());
-                    }
-                    break;
-                case config:
-                    dashioDevice->dashboardID = data.idStr;
-                    if (dashioDevice->configC64Str != NULL) {
-                        processConfig();
-                    } else {
-                        if (processBLEmessageCallback != nullptr) {
-                            processBLEmessageCallback(&data);
+        bool startAuth = false;
+        
+        switch (data.control) {
+            case who:
+                sendMessage(dashioDevice->getWhoMessage());
+                break;
+            case connect:
+                if (secureBLE && (bleClients != nullptr)) {
+                    for (int i = 0; i < maxBLEclients; i++) {
+                        if (bleClients[i].connectionHandle == data.connectionHandle) {
+                            if (bleClients[i].authState == BLE_NOT_AUTH) {
+                                startAuth = true;
+                            }
                         }
                     }
-                    break;
-                default:
+                }
+                if (startAuth) {
+                    NimBLEDevice::startSecurity(data.connectionHandle);
+                } else {
+                    sendMessage(dashioDevice->getConnectMessage());
+                }
+                break;
+            case config:
+                dashioDevice->dashboardID = data.idStr;
+                if (dashioDevice->configC64Str != nullptr) {
+                    processConfig();
+                } else {
                     if (processBLEmessageCallback != nullptr) {
                         processBLEmessageCallback(&data);
                     }
-                    break;
-            }
+                }
+                break;
+            default:
+                if (processBLEmessageCallback != nullptr) {
+                    processBLEmessageCallback(&data);
+                }
+                break;
         }
     }
     
@@ -934,32 +944,36 @@ void DashioBLE::end() {
 void DashioBLE::setCallback(void (*processIncomingMessage)(MessageData *messageData)) {
     processBLEmessageCallback = processIncomingMessage;
 }
-        
-void DashioBLE::begin(int passKey) {
-    authRequestConnect = false;
+    
+void DashBLE::setPassKey(uint32_t _passKey) {
+    passKey = _passKey;
     secureBLE = (String(passKey).length() == 6);
-
-    String localName = F("DashIO_");
-    localName += dashioDevice->type;
-    NimBLEDevice::init(localName.c_str());
-    NimBLEDevice::setMTU(BLE_MAX_SEND_MESSAGE_LENGTH);
     
     // Setup BLE security (optional)
     if (secureBLE) {
         NimBLEDevice::setSecurityAuth(true, true, true); // bool bonding, bool mitm (man in the middle), bool sc
         NimBLEDevice::setSecurityIOCap(BLE_HS_IO_DISPLAY_ONLY); // uint8_t iocap Sets the Input/Output capabilities of this device.
-        NimBLEDevice::setSecurityPasskey(passKey);
-        NimBLEDevice::setSecurityCallbacks(new SecurityBLECallbacks());
-    } else {
-        authenticated = true;
     }
+}
+        
+void DashioBLE::begin(uint32_t _passKey) {
+    String localName = F("DashIO_");
+    localName += dashioDevice->type;
+    NimBLEDevice::init(localName.c_str());
+    NimBLEDevice::setMTU(BLE_MAX_SEND_MESSAGE_LENGTH);
     
+    if ((String(_passKey).length() == 6)) {
+        setPassKey(_passKey);
+    } else if ((String(passKey).length() == 6)) {
+        setPassKey(passKey); // in case passKey was set BEFORE NimBLEDevice::init
+    }
+
     // Setup server, service and characteristic
     pServer = NimBLEDevice::createServer();
-    pServer->setCallbacks(new ServerCallbacks());
-    BLEService *pService = pServer->createService(SERVICE_UUID);
+    pServer->setCallbacks(new ServerCallbacks(this));
+    NimBLEService *pService = pServer->createService(SERVICE_UUID);
     pCharacteristic = pService->createCharacteristic(CHARACTERISTIC_UUID, NIMBLE_PROPERTY::WRITE_NR | NIMBLE_PROPERTY::NOTIFY);
-    pCharacteristic->setCallbacks(new MessageReceivedBLECallback(this));
+    pCharacteristic->setCallbacks(new CharacteristicCallbacks(this));
     pService->start();
     
     // Setup BLE advertising
@@ -976,11 +990,11 @@ String DashioBLE::macAddress() {
     return bdAddr.toString().c_str();
 }
 
-void DashioBLE::advertise(){
+void DashioBLE::advertise() {
     pAdvertising->start();
 }
 
-bool DashioBLE::isConnected(){
+bool DashioBLE::isConnected() {
     if (pServer != nullptr) {
         return (pServer->getConnectedCount() > 0);
     } else {
@@ -988,6 +1002,58 @@ bool DashioBLE::isConnected(){
     }
 }
 
+void DashioBLE::initialiseClientHolders() {
+    if (bleClients == nullptr) {
+        bleClients = new BLEclientHolder(maxBLEclients);
+    }
+}
+
+bool DashioBLE::setConnectionActive(uint16_t conn_handle) {
+    bool success = false;
+    if (bleClients != nullptr) {
+        for (int i = 0; i < maxBLEclients; i++) { // Just incase it already exists
+            if (bleClients[i].connectionHandle == conn_handle) {
+                bleClients[i].active = true;
+                success = true;
+                break;
+            }
+        }
+
+        if (!success) { // Find an inactive con holder and use it
+            for (int i = 0; i < maxBLEclients; i++) {
+                if (bleClients[i].active == false) {
+                    bleClients[i].connectionHandle = conn_handle;
+                    bleClients[i].active = true;
+                    success = true;
+                    break;
+                }
+            }
+        }
+    }
+    return success;
+}
+
+void DashioBLE::setConnectionInactive(uint16_t conn_handle) {
+    if (bleClients != nullptr) {
+        for (int i = 0; i < maxBLEclients; i++) {
+            if (bleClients[i].connectionHandle == conn_handle) {
+                bleClients[i].connectionHandle = -1;
+                bleClients[i].active = false;
+                bleClients[i].authState = BLE_NOT_AUTH;
+            }
+        }
+    }
+}
+
+void DashioBLE::setConnectionAuthState(uint16_t conn_handle, BLEauthState authState) {
+    if (bleClients != nullptr) {
+        for (int i = 0; i < maxBLEclients; i++) {
+            if (bleClients[i].connectionHandle == conn_handle) {
+                bleClients[i].authState = authState;
+            }
+        }
+    }
+}
 
 // -------------------------------------------------------------------------------------
 
