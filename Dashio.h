@@ -1,7 +1,13 @@
 /*
  Dashio.h - Library for the DashIO comms protocol.
- Created by C. Tuffnell
- November 17, 2020
+ Created by C. Tuffnell, Dashio Connect Limited
+ 
+ The Dashio library provides the common functionality for other Dash libraries.
+ There are two important classes:
+ 1) MessageData - processing incoming messages and storing the message data
+    for each connection.
+ 2) DashioDevice - contains informtion about the device and functions for
+    creating messages from the device information.
  
  MIT License
 
@@ -164,7 +170,7 @@ enum StatusCode {
     wifiConnected,
     wifiDisconnected,
     mqttConnected,
-    mqttDisconnected,
+    mqttDisconnected
 };
 
 struct Rect {

@@ -1,8 +1,4 @@
 /*
- DashJSON.cpp - Library for simle JSON encoding for the DashIO comms protocol.
- Created by C. Tuffnell
- November 17, 2020
- 
  MIT License
 
  Copyright (c) 2020 Craig Tuffnell, DashIO Connect Limited

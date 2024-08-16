@@ -1,4 +1,8 @@
 /*
+ DashioProvisioningSAMD.h - Library for storing and retrieving provisioning data
+ and credentials for Arduino SAMD development boards.
+ Created by C. Tuffnell, Dashio Connect Limited
+
  MIT License
 
  Copyright (c) 2021 Craig Tuffnell, DashIO Connect Limited

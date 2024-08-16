@@ -1,4 +1,8 @@
 /*
+ DashioSerial.h - Library for serial commection to developoment boards using
+ the Dash Comms Module software.
+ Created by C. Tuffnell, Dashio Connect Limited
+
  MIT License
 
  Copyright (c) 2023 Craig Tuffnell, DashIO Connect Limited
