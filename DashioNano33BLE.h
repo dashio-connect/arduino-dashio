@@ -2,6 +2,8 @@
  DashioNano33BLE.h - Library for BLE connectivity for Arduino Nano 33 BLE
  development boards.
  Created by C. Tuffnell, Dashio Connect Limited
+ 
+ For more information, visit: https://dashio.io/guide-arduino-nano33ble/
 
  MIT License
 

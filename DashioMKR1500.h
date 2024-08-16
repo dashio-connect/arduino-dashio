@@ -2,6 +2,8 @@
  DashioMKR1500.h - Library for dash MQTT connectivity for Arduino MKR1500
  development boards.
  Created by C. Tuffnell, Dashio Connect Limited
+ 
+ For more information, visit: https://dashio.io/guide-arduino-mkrnb1500/
 
  MIT License
 

@@ -2,6 +2,9 @@
  DashioESP.h - Library for BLE, TCP & dash MQTT connectivity for ESP32 & ESP8266
  development boards.
  Created by C. Tuffnell, Dashio Connect Limited
+ 
+ For ESP32 vist: https://dashio.io/guide-arduino-esp32/
+ and for ESP8266 visit: https://dashio.io/guide-arduino-esp8266/
 
  MIT License
 

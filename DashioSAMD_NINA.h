@@ -3,6 +3,8 @@
  development boards.
  Created by C. Tuffnell, Dashio Connect Limited
 
+ For more information, visit: https://dashio.io/guide-arduino-samd/
+
  MIT License
 
  Copyright (c) 2021 Craig Tuffnell, DashIO Connect Limited

@@ -9,6 +9,8 @@
  2) DashioDevice - contains informtion about the device and functions for
     creating messages from the device information.
  
+ For more information, visit: https://dashio.io/documents/
+ 
  MIT License
 
  Copyright (c) 2020 Craig Tuffnell, DashIO Connect Limited

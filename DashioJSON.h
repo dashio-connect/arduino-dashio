@@ -2,6 +2,8 @@
  DashJSON.h - Library for minimal and simple JSON encoding for the DashIO comms protocol.
  Created by C. Tuffnell, Dashio Connect Limited
  
+ For more information, visit: https://dashio.io/documents/
+
  MIT License
 
  Copyright (c) 2020 Craig Tuffnell, DashIO Connect Limited

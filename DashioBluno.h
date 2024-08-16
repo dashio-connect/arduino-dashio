@@ -2,6 +2,8 @@
  DashioBluno.h - Library for BLE connectivity for Arduino UNO based Bluno development board.
  Created by C. Tuffnell, Dashio Connect Limited
  
+ For more information, visit: https://dashio.io/documents/
+
  MIT License
 
  Copyright (c) 2021 Craig Tuffnell, DashIO Connect Limited
