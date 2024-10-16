@@ -1,8 +1,5 @@
---
---
-#***The DashIO Arduino libraries are now available through the Arduino Library Manager. This repository is no longer maintained.***
---
---
+# The DashIO Arduino libraries are now available through the Arduino Library Manager. This repository is no longer maintained.
+
 # DashIO
 
 So, what is **DashIO**? It is a quick effortless way to connect your IoT device to your phone, tablet or iPad using the free **Dash** app. It allows easy setup of controls such as Dials, Text Boxes, Charts, Graphs, Notifications..., from your IoT device. You can define the look and layout of the controls on your phone from your IoT device. There are three methods to connect to your phone; Bluetooth Low Energy (BLE), TCP or MQTT.
