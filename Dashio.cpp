@@ -253,6 +253,12 @@ void MessageData::processMessage(const String& message, uint16_t _connectionHand
 bool MessageData::processChar(char chr) {
     bool messageEnd = false;
     if ((chr == DELIM) || (chr == END_DELIM)) {
+        for (int i = 0; i < readStr.length(); i++) {
+          if ((int)readStr[i] < 32) {    // Check ASCII-controll chars
+             readStr.remove(i, 1);       // Remove it
+             i--;                        // Shift index
+          }
+        }
         if ((readStr.length() > 0) || (segmentCount == 1)) { // segmentCount == 1 allows for empty second field ??? maybe should be 2 for empty third field now that we've added deviceID at the front
             switch (segmentCount) {
             case 0:
